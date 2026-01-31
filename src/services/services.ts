@@ -5,8 +5,8 @@ const API_URL = "https://u2.rsgve.com/gym-api/api";
 export interface Clients {
   id?: number;
   name: string;
-  cedula: number;
-  phone: number;
+  cedula: string;
+  phone: string;
   fecha_ingreso: string;
   activo: boolean;
 }

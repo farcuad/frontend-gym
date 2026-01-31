@@ -44,8 +44,8 @@ const EmployeeTable: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<Clients | null>(null);
   const [newClient, setNewClient] = useState<Clients>({
     name: "",
-    cedula: 0,
-    phone: 0,
+    cedula: "",
+    phone: "",
     fecha_ingreso: new Date().toISOString().split('T')[0],
     activo: true
   });
@@ -61,8 +61,8 @@ const EmployeeTable: React.FC = () => {
       setIsCreateOpen(false);
       setNewClient({
         name: "",
-        cedula: 0,
-        phone: 0,
+        cedula: "",
+        phone: "",
         fecha_ingreso: new Date().toISOString().split('T')[0],
         activo: true
       });
@@ -278,9 +278,9 @@ const EmployeeTable: React.FC = () => {
                     <FontAwesomeIcon icon={faIdCard} className="text-xs" />
                   </span>
                   <input
-                    type="number"
+                    type="text"
                     value={newClient.cedula || ""}
-                    onChange={(e) => setNewClient({...newClient, cedula: Number(e.target.value)})}
+                    onChange={(e) => setNewClient({...newClient, cedula: e.target.value})}
                     placeholder="Cédula"
                     required
                     className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
@@ -294,7 +294,7 @@ const EmployeeTable: React.FC = () => {
                   <input
                     type="number"
                     value={newClient.phone || ""}
-                    onChange={(e) => setNewClient({...newClient, phone: Number(e.target.value)})}
+                    onChange={(e) => setNewClient({...newClient, phone: e.target.value})}
                     placeholder="Teléfono"
                     required
                     className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
