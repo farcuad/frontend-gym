@@ -54,7 +54,6 @@ const EmployeeTable: React.FC = () => {
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Clients | null>(null);
   const [editClient, setEditClient] = useState<Clients | null>(null);
   const [newClient, setNewClient] = useState<Clients>({
     name: "",
@@ -90,7 +89,6 @@ const EmployeeTable: React.FC = () => {
   };
 
   const handleEdit = (client: Clients) => {
-    setSelectedClient(client);
     setEditClient({ ...client });
     setIsEditOpen(true);
   };

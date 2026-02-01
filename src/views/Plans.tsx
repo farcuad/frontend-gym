@@ -55,7 +55,6 @@ const PlanTable: React.FC = () => {
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<Plans | null>(null);
   const [newPlan, setNewPlan] = useState<Plans>({
     name: "",
     duration_day: 30,
@@ -87,7 +86,6 @@ const PlanTable: React.FC = () => {
   };
 
   const handleEdit = (plan: Plans) => {
-    setSelectedPlan(plan);
     setPlanUpdate({ ...plan });
     setIsEditOpen(true);
   };
