@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faEdit, 
-  faTrashAlt, 
-  faTag, 
+import {
+  faEdit,
+  faTrashAlt,
+  faTag,
   faDollarSign,
   faTimes,
   faLayerGroup,
   faSpinner,
   faPlus,
-  faClock
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { Plans } from "../services/services";
@@ -26,9 +26,13 @@ const PlanTable: React.FC = () => {
       // La API devuelve { message: "...", plans: [...] }
       // response.data contiene el objeto completo de la API
       const apiResponse = response.data;
-      
+
       // Extraer el array de planes
-      if (apiResponse && apiResponse.plans && Array.isArray(apiResponse.plans)) {
+      if (
+        apiResponse &&
+        apiResponse.plans &&
+        Array.isArray(apiResponse.plans)
+      ) {
         setPlans(apiResponse.plans);
       } else if (Array.isArray(apiResponse)) {
         // Si la respuesta es directamente un array
@@ -55,8 +59,9 @@ const PlanTable: React.FC = () => {
   const [newPlan, setNewPlan] = useState<Plans>({
     name: "",
     duration_day: 30,
-    price: 0
+    price: 0,
   });
+  const [planUpdate, setPlanUpdate] = useState<Plans | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const MySwal = withReactContent(Swal);
 
@@ -65,17 +70,17 @@ const PlanTable: React.FC = () => {
     setIsSubmitting(true);
     try {
       await apiService.createPlan(newPlan);
-      MySwal.fire('¡Éxito!', 'Plan creado correctamente.', 'success');
+      MySwal.fire("¡Éxito!", "Plan creado correctamente.", "success");
       setIsCreateOpen(false);
       setNewPlan({
         name: "",
         duration_day: 30,
-        price: 0
+        price: 0,
       });
       fetchPlans();
     } catch (error) {
       console.error("Error al crear plan:", error);
-      MySwal.fire('Error', 'No se pudo crear el plan.', 'error');
+      MySwal.fire("Error", "No se pudo crear el plan.", "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -83,31 +88,68 @@ const PlanTable: React.FC = () => {
 
   const handleEdit = (plan: Plans) => {
     setSelectedPlan(plan);
+    setPlanUpdate({ ...plan });
     setIsEditOpen(true);
   };
 
-  const handleDelete = (name: string) => {
+  const handleDelete = async (plans: Plans) => {
     MySwal.fire({
-      title: '¿Eliminar plan?',
-      text: `El plan "${name}" ya no estará disponible para nuevos socios.`,
-      icon: 'warning',
+      title: "¿Eliminar plan?",
+      text: `El plan "${plans.name}" ya no estará disponible para nuevos socios.`,
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#0d9488',
-      cancelButtonColor: '#f43f5e',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-      customClass: { popup: 'rounded-3xl' }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        MySwal.fire('¡Eliminado!', 'El plan ha sido borrado con éxito.', 'success');
+      confirmButtonColor: "#0d9488",
+      cancelButtonColor: "#f43f5e",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      customClass: { popup: "rounded-3xl" },
+    }).then(async (result) => {
+      if (result.isConfirmed && plans.id) {
+        try {
+          await apiService.deletePlan(plans.id);
+          MySwal.fire(
+            "¡Eliminado!",
+            "El plan ha sido borrado con éxito.",
+            "success",
+          );
+          fetchPlans();
+        } catch (error) {
+          console.error("Error al eliminar plan:", error);
+          MySwal.fire("Error", "No se pudo eliminar el plan.", "error");
+        }
       }
     });
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const { name, duration_day, price } = planUpdate!;
+      if (!planUpdate || !planUpdate.id) return;
+      await apiService.updatePlan(planUpdate!.id, {
+        name,
+        duration_day,
+        price,
+      });
+      MySwal.fire("¡Éxito!", "Plan actualizado correctamente.", "success");
+      setIsEditOpen(false);
+      fetchPlans();
+    } catch (error) {
+      console.error("Error al actualizar plan:", error);
+      MySwal.fire("Error", "No se pudo actualizar el plan.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
     return (
       <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-[200px]">
-        <FontAwesomeIcon icon={faSpinner} className="text-teal-600 text-2xl animate-spin" />
+        <FontAwesomeIcon
+          icon={faSpinner}
+          className="text-teal-600 text-2xl animate-spin"
+        />
       </div>
     );
   }
@@ -132,18 +174,33 @@ const PlanTable: React.FC = () => {
         <table className="min-w-full bg-white text-sm">
           <thead>
             <tr className="border-b border-gray-100">
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">#</th>
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">Detalle del Plan</th>
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">Duración</th>
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">Precio USD</th>
-              <th className="px-6 py-4 text-center font-bold text-gray-400 uppercase tracking-widest text-[10px]">Acciones</th>
+              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                #
+              </th>
+              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                Detalle del Plan
+              </th>
+              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                Duración
+              </th>
+              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                Precio USD
+              </th>
+              <th className="px-6 py-4 text-center font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                Acciones
+              </th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-gray-50">
             {plans.map((plan, index) => (
-              <tr key={index} className="hover:bg-gray-50/50 transition-colors group">
-                <td className="px-6 py-5 whitespace-nowrap text-gray-400 font-medium">{index + 1}</td>
+              <tr
+                key={plan.id}
+                className="hover:bg-gray-50/50 transition-colors group"
+              >
+                <td className="px-6 py-5 whitespace-nowrap text-gray-400 font-medium">
+                  {index + 1}
+                </td>
                 <td className="px-6 py-5 whitespace-nowrap">
                   <span className="font-bold text-gray-700">{plan.name}</span>
                 </td>
@@ -159,15 +216,15 @@ const PlanTable: React.FC = () => {
                 </td>
                 <td className="px-6 py-5 whitespace-nowrap text-center">
                   <div className="flex justify-center gap-3">
-                    <button 
+                    <button
                       onClick={() => handleEdit(plan)}
                       className="text-amber-500 hover:text-amber-600 transition-colors p-2"
                       title="Editar Plan"
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
-                    <button 
-                      onClick={() => handleDelete(plan.name)}
+                    <button
+                      onClick={() => handleDelete(plan)}
                       className="text-rose-500 hover:text-rose-600 transition-colors p-2"
                       title="Eliminar Plan"
                     >
@@ -185,7 +242,7 @@ const PlanTable: React.FC = () => {
       {isEditOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
-            <button 
+            <button
               onClick={() => setIsEditOpen(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
             >
@@ -194,34 +251,55 @@ const PlanTable: React.FC = () => {
 
             <div className="mb-8">
               <h3 className="text-2xl font-black text-gray-800">Editar Plan</h3>
-              <p className="text-sm text-gray-400 font-medium italic">Ajusta los costos y beneficios.</p>
+              <p className="text-sm text-gray-400 font-medium italic">
+                Ajusta los costos y beneficios.
+              </p>
             </div>
 
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleUpdate}>
               <div className="space-y-4">
                 <div className="relative">
-                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Nombre del Plan</label>
+                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">
+                    Nombre del Plan
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
                       <FontAwesomeIcon icon={faTag} className="text-xs" />
                     </span>
                     <input
                       type="text"
-                      defaultValue={selectedPlan?.name}
+                      value={planUpdate?.name || ""}
+                      onChange={(e) =>
+                        setPlanUpdate((prev) =>
+                          prev ? { ...prev, name: e.target.value } : prev,
+                        )
+                      }
                       className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
 
                 <div className="relative">
-                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Precio Mensual ($)</label>
+                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">
+                    Precio Mensual ($)
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                      <FontAwesomeIcon icon={faDollarSign} className="text-xs" />
+                      <FontAwesomeIcon
+                        icon={faDollarSign}
+                        className="text-xs"
+                      />
                     </span>
                     <input
                       type="text"
-                      defaultValue={selectedPlan?.price}
+                      value={planUpdate?.price || ""}
+                      onChange={(e) =>
+                        setPlanUpdate((prev) =>
+                          prev
+                            ? { ...prev, price: Number(e.target.value) }
+                            : prev,
+                        )
+                      }
                       className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
@@ -240,7 +318,14 @@ const PlanTable: React.FC = () => {
                   type="submit"
                   className="flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all"
                 >
-                  Actualizar
+                  {isSubmitting ? (
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="animate-spin"
+                    />
+                  ) : (
+                    "Actualizar Plan"
+                  )}
                 </button>
               </div>
             </form>
@@ -252,7 +337,7 @@ const PlanTable: React.FC = () => {
       {isCreateOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
-            <button 
+            <button
               onClick={() => setIsCreateOpen(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
             >
@@ -261,13 +346,17 @@ const PlanTable: React.FC = () => {
 
             <div className="mb-8">
               <h3 className="text-2xl font-black text-gray-800">Nuevo Plan</h3>
-              <p className="text-sm text-gray-400 font-medium italic">Crea un nuevo plan de suscripción.</p>
+              <p className="text-sm text-gray-400 font-medium italic">
+                Crea un nuevo plan de suscripción.
+              </p>
             </div>
 
             <form className="space-y-6" onSubmit={handleCreatePlan}>
               <div className="space-y-4">
                 <div className="relative">
-                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Nombre del Plan</label>
+                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">
+                    Nombre del Plan
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
                       <FontAwesomeIcon icon={faTag} className="text-xs" />
@@ -275,7 +364,9 @@ const PlanTable: React.FC = () => {
                     <input
                       type="text"
                       value={newPlan.name}
-                      onChange={(e) => setNewPlan({...newPlan, name: e.target.value})}
+                      onChange={(e) =>
+                        setNewPlan({ ...newPlan, name: e.target.value })
+                      }
                       placeholder="Ej: Mensualidad con entrenador"
                       required
                       className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
@@ -284,7 +375,9 @@ const PlanTable: React.FC = () => {
                 </div>
 
                 <div className="relative">
-                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Duración (días)</label>
+                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">
+                    Duración (días)
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
                       <FontAwesomeIcon icon={faClock} className="text-xs" />
@@ -292,7 +385,12 @@ const PlanTable: React.FC = () => {
                     <input
                       type="number"
                       value={newPlan.duration_day || ""}
-                      onChange={(e) => setNewPlan({...newPlan, duration_day: Number(e.target.value)})}
+                      onChange={(e) =>
+                        setNewPlan({
+                          ...newPlan,
+                          duration_day: Number(e.target.value),
+                        })
+                      }
                       placeholder="30"
                       required
                       className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
@@ -301,16 +399,26 @@ const PlanTable: React.FC = () => {
                 </div>
 
                 <div className="relative">
-                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Precio ($)</label>
+                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">
+                    Precio ($)
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                      <FontAwesomeIcon icon={faDollarSign} className="text-xs" />
+                      <FontAwesomeIcon
+                        icon={faDollarSign}
+                        className="text-xs"
+                      />
                     </span>
                     <input
                       type="number"
                       step="0.01"
                       value={newPlan.price || ""}
-                      onChange={(e) => setNewPlan({...newPlan, price: Number(e.target.value)})}
+                      onChange={(e) =>
+                        setNewPlan({
+                          ...newPlan,
+                          price: Number(e.target.value),
+                        })
+                      }
                       placeholder="25.00"
                       required
                       className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
@@ -333,7 +441,10 @@ const PlanTable: React.FC = () => {
                   className="flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                    <FontAwesomeIcon
+                      icon={faSpinner}
+                      className="animate-spin"
+                    />
                   ) : (
                     "Crear Plan"
                   )}

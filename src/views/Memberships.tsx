@@ -15,11 +15,12 @@ import {
   faLayerGroup
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
-import type { Memberships, Clients, Plans } from "../services/services";
+import type { Memberships, Clients, Plans} from "../services/services";
 
 interface NewMembership {
   client_id: number;
   plan_id: number;
+  fecha_inicio: string;
 }
 
 const MembershipTable: React.FC = () => {
@@ -87,9 +88,11 @@ const MembershipTable: React.FC = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Memberships | null>(null);
+  const fechaHoy = new Date().toISOString().split('T')[0];
   const [newMembership, setNewMembership] = useState<NewMembership>({
     client_id: 0,
-    plan_id: 0
+    plan_id: 0,
+    fecha_inicio: fechaHoy,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const MySwal = withReactContent(Swal);
@@ -102,10 +105,10 @@ const MembershipTable: React.FC = () => {
     }
     setIsSubmitting(true);
     try {
-      await apiService.createMembership(newMembership as unknown as Memberships);
+      await apiService.createMembership(newMembership);
       MySwal.fire('¡Éxito!', 'Membresía creada correctamente.', 'success');
       setIsCreateOpen(false);
-      setNewMembership({ client_id: 0, plan_id: 0 });
+      setNewMembership({ client_id: 0, plan_id: 0, fecha_inicio: '' });
       fetchMemberships();
     } catch (error) {
       console.error("Error al crear membresía:", error);
@@ -120,7 +123,7 @@ const MembershipTable: React.FC = () => {
     setIsEditOpen(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     MySwal.fire({
       title: '¿Revocar Membresía?',
       text: `Se eliminará el registro #${id}.`,
@@ -131,9 +134,16 @@ const MembershipTable: React.FC = () => {
       confirmButtonText: 'Sí, eliminar',
       cancelButtonText: 'Cancelar',
       customClass: { popup: 'rounded-[2rem]' }
-    }).then((result) => {
+    }).then(async(result) => {
       if (result.isConfirmed) {
-        MySwal.fire('Eliminado', 'Registro actualizado.', 'success');
+        try{
+          await apiService.deleteMembership(id);
+          MySwal.fire('Eliminado', 'Registro actualizado.', 'success');
+          fetchMemberships();
+        }catch(error){
+          MySwal.fire('Error', 'No se pudo actualizar el registro.', 'error');
+          console.error("Error al actualizar el registro:", error);
+        }
       }
     });
   };

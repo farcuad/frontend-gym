@@ -29,6 +29,12 @@ export interface Memberships {
   estado: "activo" | "vencido" | "suspendido";
 }
 
+export interface newMembership {
+  client_id: number;
+  plan_id: number;
+  fecha_inicio: string;
+}
+
 // 1. Crear instancia de Axios con la URL base
 const api = axios.create({
   baseURL: API_URL,
@@ -69,7 +75,7 @@ export const apiService = {
 
   // Membresias
   getMemberships: () => api.get("/memberships"),
-  createMembership: (data: Memberships) => api.post("/memberships", data),
+  createMembership: (data: newMembership) => api.post("/memberships", data),
   updateMembership: (id: string | number, data: Memberships) => api.put(`/memberships/${id}`, data),
   deleteMembership: (id: string | number) => api.delete(`/memberships/${id}`),
 
