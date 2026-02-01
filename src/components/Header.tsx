@@ -98,53 +98,53 @@ function Header({ onToggleAside }: HeaderProps) {
 
           {/* Cuadro de notificaciones */}
           {isNotificationOpen && (
-            <div className="absolute right-0 mt-3 w-96 rounded-xl bg-white shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
-              <div className="p-4 border-b bg-gray-50/50 flex justify-between items-center">
-                <h3 className="font-bold text-gray-800">Membresías Vencidas</h3>
-                {alertData && (
-                  <span className="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-medium">
-                    {alertData.count} {alertData.count === 1 ? 'Vencida' : 'Vencidas'}
-                  </span>
-                )}
-              </div>
-              
-              <div className="max-h-80 overflow-y-auto">
-                {loadingAlerts ? (
-                  <div className="p-8 flex items-center justify-center">
-                    <FontAwesomeIcon icon={faSpinner} className="text-teal-600 text-xl animate-spin" />
-                  </div>
-                ) : alertData && alertData.clients && alertData.clients.length > 0 ? (
-                  alertData.clients.map((client, index) => (
-                    <div key={index} className="w-full p-4 flex gap-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
-                      <div className="mt-1 text-amber-500">
-                        <FontAwesomeIcon icon={faExclamationTriangle} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-900">{client.name}</p>
-                        <p className="text-xs text-gray-500">{client.plan_name}</p>
-                        <div className="flex items-center gap-3 mt-1">
-                          <span className="text-[10px] text-rose-500 font-medium">
-                            Vencido: {formatDate(client.fecha_vencimiento)}
-                          </span>
-                          <a 
-                            href={`tel:${client.phone}`}
-                            className="text-[10px] text-teal-600 font-medium flex items-center gap-1 hover:underline"
-                          >
-                            <FontAwesomeIcon icon={faPhone} className="text-[8px]" />
-                            {client.phone}
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="p-8 text-center text-gray-400">
-                    <p className="text-sm">No hay membresías vencidas</p>
-                  </div>
-                )}
+  <div className="absolute right-0 mt-3 w-[calc(100vw-2rem)] sm:w-96 rounded-xl bg-white shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div className="p-4 border-b bg-gray-50/50 flex justify-between items-center">
+      <h3 className="font-bold text-gray-800">Membresías Vencidas</h3>
+      {alertData && (
+        <span className="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-medium">
+          {alertData.count} {alertData.count === 1 ? 'Vencida' : 'Vencidas'}
+        </span>
+      )}
+    </div>
+    
+    <div className="max-h-80 overflow-y-auto">
+      {loadingAlerts ? (
+        <div className="p-8 flex items-center justify-center">
+          <FontAwesomeIcon icon={faSpinner} className="text-teal-600 text-xl animate-spin" />
+        </div>
+      ) : alertData && alertData.clients && alertData.clients.length > 0 ? (
+        alertData.clients.map((client, index) => (
+          <div key={index} className="w-full p-4 flex gap-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
+            <div className="mt-1 text-amber-500 flex-shrink-0">
+              <FontAwesomeIcon icon={faExclamationTriangle} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 truncate">{client.name}</p>
+              <p className="text-xs text-gray-500 truncate">{client.plan_name}</p>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                <span className="text-[10px] text-rose-500 font-medium whitespace-nowrap">
+                  Vencido: {formatDate(client.fecha_vencimiento)}
+                </span>
+                <a 
+                  href={`tel:${client.phone}`}
+                  className="text-[10px] text-teal-600 font-medium flex items-center gap-1 hover:underline whitespace-nowrap"
+                >
+                  <FontAwesomeIcon icon={faPhone} className="text-[8px]" />
+                  {client.phone}
+                </a>
               </div>
             </div>
-          )}
+          </div>
+        ))
+      ) : (
+        <div className="p-8 text-center text-gray-400">
+          <p className="text-sm">No hay membresías vencidas</p>
+        </div>
+      )}
+    </div>
+  </div>
+)}
         </div>
 
         {/* User Dropdown */}

@@ -140,30 +140,46 @@ const ChatIA: React.FC = () => {
 
       {/* INPUT / ÁREA DE ESCRITURA */}
       <div className="p-4 bg-white border-t border-gray-100">
-        <form onSubmit={handleSend} className="flex items-center gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-200 focus-within:border-teal-400 focus-within:ring-1 focus-within:ring-teal-400 transition-all">
+        <form 
+          onSubmit={handleSend} 
+          className="flex items-end gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-200 focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-400/20 focus-within:bg-white transition-all outline-none"
+        >
           
           <button
             type="button"
             onClick={handleVoiceInput}
-            className={`flex items-center justify-center size-10 rounded-xl transition-all ${
+            className={`flex items-center justify-center size-10 rounded-xl transition-all mb-0.5 ${
               isListening ? "bg-red-500 text-white shadow-lg shadow-red-200" : "text-gray-400 hover:bg-gray-200 hover:text-gray-600"
             }`}
           >
             <FontAwesomeIcon icon={isListening ? faMicrophoneSlash : faMicrophone} />
           </button>
 
-          <input
-            type="text"
+          <textarea
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              // Auto-resize
+              e.target.style.height = 'inherit';
+              e.target.style.height = `${Math.min(e.target.scrollHeight, 150)}px`;
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend(e as any);
+                // Reset height
+                (e.target as HTMLTextAreaElement).style.height = 'inherit';
+              }
+            }}
             placeholder={isListening ? "Escuchando tu voz..." : "Escribe un comando o usa el micrófono..."}
-            className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-gray-700 placeholder:text-gray-400"
+            className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-gray-700 placeholder:text-gray-400 resize-none py-2.5 min-h-[40px] max-h-[150px] outline-none"
+            rows={1}
           />
 
           <button
             type="submit"
             disabled={!input.trim()}
-            className="flex items-center justify-center size-10 bg-teal-600 text-white rounded-xl hover:bg-teal-700 disabled:bg-gray-300 disabled:shadow-none shadow-lg shadow-teal-100 transition-all"
+            className="flex items-center justify-center size-10 bg-teal-600 text-white rounded-xl hover:bg-teal-700 disabled:bg-gray-300 disabled:shadow-none shadow-lg shadow-teal-100 transition-all mb-0.5"
           >
             <FontAwesomeIcon icon={faPaperPlane} className="size-4" />
           </button>
