@@ -41,6 +41,7 @@ function Aside({ isOpen, onClose }: AsideProps) {
         `}
       >
         <div className="h-20 flex items-center px-6 mb-4">
+          <NavLink to="/home">
           <div className="flex items-center gap-3">
             <div className="bg-teal-600 p-2 rounded-lg text-white shadow-lg">
               <FontAwesomeIcon icon={faDumbbell} className="size-5" />
@@ -49,6 +50,7 @@ function Aside({ isOpen, onClose }: AsideProps) {
               FIT<span className="text-teal-600">LOG</span>
             </span>
           </div>
+          </NavLink>
         </div>
 
         {/* Navigation */}

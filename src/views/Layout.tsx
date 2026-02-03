@@ -5,6 +5,7 @@ import Clients from "./Clients";
 import Plans from "./Plans"
 import Memberships from "./Memberships";
 import ChatIA from "./ChatAi";
+import Home from "./Home";
 import { useState } from "react";
 
 function App() {
@@ -22,6 +23,8 @@ function App() {
         <Header onToggleAside={toggleAside} />
         <main className="flex-1 p-4 bg-gray-50">
           <Routes>
+            
+             <Route path="/" element={<Home />} />
              <Route path="clients" element={<Clients />} />
              <Route path="plans" element={<Plans />} />
              <Route path="memberships" element={<Memberships />} />

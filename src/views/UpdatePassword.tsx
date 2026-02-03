@@ -35,7 +35,7 @@ function AuthLogin() {
       if(response.status == 200){
         notify.success("Tu contraseña a sido cambiada correctamente");
         setLoading(false);
-        navigate("/");
+        navigate("/login");
       }
     }catch (error) {
       console.error(error);
@@ -118,7 +118,7 @@ function AuthLogin() {
           </div>
 
           <div className="text-center text-sm">
-            <NavLink to="/"
+            <NavLink to="/login"
               className="font-medium text-teal-600 hover:text-teal-500"
             >
               Iniciar Sesion
