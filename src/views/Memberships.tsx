@@ -23,6 +23,7 @@ interface NewMembership {
   fecha_inicio: string;
 }
 
+
 const MembershipTable: React.FC = () => {
   const [memberships, setMemberships] = useState<Memberships[]>([]);
   const [clients, setClients] = useState<Clients[]>([]);
@@ -85,9 +86,7 @@ const MembershipTable: React.FC = () => {
     fetchClientsAndPlans();
   }, []);
 
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [selectedMember, setSelectedMember] = useState<Memberships | null>(null);
   const fechaHoy = new Date().toISOString().split('T')[0];
   const [newMembership, setNewMembership] = useState<NewMembership>({
     client_id: 0,
@@ -118,10 +117,6 @@ const MembershipTable: React.FC = () => {
     }
   };
 
-  const handleEdit = (member: Memberships) => {
-    setSelectedMember(member);
-    setIsEditOpen(true);
-  };
 
   const handleDelete = async (id: number) => {
     MySwal.fire({
@@ -147,12 +142,42 @@ const MembershipTable: React.FC = () => {
       }
     });
   };
+  
+  const handleUpdate = async (member: Memberships ) => {
+    const findPlan = plans.find(plan => plan.id === member.plan_id);
+    if (!findPlan) {
+      MySwal.fire('Error', 'No se encontró el plan asociado.', 'error');
+  return;
+    };
+    MySwal.fire({
+      title: 'Renovar Membersía',
+      text: `¿Dese renovar esta membersia por ${findPlan.duration_day} días?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#0d9488',
+      cancelButtonColor: '#f43f5e',
+      confirmButtonText: 'Sí, renovar',
+      cancelButtonText: 'Cancelar',
+      customClass: { popup: 'rounded-[2rem]' }
+    }).then(async(result) => {
+      if (result.isConfirmed) {
+        try{
+          await apiService.renewMembership(member.id);
+          MySwal.fire('Renovado', 'La membersia fue renovada corectamente.', 'success');
+          fetchMemberships();
+        }catch(error){
+          MySwal.fire('Error', 'No se pudo renovar el registro.', 'error');
+          console.error("Error al actualizar el registro:", error);
+        }
+      }
+    });
+  };
 
   const getStatusColor = (estado: Memberships['estado']) => {
     switch (estado) {
       case 'activo':
         return 'bg-green-100 text-green-600';
-      case 'vencido':
+      case 'pendiente':
         return 'bg-rose-100 text-rose-600';
       case 'suspendido':
         return 'bg-amber-100 text-amber-600';
@@ -201,7 +226,11 @@ const MembershipTable: React.FC = () => {
               <th className="px-6 py-4 text-center font-bold uppercase tracking-widest text-[10px]">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          {memberships.length === 0 && <tr><td colSpan={8} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
+          {memberships.length > 0 && (
+            <tbody className="divide-y divide-gray-50">
+            
+            
             {memberships.map((member, index) => (
               <tr key={member.id} className="hover:bg-gray-50/50 transition-all group">
                 <td className="px-6 py-5 text-gray-400 font-medium">{index + 1}</td>
@@ -242,7 +271,7 @@ const MembershipTable: React.FC = () => {
                 </td>
                 <td className="px-6 py-5 text-center">
                   <div className="flex justify-center gap-2">
-                    <button onClick={() => handleEdit(member)} className="size-8 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors">
+                    <button onClick={() => handleUpdate(member)} className="size-8 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors">
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button onClick={() => handleDelete(member.id)} className="size-8 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
@@ -253,71 +282,17 @@ const MembershipTable: React.FC = () => {
               </tr>
             ))}
           </tbody>
+            )}
+          
         </table>
       </div>
 
-      {/* MODAL DE EDICIÓN */}
-      {isEditOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-2 bg-teal-600"></div>
-            
-            <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-800">Actualizar Membresía</h3>
-              <p className="text-sm text-gray-400 font-medium">Modifica los detalles de la membresía.</p>
-            </div>
 
-            <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-              <div className="relative group">
-                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Cliente</label>
-                <input
-                  type="text"
-                  defaultValue={selectedMember?.client_name}
-                  disabled
-                  className="w-full px-4 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold text-gray-700 cursor-not-allowed"
-                />
-              </div>
 
-              <div className="relative group">
-                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Plan</label>
-                <input
-                  type="text"
-                  defaultValue={selectedMember?.plan_name}
-                  disabled
-                  className="w-full px-4 py-4 bg-gray-50 border border-transparent rounded-2xl text-sm font-bold text-gray-700 cursor-not-allowed"
-                />
-              </div>
-
-              <div className="relative group">
-                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Estado</label>
-                <select
-                  defaultValue={selectedMember?.estado}
-                  className="w-full px-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
-                >
-                  <option value="activo">Activo</option>
-                  <option value="vencido">Vencido</option>
-                  <option value="suspendido">Suspendido</option>
-                </select>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setIsEditOpen(false)} className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 rounded-2xl transition-all">
-                  Cerrar
-                </button>
-                <button type="submit" className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-100 rounded-2xl transition-all">
-                  Guardar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL DE CREACIÓN */}
+      {/* Modal para crear membresias */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-2 bg-teal-600"></div>
             
             <button 
               onClick={() => setIsCreateOpen(false)}

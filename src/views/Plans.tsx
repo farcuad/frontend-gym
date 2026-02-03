@@ -189,8 +189,18 @@ const PlanTable: React.FC = () => {
               </th>
             </tr>
           </thead>
-
-          <tbody className="divide-y divide-gray-50">
+          {plans.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-5 whitespace-nowrap text-center text-gray-400 font-bold text-[15px]"
+                >
+                  No hay planes de suscripción disponibles.
+                </td>
+              </tr>
+          )}
+          {plans.length > 0 && (
+            <tbody className="divide-y divide-gray-50">
             {plans.map((plan, index) => (
               <tr
                 key={plan.id}
@@ -233,6 +243,8 @@ const PlanTable: React.FC = () => {
               </tr>
             ))}
           </tbody>
+          )}
+          
         </table>
       </div>
 

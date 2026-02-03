@@ -184,7 +184,19 @@ const EmployeeTable: React.FC = () => {
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-gray-50">
+          {employees.length === 0 && (
+            <tr>
+              <td
+                colSpan={5}
+                className="px-6 py-4 text-center font-bold text-gray-400 uppercase tracking-wider text-[13px]"
+              >
+                No hay clientes disponibles
+              </td>
+            </tr>
+          )}
+          
+          { employees.length > 0 && (
+            <tbody className="divide-y divide-gray-50">
             {employees.map((person, index) => (
               <tr
                 key={person.id}
@@ -223,6 +235,8 @@ const EmployeeTable: React.FC = () => {
               </tr>
             ))}
           </tbody>
+          )}
+          
         </table>
       </div>
 
