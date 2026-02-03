@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { faBars, faUser, faBell, faExclamationTriangle, faSignOutAlt, faSpinner, faPhone } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +29,9 @@ function Header({ onToggleAside }: HeaderProps) {
   const [loadingAlerts, setLoadingAlerts] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const userDropdownRef = useRef<HTMLDivElement>(null);
+
   const fetchAlerts = async () => {
     setLoadingAlerts(true);
     try {
@@ -47,6 +50,21 @@ function Header({ onToggleAside }: HeaderProps) {
     // Refrescar cada 5 minutos
     const interval = setInterval(fetchAlerts, 5 * 60 * 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Cerrar al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setIsNotificationOpen(false);
+      }
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleLogout = () => {
@@ -80,7 +98,7 @@ function Header({ onToggleAside }: HeaderProps) {
       {/* Right */}
       <div className="flex items-center gap-4 relative">
         {/* Botón Campana */}
-        <div className="relative">
+        <div className="relative" ref={notificationRef}>
           <button 
             onClick={() => {
               setIsNotificationOpen(!isNotificationOpen);
@@ -98,9 +116,9 @@ function Header({ onToggleAside }: HeaderProps) {
 
           {/* Cuadro de notificaciones */}
           {isNotificationOpen && (
-  <div className="absolute right-0 mt-3 w-[calc(100vw-2rem)] sm:w-96 rounded-xl bg-white shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
+  <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-20 sm:top-auto mt-0 sm:mt-3 w-auto sm:w-96 rounded-xl bg-white shadow-2xl border border-gray-100 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
     <div className="p-4 border-b bg-gray-50/50 flex justify-between items-center">
-      <h3 className="font-bold text-gray-800">Membresías Vencidas</h3>
+      <h3 className="font-bold text-gray-800 text-sm sm:text-base">Membresías Vencidas</h3>
       {alertData && (
         <span className="text-xs bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-medium">
           {alertData.count} {alertData.count === 1 ? 'Vencida' : 'Vencidas'}
@@ -148,7 +166,7 @@ function Header({ onToggleAside }: HeaderProps) {
         </div>
 
         {/* User Dropdown */}
-        <div className="relative ">
+        <div className="relative" ref={userDropdownRef}>
           <button
             className="cursor-pointer flex items-center gap-2 rounded-full border border-gray-200 px-3 py-1.5 text-sm font-medium hover:shadow-md transition-shadow bg-white"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
