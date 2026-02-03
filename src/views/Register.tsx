@@ -37,7 +37,7 @@ function AuthLogin() {
       if (response.status === 200) {
         notify.success("Tu Gimnasio a sido registrado correctamente");
         setLoading(false);
-        navigate("/login");
+        navigate("/");
       }
     }catch (error) {
       console.error(error);
@@ -129,7 +129,7 @@ function AuthLogin() {
           </div>
 
           <div className="text-center text-sm">
-            <NavLink to="/login"
+            <NavLink to="/"
               className="font-medium text-teal-600 hover:text-teal-500"
             >
               Iniciar Sesion

@@ -69,7 +69,7 @@ function Header({ onToggleAside }: HeaderProps) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login");
+    navigate("/");
   };
 
   const formatDate = (dateString: string) => {
