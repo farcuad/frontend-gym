@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
+import type { AxiosError } from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { notify } from "../utils/toast";
 import { checkPasswordStrength } from "../utils/validatePassword";
@@ -31,11 +32,11 @@ function AuthLogin() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-      if (passwordInfo?.level === "very-weak") {
+    if (passwordInfo?.level === "very-weak") {
       notify.warning("La contraseña debe tener al menos 6 caracteres");
       return;
-      }
+    }
+    setLoading(true);
 
     try {
       const response = await Axios.post(
@@ -44,11 +45,12 @@ function AuthLogin() {
       );
       if (response.status === 200) {
         notify.success("Tu Gimnasio a sido registrado correctamente");
-        setLoading(false);
         navigate("/");
       }
     } catch (error) {
-      console.error(error);
+      const err = error as AxiosError<{ error: string }>;
+      notify.error(err.response?.data?.error ?? "Error inesperado, intenta nuevamente");
+    } finally {
       setLoading(false);
     }
   };
