@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import Axios from "axios";
+import type { AxiosError } from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { notify } from "../utils/toast";
 
@@ -37,8 +38,10 @@ function AuthLogin() {
         navigate("/home");
       }
     }catch (error) {
-      console.error(error);
       setLoading(false);
+      const err = error as AxiosError<{ error: string }>;
+      
+      notify.error(err.response?.data?.error ?? "Error inesperado, intenta nuevamente");
     }
   }
   return (
