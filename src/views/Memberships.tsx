@@ -177,7 +177,7 @@ const MembershipTable: React.FC = () => {
     switch (estado) {
       case 'activo':
         return 'bg-green-100 text-green-600';
-      case 'pendiente':
+      case 'vencido':
         return 'bg-rose-100 text-rose-600';
       case 'suspendido':
         return 'bg-amber-100 text-amber-600';

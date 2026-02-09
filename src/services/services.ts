@@ -27,7 +27,7 @@ export interface Memberships {
   plan_price: string;
   fecha_inicio: string;
   fecha_vencimiento: string;
-  estado: "activo" | "pendiente" | "suspendido";
+  estado: "activo" | "vencido" | "suspendido";
 }
 
 export interface newMembership {
