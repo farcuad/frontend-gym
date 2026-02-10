@@ -94,24 +94,34 @@ const EmployeeTable: React.FC = () => {
   };
 
   const handleUpdateClient = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!editClient || !editClient.id) return;
+    if (!editClient || !editClient.id) return;
 
-  setIsSubmitting(true);
-  try {
-    const { name, cedula, phone, fecha_ingreso, activo } = editClient;
-    await apiService.updateClient(editClient.id, { name, cedula, phone, fecha_ingreso, activo });
-    MySwal.fire("¡Actualizado!", "Cliente actualizado correctamente.", "success");
-    setIsEditOpen(false);
-    fetchClients();
-  } catch (error) {
-    MySwal.fire("Error", "No se pudo actualizar el cliente.");
-    console.log(error);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    setIsSubmitting(true);
+    try {
+      const { name, cedula, phone, fecha_ingreso, activo } = editClient;
+      await apiService.updateClient(editClient.id, {
+        name,
+        cedula,
+        phone,
+        fecha_ingreso,
+        activo,
+      });
+      MySwal.fire(
+        "¡Actualizado!",
+        "Cliente actualizado correctamente.",
+        "success",
+      );
+      setIsEditOpen(false);
+      fetchClients();
+    } catch (error) {
+      MySwal.fire("Error", "No se pudo actualizar el cliente.");
+      console.log(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleDelete = async (client: Clients) => {
     MySwal.fire({
@@ -162,7 +172,7 @@ const EmployeeTable: React.FC = () => {
           Nuevo Cliente
         </button>
       </div>
-      <div className="overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full bg-white text-sm">
           <thead>
             <tr className="border-b border-gray-100">
@@ -194,50 +204,112 @@ const EmployeeTable: React.FC = () => {
               </td>
             </tr>
           )}
-          
-          { employees.length > 0 && (
+
+          {employees.length > 0 && (
             <tbody className="divide-y divide-gray-50">
-            {employees.map((person, index) => (
-              <tr
-                key={person.id}
-                className="hover:bg-teal-50/30 transition-colors group"
-              >
-                <td className="px-6 py-4 whitespace-nowrap text-gray-500 font-medium">
-                  {index + 1}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="font-bold text-gray-800">{person.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium">
-                  {person.cedula}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium">
-                  {person.phone}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() => handleEdit(person)}
-                      className="size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
-                      title="Editar"
-                    >
-                      <FontAwesomeIcon icon={faEdit} className="text-xs" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(person)}
-                      className="size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
-                      title="Eliminar"
-                    >
-                      <FontAwesomeIcon icon={faTrashAlt} className="text-xs" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+              {employees.map((person, index) => (
+                <tr
+                  key={person.id}
+                  className="hover:bg-teal-50/30 transition-colors group"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500 font-medium">
+                    {index + 1}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="font-bold text-gray-800">{person.name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium">
+                    {person.cedula}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium">
+                    {person.phone}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(person)}
+                        className="size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
+                        title="Editar"
+                      >
+                        <FontAwesomeIcon icon={faEdit} className="text-xs" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(person)}
+                        className="size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                        title="Eliminar"
+                      >
+                        <FontAwesomeIcon
+                          icon={faTrashAlt}
+                          className="text-xs"
+                        />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           )}
-          
         </table>
+      </div>
+
+      {/* VISTA MÓVIL (TARJETAS) */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {employees.length === 0 && (
+          <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
+            No hay clientes disponibles
+          </div>
+        )}
+        {employees.map((person) => (
+          <div
+            key={person.id}
+            className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="font-bold text-gray-800 text-lg">
+                  {person.name}
+                </h3>
+                <p className="text-sm text-gray-500 font-medium flex items-center gap-2 mt-1">
+                  <FontAwesomeIcon
+                    icon={faIdCard}
+                    className="text-xs text-teal-500"
+                  />
+                  {person.cedula}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleEdit(person)}
+                  className="size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
+                >
+                  <FontAwesomeIcon icon={faEdit} className="text-xs" />
+                </button>
+                <button
+                  onClick={() => handleDelete(person)}
+                  className="size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                >
+                  <FontAwesomeIcon icon={faTrashAlt} className="text-xs" />
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-gray-50 flex items-center justify-between">
+              <div className="flex flex-col">
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                  Teléfono
+                </span>
+                <span className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                  <FontAwesomeIcon
+                    icon={faPhone}
+                    className="text-xs text-teal-500"
+                  />
+                  {person.phone}
+                </span>
+              </div>
+              {/* Puedes agregar más campos aquí si es necesario */}
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* MODAL DE EDICIÓN MEJORADO */}
@@ -319,7 +391,8 @@ const EmployeeTable: React.FC = () => {
                 <button
                   type="submit"
                   className="flex-1 px-4 py-3.5 text-sm font-bold text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all"
-                >{isSubmitting ? (
+                >
+                  {isSubmitting ? (
                     <FontAwesomeIcon
                       icon={faSpinner}
                       className="animate-spin"

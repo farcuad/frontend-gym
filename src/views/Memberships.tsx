@@ -212,7 +212,7 @@ const MembershipTable: React.FC = () => {
         </button>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b border-gray-50 text-gray-400">
@@ -285,6 +285,80 @@ const MembershipTable: React.FC = () => {
             )}
           
         </table>
+      </div>
+
+      {/* VISTA MÓVIL (TARJETAS) */}
+      <div className="grid grid-cols-1 gap-4 md:hidden">
+        {memberships.length === 0 && (
+           <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
+            No hay membresias disponibles
+          </div>
+        )}
+        {memberships.map((member) => (
+          <div key={member.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
+             {/* Header Tarjeta */}
+             <div className="flex justify-between items-start">
+                <div className="flex items-center gap-3">
+                    <div className="size-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-600">
+                      <FontAwesomeIcon icon={faUser} className="text-sm" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-gray-800">{member.client_name}</h3>
+                      <p className="text-xs text-gray-400 font-medium">{member.client_phone}</p>
+                    </div>
+                </div>
+                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
+                    <FontAwesomeIcon icon={member.estado === "activo" ? faCheckCircle : faTimes} className="text-[10px]" />
+                    {member.estado}
+                </span>
+             </div>
+
+             {/* Detalles */}
+             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-50">
+                <div>
+                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Plan</span>
+                   <span className="text-sm font-bold text-gray-700">{member.plan_name}</span>
+                </div>
+                <div className="text-right">
+                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Precio</span>
+                   <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-lg font-bold text-xs">
+                    $ {member.plan_price}
+                   </span>
+                </div>
+                
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Inicio</span>
+                   <div className="flex items-center gap-1.5 text-gray-600">
+                    <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-teal-500" />
+                    <span className="text-xs font-medium">{new Date(member.fecha_inicio).toLocaleDateString()}</span>
+                  </div>
+                </div>
+                 <div className="text-right">
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Vencimiento</span>
+                   <div className="flex items-center justify-end gap-1.5 text-gray-600">
+                    <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-rose-500" />
+                    <span className="text-xs font-medium">{new Date(member.fecha_vencimiento).toLocaleDateString()}</span>
+                  </div>
+                </div>
+             </div>
+
+             {/* Acciones */}
+             <div className="flex gap-2 pt-3 border-t border-gray-50">
+               <button 
+                  onClick={() => handleUpdate(member)} 
+                  className="flex-1 py-2 rounded-xl bg-amber-50 text-amber-600 font-bold text-xs hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+                >
+                  <FontAwesomeIcon icon={faEdit} /> Renovar
+                </button>
+                <button 
+                  onClick={() => handleDelete(member.id)} 
+                  className="flex-1 py-2 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-2"
+                >
+                  <FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+                </button>
+             </div>
+          </div>
+        ))}
       </div>
 
 
