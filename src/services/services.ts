@@ -30,10 +30,33 @@ export interface Memberships {
   estado: "activo" | "vencido" | "suspendido";
 }
 
+export interface PaymentInfo {
+  chosen_rate_type: string;
+  exchange_rate: number;
+  amount_paid_bs: number;
+  payment_method: "Divisas" | "Pago Móvil";
+  reference?: string;
+}
+
+export interface PaymentHistory {
+  id: number;
+  amount_paid_bs: string;
+  exchange_rate: string;
+  payment_method: string;
+  reference: string;
+  created_at: string;
+  status: string;
+  client_name: string;
+  client_phone: string;
+  plan_name: string;
+  plan_price_usd: string;
+}
+
 export interface newMembership {
   client_id: number;
   plan_id: number;
   fecha_inicio: string;
+  payment_info?: PaymentInfo;
 }
 
 
@@ -82,10 +105,19 @@ export const apiService = {
   renewMembership: (id: number) => api.post(`/memberships/${id}/renew`),
   deleteMembership: (id: string | number) => api.delete(`/memberships/${id}`),
 
+  getHistoryPagos: () => api.get("/payments"),
   // Asistente Ia
   sendMessageIA: (preguntaUsuario: string) => api.post("/analizar", { preguntaUsuario }),
 
   getAlertClient: () => api.get("/clients/alert"),
+};
+
+// API de tasa de cambio
+const EXCHANGE_API_URL = "https://v6.exchangerate-api.com/v6/4c57d800c11ecff8f364f3e1/latest/USD";
+
+export const getExchangeRate = async (): Promise<number> => {
+  const response = await axios.get(EXCHANGE_API_URL);
+  return response.data.conversion_rates.VES;
 };
 
 export default api;

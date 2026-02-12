@@ -6,6 +6,7 @@ import Plans from "./Plans"
 import Memberships from "./Memberships";
 import ChatIA from "./ChatAi";
 import Home from "./Home";
+import HistoryPagos from "./HistoryPagos";
 import { useState } from "react";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
              <Route path="clients" element={<Clients />} />
              <Route path="plans" element={<Plans />} />
              <Route path="memberships" element={<Memberships />} />
+             <Route path="history-pagos" element={<HistoryPagos />} />
              <Route path="chat" element={<ChatIA />} />
           </Routes>
         </main>

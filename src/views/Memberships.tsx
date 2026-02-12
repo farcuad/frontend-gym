@@ -12,15 +12,19 @@ import {
   faCalendarAlt,
   faSpinner,
   faPlus,
-  faLayerGroup
+  faLayerGroup,
+  faDollarSign,
+  faMobileAlt,
+  faReceipt
 } from "@fortawesome/free-solid-svg-icons";
-import { apiService } from "../services/services";
-import type { Memberships, Clients, Plans} from "../services/services";
+import { apiService, getExchangeRate } from "../services/services";
+import type { Memberships, Clients, Plans, PaymentInfo } from "../services/services";
 
 interface NewMembership {
   client_id: number;
   plan_id: number;
   fecha_inicio: string;
+  payment_info?: PaymentInfo;
 }
 
 
@@ -29,19 +33,16 @@ const MembershipTable: React.FC = () => {
   const [clients, setClients] = useState<Clients[]>([]);
   const [plans, setPlans] = useState<Plans[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
 
   const fetchMemberships = async () => {
     try {
       const response = await apiService.getMemberships();
-      // La API devuelve { message: "...", membership: [...] } (singular)
-      // response.data contiene el objeto completo de la API
       const apiResponse = response.data;
 
-      // Extraer el array de membresías (la API usa 'membership' en singular)
       if (apiResponse && apiResponse.membership && Array.isArray(apiResponse.membership)) {
         setMemberships(apiResponse.membership);
       } else if (Array.isArray(apiResponse)) {
-        // Si la respuesta es directamente un array
         setMemberships(apiResponse);
       } else {
         console.error("Formato de respuesta inesperado:", apiResponse);
@@ -81,9 +82,19 @@ const MembershipTable: React.FC = () => {
     }
   };
 
+  const fetchExchangeRate = async () => {
+    try {
+      const rate = await getExchangeRate();
+      setExchangeRate(rate);
+    } catch (error) {
+      console.error("Error al obtener tasa de cambio:", error);
+    }
+  };
+
   useEffect(() => {
     fetchMemberships();
     fetchClientsAndPlans();
+    fetchExchangeRate();
   }, []);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -93,8 +104,15 @@ const MembershipTable: React.FC = () => {
     plan_id: 0,
     fecha_inicio: fechaHoy,
   });
+  const [paymentMethod, setPaymentMethod] = useState<"Divisas" | "Pago Móvil">("Divisas");
+  const [reference, setReference] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const MySwal = withReactContent(Swal);
+
+  // Obtener el precio del plan seleccionado
+  const selectedPlan = plans.find(p => p.id === newMembership.plan_id);
+  const selectedPlanPrice = Number(selectedPlan?.price) || 0;
+  const amountInBs = exchangeRate ? +(selectedPlanPrice * exchangeRate).toFixed(2) : 0;
 
   const handleCreateMembership = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,12 +120,38 @@ const MembershipTable: React.FC = () => {
       MySwal.fire('Error', 'Por favor selecciona un cliente y un plan.', 'warning');
       return;
     }
+
+    if (paymentMethod === "Pago Móvil" && !reference.trim()) {
+      MySwal.fire('Error', 'Por favor ingresa la referencia bancaria.', 'warning');
+      return;
+    }
+
+    if (!exchangeRate) {
+      MySwal.fire('Error', 'No se pudo obtener la tasa de cambio. Intenta de nuevo.', 'error');
+      return;
+    }
+
+    const paymentInfo: PaymentInfo = {
+      chosen_rate_type: "BCV",
+      exchange_rate: exchangeRate,
+      amount_paid_bs: amountInBs,
+      payment_method: paymentMethod,
+      ...(paymentMethod === "Pago Móvil" && { reference: reference.trim() }),
+    };
+
+    const membershipData: NewMembership = {
+      ...newMembership,
+      payment_info: paymentInfo,
+    };
+
     setIsSubmitting(true);
     try {
-      await apiService.createMembership(newMembership);
+      await apiService.createMembership(membershipData);
       MySwal.fire('¡Éxito!', 'Membresía creada correctamente.', 'success');
       setIsCreateOpen(false);
-      setNewMembership({ client_id: 0, plan_id: 0, fecha_inicio: '' });
+      setNewMembership({ client_id: 0, plan_id: 0, fecha_inicio: fechaHoy });
+      setPaymentMethod("Divisas");
+      setReference("");
       fetchMemberships();
     } catch (error) {
       console.error("Error al crear membresía:", error);
@@ -186,6 +230,13 @@ const MembershipTable: React.FC = () => {
     }
   };
 
+  // Helpers para formatear precios
+  const formatBs = (priceUsd: number | string) => {
+    const price = typeof priceUsd === 'string' ? parseFloat(priceUsd) : priceUsd;
+    if (!exchangeRate || isNaN(price)) return '—';
+    return `Bs. ${(price * exchangeRate).toFixed(2)}`;
+  };
+
   if (loading) {
     return (
       <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-[200px]">
@@ -195,22 +246,32 @@ const MembershipTable: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
+    <div className="p-4 md:p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
       <div className="flex justify-between items-center mb-6 px-2">
         <h2 className="text-xl font-black text-gray-800 flex items-center gap-3">
           <div className="bg-teal-600 text-white p-2 rounded-xl shadow-lg shadow-teal-100">
             <FontAwesomeIcon icon={faIdBadge} className="size-5" />
           </div>
-          Control de Membresías
+          <span className="hidden sm:inline">Control de </span>Membresías
         </h2>
         <button
           onClick={() => setIsCreateOpen(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
         >
           <FontAwesomeIcon icon={faPlus} />
-          Nueva Membresía
+          <span className="hidden sm:inline">Nueva Membresía</span>
+          <span className="sm:hidden">Nueva</span>
         </button>
       </div>
+
+      {exchangeRate && (
+        <div className="mb-4 px-2">
+          <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-xs font-bold">
+            <FontAwesomeIcon icon={faDollarSign} />
+            Tasa BCV: {exchangeRate.toFixed(2)} Bs
+          </span>
+        </div>
+      )}
 
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full text-sm">
@@ -219,14 +280,15 @@ const MembershipTable: React.FC = () => {
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">#</th>
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Cliente</th>
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Plan</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Precio</th>
+              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Precio USD</th>
+              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Precio Bs</th>
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Fecha Inicio</th>
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Fecha Vencimiento</th>
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Estado</th>
               <th className="px-6 py-4 text-center font-bold uppercase tracking-widest text-[10px]">Acciones</th>
             </tr>
           </thead>
-          {memberships.length === 0 && <tr><td colSpan={8} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
+          {memberships.length === 0 && <tr><td colSpan={9} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
           {memberships.length > 0 && (
             <tbody className="divide-y divide-gray-50">
             
@@ -249,6 +311,11 @@ const MembershipTable: React.FC = () => {
                 <td className="px-6 py-5">
                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs">
                     $ {member.plan_price}
+                  </span>
+                </td>
+                <td className="px-6 py-5">
+                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold text-xs">
+                    {formatBs(member.plan_price)}
                   </span>
                 </td>
                 <td className="px-6 py-5">
@@ -297,17 +364,17 @@ const MembershipTable: React.FC = () => {
         {memberships.map((member) => (
           <div key={member.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
              {/* Header Tarjeta */}
-             <div className="flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                    <div className="size-10 rounded-full bg-teal-50 flex items-center justify-center text-teal-600">
+             <div className="flex justify-between items-start gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="size-10 rounded-full bg-teal-50 flex-shrink-0 flex items-center justify-center text-teal-600">
                       <FontAwesomeIcon icon={faUser} className="text-sm" />
                     </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800">{member.client_name}</h3>
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-gray-800 truncate">{member.client_name}</h3>
                       <p className="text-xs text-gray-400 font-medium">{member.client_phone}</p>
                     </div>
                 </div>
-                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
+                <span className={`flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
                     <FontAwesomeIcon icon={member.estado === "activo" ? faCheckCircle : faTimes} className="text-[10px]" />
                     {member.estado}
                 </span>
@@ -320,22 +387,29 @@ const MembershipTable: React.FC = () => {
                    <span className="text-sm font-bold text-gray-700">{member.plan_name}</span>
                 </div>
                 <div className="text-right">
-                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Precio</span>
+                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Precio USD</span>
                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-lg font-bold text-xs">
                     $ {member.plan_price}
                    </span>
                 </div>
-                
+
                 <div>
+                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Precio Bs</span>
+                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-lg font-bold text-xs">
+                    {formatBs(member.plan_price)}
+                   </span>
+                </div>
+                
+                <div className="text-right">
                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Inicio</span>
-                   <div className="flex items-center gap-1.5 text-gray-600">
+                   <div className="flex items-center justify-end gap-1.5 text-gray-600">
                     <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-teal-500" />
                     <span className="text-xs font-medium">{new Date(member.fecha_inicio).toLocaleDateString()}</span>
                   </div>
                 </div>
-                 <div className="text-right">
+                 <div>
                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Vencimiento</span>
-                   <div className="flex items-center justify-end gap-1.5 text-gray-600">
+                   <div className="flex items-center gap-1.5 text-gray-600">
                     <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-rose-500" />
                     <span className="text-xs font-medium">{new Date(member.fecha_vencimiento).toLocaleDateString()}</span>
                   </div>
@@ -366,7 +440,7 @@ const MembershipTable: React.FC = () => {
       {/* Modal para crear membresias */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden max-h-[90vh] overflow-y-auto">
             
             <button 
               onClick={() => setIsCreateOpen(false)}
@@ -424,6 +498,115 @@ const MembershipTable: React.FC = () => {
                   </select>
                 </div>
               </div>
+
+              {/* Método de Pago */}
+              <div className="relative group">
+                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-2 block">Método de Pago</label>
+                <div className="flex gap-3">
+                  {/* Divisas */}
+                  <label
+                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                      paymentMethod === "Divisas"
+                        ? "border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100"
+                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="Divisas"
+                      checked={paymentMethod === "Divisas"}
+                      onChange={() => setPaymentMethod("Divisas")}
+                      className="sr-only"
+                    />
+                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${
+                      paymentMethod === "Divisas" ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-400"
+                    }`}>
+                      <FontAwesomeIcon icon={faDollarSign} />
+                    </div>
+                    <div>
+                      <span className="font-bold text-sm text-gray-700 block">Divisas</span>
+                      <span className="text-[10px] text-gray-400">Pago en USD</span>
+                    </div>
+                  </label>
+
+                  {/* Pago Móvil */}
+                  <label
+                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                      paymentMethod === "Pago Móvil"
+                        ? "border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100"
+                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="Pago Móvil"
+                      checked={paymentMethod === "Pago Móvil"}
+                      onChange={() => setPaymentMethod("Pago Móvil")}
+                      className="sr-only"
+                    />
+                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${
+                      paymentMethod === "Pago Móvil" ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-400"
+                    }`}>
+                      <FontAwesomeIcon icon={faMobileAlt} />
+                    </div>
+                    <div>
+                      <span className="font-bold text-sm text-gray-700 block">Pago Móvil</span>
+                      <span className="text-[10px] text-gray-400">Transferencia Bs</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Referencia bancaria (solo Pago Móvil) */}
+              {paymentMethod === "Pago Móvil" && (
+                <div className="relative group animate-in slide-in-from-top-2 duration-200">
+                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Referencia Bancaria</label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
+                      <FontAwesomeIcon icon={faReceipt} className="text-xs" />
+                    </span>
+                    <input
+                      type="text"
+                      value={reference}
+                      onChange={(e) => setReference(e.target.value)}
+                      placeholder="Ej: 987654321"
+                      required
+                      className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Vista del monto a pagar */}
+              {newMembership.plan_id > 0 && exchangeRate && (
+                <div className="bg-gradient-to-br from-gray-50 to-teal-50/30 rounded-2xl p-5 space-y-3 border border-gray-100">
+                  <h4 className="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Resumen de Pago</h4>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-500">Precio del plan</span>
+                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm">
+                      $ {selectedPlanPrice.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-500">Tasa BCV</span>
+                    <span className="text-sm font-bold text-gray-600">{exchangeRate.toFixed(2)} Bs/USD</span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
+                    <span className="text-sm font-bold text-gray-700">Total en Bolívares</span>
+                    <span className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-black text-sm">
+                      Bs. {amountInBs.toFixed(2)}
+                    </span>
+                  </div>
+                  {paymentMethod === "Divisas" && (
+                    <p className="text-[11px] text-gray-400 italic">El cliente pagará en divisas (USD).</p>
+                  )}
+                  {paymentMethod === "Pago Móvil" && (
+                    <p className="text-[11px] text-gray-400 italic">El cliente pagará Bs. {amountInBs.toFixed(2)} por Pago Móvil.</p>
+                  )}
+                </div>
+              )}
 
               <div className="flex gap-3 pt-4">
                 <button 

@@ -13,12 +13,13 @@ import {
   faPlus,
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
-import { apiService } from "../services/services";
+import { apiService, getExchangeRate } from "../services/services";
 import type { Plans } from "../services/services";
 
 const PlanTable: React.FC = () => {
   const [plans, setPlans] = useState<Plans[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
 
   const fetchPlans = async () => {
     try {
@@ -51,7 +52,13 @@ const PlanTable: React.FC = () => {
 
   useEffect(() => {
     fetchPlans();
+    getExchangeRate().then(rate => setExchangeRate(rate)).catch(err => console.error("Error tasa:", err));
   }, []);
+
+  const formatBs = (price: number) => {
+    if (!exchangeRate) return '—';
+    return `Bs. ${(price * exchangeRate).toFixed(2)}`;
+  };
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -184,6 +191,9 @@ const PlanTable: React.FC = () => {
               <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
                 Precio USD
               </th>
+              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
+                Precio Bs
+              </th>
               <th className="px-6 py-4 text-center font-bold text-gray-400 uppercase tracking-widest text-[10px]">
                 Acciones
               </th>
@@ -192,7 +202,7 @@ const PlanTable: React.FC = () => {
           {plans.length === 0 && (
               <tr>
                 <td
-                  colSpan={5}
+                  colSpan={6}
                   className="px-6 py-5 whitespace-nowrap text-center text-gray-400 font-bold text-[15px]"
                 >
                   No hay planes de suscripción disponibles.
@@ -220,6 +230,11 @@ const PlanTable: React.FC = () => {
                 <td className="px-6 py-5 whitespace-nowrap">
                   <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs">
                     $ {plan.price}
+                  </span>
+                </td>
+                <td className="px-6 py-5 whitespace-nowrap">
+                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold text-xs">
+                    {formatBs(plan.price)}
                   </span>
                 </td>
                 <td className="px-6 py-5 whitespace-nowrap text-center">
@@ -264,9 +279,14 @@ const PlanTable: React.FC = () => {
                   {plan.duration_day} días
                 </span>
               </div>
-              <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm">
-                $ {plan.price}
-              </span>
+              <div className="flex flex-col items-end gap-1">
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm">
+                  $ {plan.price}
+                </span>
+                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold text-[10px]">
+                  {formatBs(plan.price)}
+                </span>
+              </div>
             </div>
 
             <div className="flex gap-2 pt-3 border-t border-gray-50 mt-2">

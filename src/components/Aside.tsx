@@ -72,6 +72,11 @@ function Aside({ isOpen, onClose }: AsideProps) {
             <span>Membresías</span>
           </NavLink>
 
+          <NavLink to="/home/history-pagos" className={navLinkClass}>
+            <FontAwesomeIcon icon={faIdCard} className="w-5" />
+            <span>Historial de Pagos</span>
+          </NavLink>
+
           <div className="pt-4">
             <p className="text-[11px] uppercase tracking-wider text-gray-400 px-4 mb-2">Inteligencia Artificial</p>
             <NavLink to="/home/chat" className={navLinkClass}>
