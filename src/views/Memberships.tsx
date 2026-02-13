@@ -165,7 +165,7 @@ const MembershipTable: React.FC = () => {
   const handleDelete = async (id: number) => {
     MySwal.fire({
       title: '¿Revocar Membresía?',
-      text: `Se eliminará el registro #${id}.`,
+      text: `Se eliminará éste registro.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#0d9488',
@@ -248,12 +248,21 @@ const MembershipTable: React.FC = () => {
   return (
     <div className="p-4 md:p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
       <div className="flex justify-between items-center mb-6 px-2">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 justify-start">
         <h2 className="text-xl font-black text-gray-800 flex items-center gap-3">
           <div className="bg-teal-600 text-white p-2 rounded-xl shadow-lg shadow-teal-100">
             <FontAwesomeIcon icon={faIdBadge} className="size-5" />
           </div>
           <span className="hidden sm:inline">Control de </span>Membresías
         </h2>
+        {exchangeRate && (
+        <div className="mt-2 md:mt-0 px-2">
+          <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-xs font-bold">
+            Tasa BCV: {exchangeRate.toFixed(2)} Bs
+          </span>
+        </div>
+      )}
+        </div>
         <button
           onClick={() => setIsCreateOpen(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
@@ -264,14 +273,7 @@ const MembershipTable: React.FC = () => {
         </button>
       </div>
 
-      {exchangeRate && (
-        <div className="mb-4 px-2">
-          <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-xs font-bold">
-            <FontAwesomeIcon icon={faDollarSign} />
-            Tasa BCV: {exchangeRate.toFixed(2)} Bs
-          </span>
-        </div>
-      )}
+      
 
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full text-sm">
@@ -366,7 +368,7 @@ const MembershipTable: React.FC = () => {
              {/* Header Tarjeta */}
              <div className="flex justify-between items-start gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                    <div className="size-10 rounded-full bg-teal-50 flex-shrink-0 flex items-center justify-center text-teal-600">
+                    <div className="size-10 rounded-full bg-teal-50 shrink-0 flex items-center justify-center text-teal-600">
                       <FontAwesomeIcon icon={faUser} className="text-sm" />
                     </div>
                     <div className="min-w-0">
@@ -374,7 +376,7 @@ const MembershipTable: React.FC = () => {
                       <p className="text-xs text-gray-400 font-medium">{member.client_phone}</p>
                     </div>
                 </div>
-                <span className={`flex-shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
+                <span className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
                     <FontAwesomeIcon icon={member.estado === "activo" ? faCheckCircle : faTimes} className="text-[10px]" />
                     {member.estado}
                 </span>
@@ -439,7 +441,7 @@ const MembershipTable: React.FC = () => {
 
       {/* Modal para crear membresias */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
           <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden max-h-[90vh] overflow-y-auto">
             
             <button 
@@ -581,7 +583,7 @@ const MembershipTable: React.FC = () => {
 
               {/* Vista del monto a pagar */}
               {newMembership.plan_id > 0 && exchangeRate && (
-                <div className="bg-gradient-to-br from-gray-50 to-teal-50/30 rounded-2xl p-5 space-y-3 border border-gray-100">
+                <div className="bg-linear-to-br from-gray-50 to-teal-50/30 rounded-2xl p-5 space-y-3 border border-gray-100">
                   <h4 className="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Resumen de Pago</h4>
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium text-gray-500">Precio del plan</span>

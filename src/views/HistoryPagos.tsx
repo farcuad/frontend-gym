@@ -37,7 +37,7 @@ const PaymentHistoryView: React.FC = () => {
         data = [];
       }
       
-      // Sort by date descending (created_at)
+      
       data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
       setPayments(data);

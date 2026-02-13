@@ -10,8 +10,7 @@ import {
   faTimes,
   faLayerGroup,
   faSpinner,
-  faPlus,
-  faClock,
+  faPlus, faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService, getExchangeRate } from "../services/services";
 import type { Plans } from "../services/services";
@@ -162,10 +161,20 @@ const PlanTable: React.FC = () => {
   return (
     <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
       <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 justify-start">
         <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
           <FontAwesomeIcon icon={faLayerGroup} className="text-teal-600" />
           Planes de Suscripción
         </h2>
+        
+        {exchangeRate && (
+        <div className="mt-2 md:mt-0 px-2">
+          <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-xs font-bold">
+            Tasa BCV: {exchangeRate.toFixed(2)} Bs
+          </span>
+        </div>
+      )}
+        </div>
         <button
           onClick={() => setIsCreateOpen(true)}
           className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
@@ -309,8 +318,8 @@ const PlanTable: React.FC = () => {
 
       {/* MODAL DE EDICIÓN DE PLAN */}
       {isEditOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsEditOpen(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
@@ -404,8 +413,8 @@ const PlanTable: React.FC = () => {
 
       {/* MODAL DE CREACIÓN */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsCreateOpen(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
