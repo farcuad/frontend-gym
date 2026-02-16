@@ -19,7 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService, getExchangeRate } from "../services/services";
 import type { Memberships, Clients, Plans, PaymentInfo } from "../services/services";
-
+import axios from 'axios';
 interface NewMembership {
   client_id: number;
   plan_id: number;
@@ -180,8 +180,12 @@ const MembershipTable: React.FC = () => {
           MySwal.fire('Eliminado', 'Registro actualizado.', 'success');
           fetchMemberships();
         }catch(error){
-          MySwal.fire('Error', 'No se pudo actualizar el registro.', 'error');
-          console.error("Error al actualizar el registro:", error);
+            if (axios.isAxiosError(error)) {
+              const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
+              MySwal.fire("Error", message, "error");
+            } else {
+              MySwal.fire("Error", "Error inesperado, intenta nuevamente", "error");
+            }
         }
       }
     });
