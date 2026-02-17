@@ -33,6 +33,15 @@ function AuthLogin() {
       const response = await Axios.post("https://u2.rsgve.com/gym-api/api/login", formData);
       if(response.data.token){
         localStorage.setItem("token", response.data.token);
+        
+        // Store user info if available
+        if (response.data.user) {
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          if (response.data.user.plan_type) {
+            localStorage.setItem("plan_type", response.data.user.plan_type);
+          }
+        }
+        
         notify.success("Bienvenido");
         setLoading(false);
         navigate("/home");

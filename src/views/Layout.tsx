@@ -8,6 +8,9 @@ import ChatIA from "./ChatAi";
 import Home from "./Home";
 import HistoryPagos from "./HistoryPagos";
 import { useState } from "react";
+import PlansGym from "./PlansGym";
+import { PlanRoute } from "../context/PlanRoute";
+
 
 function App() {
   const [asideOpen, setAsideOpen] = useState<boolean>(false);
@@ -30,7 +33,11 @@ function App() {
              <Route path="plans" element={<Plans />} />
              <Route path="memberships" element={<Memberships />} />
              <Route path="history-pagos" element={<HistoryPagos />} />
-             <Route path="chat" element={<ChatIA />} />
+
+             <Route path="chat" element={
+              <PlanRoute minPlan="Medium"><ChatIA /></PlanRoute>
+             } />
+             <Route path="plans-gym" element={<PlansGym />} />
           </Routes>
         </main>
       </div>

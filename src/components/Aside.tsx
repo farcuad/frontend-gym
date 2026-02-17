@@ -84,6 +84,14 @@ function Aside({ isOpen, onClose }: AsideProps) {
               <span>Asitente AI</span>
             </NavLink>
           </div>
+
+          <div className="pt-4">
+            <p className="text-[11px] uppercase tracking-wider text-gray-400 px-4 mb-2">Planes Gyms</p>
+            <NavLink to="/home/plans-gym" className={navLinkClass}>
+              <FontAwesomeIcon icon={faRobot} className="w-5" />
+              <span>Planes para Gym</span>
+            </NavLink>
+          </div>
         </nav>
       </aside>
     </>
