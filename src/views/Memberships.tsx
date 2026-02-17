@@ -595,16 +595,20 @@ const MembershipTable: React.FC = () => {
                       $ {selectedPlanPrice.toFixed(2)}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-500">Tasa BCV</span>
-                    <span className="text-sm font-bold text-gray-600">{exchangeRate.toFixed(2)} Bs/USD</span>
-                  </div>
-                  <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
-                    <span className="text-sm font-bold text-gray-700">Total en Bolívares</span>
-                    <span className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-black text-sm">
-                      Bs. {amountInBs.toFixed(2)}
-                    </span>
-                  </div>
+                  {paymentMethod === "Pago Móvil" && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-500">Tasa BCV</span>
+                        <span className="text-sm font-bold text-gray-600">{exchangeRate.toFixed(2)} Bs/USD</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
+                        <span className="text-sm font-bold text-gray-700">Total en Bolívares</span>
+                        <span className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-black text-sm">
+                          Bs. {amountInBs.toFixed(2)}
+                        </span>
+                      </div>
+                    </>
+                  )}
                   {paymentMethod === "Divisas" && (
                     <p className="text-[11px] text-gray-400 italic">El cliente pagará en divisas (USD).</p>
                   )}

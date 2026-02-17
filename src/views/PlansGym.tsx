@@ -64,7 +64,7 @@ const GymPricingPage: React.FC = () => {
       icon: faMobileScreen,
       features: [
         { text: "Todo del plan Pro", highlight: true },
-        { text: "App móvil nativa", highlight: true },
+        { text: "App móvil", highlight: true },
         { text: "Web personalizada", highlight: true },
         { text: "Soporte dedicado 24/7" }
       ]
@@ -82,13 +82,6 @@ const GymPricingPage: React.FC = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 sm:mb-20 space-y-4">
-          <div 
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full text-xs sm:text-sm font-medium shadow-sm border border-gray-100"
-            style={{ color: primaryColor }}
-          >
-            <FontAwesomeIcon icon={faArrowTrendUp} />
-            Sistema de Gestión para Gimnasios
-          </div>
           
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900">
             Elige tu plan <br />

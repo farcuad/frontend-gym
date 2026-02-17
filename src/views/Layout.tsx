@@ -20,12 +20,12 @@ function App() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <Aside isOpen={asideOpen} onClose={() => setAsideOpen(false)} />
 
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 h-full relative">
         <Header onToggleAside={toggleAside} />
-        <main className="flex-1 p-4 bg-gray-50">
+        <main className="flex-1 p-4 bg-gray-50 overflow-y-auto">
           <Routes>
             
              <Route path="/" element={<Home />} />
