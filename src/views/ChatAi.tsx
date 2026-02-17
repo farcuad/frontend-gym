@@ -8,6 +8,7 @@ import {
   faUserCircle 
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "model";
@@ -113,11 +114,15 @@ const ChatIA: React.FC = () => {
 
               {/* Burbuja */}
               <div className={`p-4 rounded-3xl shadow-sm text-sm leading-relaxed ${
-                msg.role === "user"
-                  ? "bg-teal-600 text-white rounded-br-none"
-                  : "bg-white text-gray-700 border border-gray-100 rounded-bl-none"
+              msg.role === "user" ? "bg-teal-600 text-white rounded-br-none" : "bg-white text-gray-700 border border-gray-100 rounded-bl-none"
               }`}>
-                {msg.content}
+                {msg.role === "model" ? (
+                  <div className="prose prose-sm max-w-none prose-teal prose-p:leading-relaxed prose-li:my-1">
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    </div>
+                  ) : (
+                      msg.content
+                  )}
               </div>
             </div>
           </div>
