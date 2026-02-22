@@ -14,6 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { Clients } from "../services/services";
+import axios from "axios";
 
 const EmployeeTable: React.FC = () => {
   const [employees, setEmployees] = useState<Clients[]>([]);
@@ -140,7 +141,12 @@ const EmployeeTable: React.FC = () => {
           MySwal.fire("¡Eliminado!", "El cliente ha sido borrado.", "success");
           fetchClients();
         } catch (error) {
-          MySwal.fire("Error", "No se pudo eliminar el cliente." + error);
+          if(axios.isAxiosError(error)) {
+            const message = error.response?.data?.message || "No se pudo eliminar el cliente.";
+            MySwal.fire("Error", message, "error");
+          }else {
+            MySwal.fire("Error", "No se pudo eliminar el cliente.", "error");
+          }
         }
       }
     });
@@ -148,7 +154,7 @@ const EmployeeTable: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-4 bg-white rounded-3xl border border-gray-100 shadow-sm flex items-center justify-center min-h-[200px]">
+      <div className="p-4 bg-white rounded-3xl border border-gray-100 shadow-sm flex items-center justify-center min-h-50">
         <FontAwesomeIcon
           icon={faSpinner}
           className="text-teal-600 text-2xl animate-spin"
@@ -314,8 +320,8 @@ const EmployeeTable: React.FC = () => {
 
       {/* MODAL DE EDICIÓN MEJORADO */}
       {isEditOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsEditOpen(false)}
               className="absolute top-6 right-6 size-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
@@ -409,8 +415,8 @@ const EmployeeTable: React.FC = () => {
 
       {/* MODAL DE CREACIÓN */}
       {isCreateOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsCreateOpen(false)}
               className="absolute top-6 right-6 size-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors"

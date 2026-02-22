@@ -243,7 +243,7 @@ const MembershipTable: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-[200px]">
+      <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-50">
         <FontAwesomeIcon icon={faSpinner} className="text-teal-600 text-2xl animate-spin" />
       </div>
     );
