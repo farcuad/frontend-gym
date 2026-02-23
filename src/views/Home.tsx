@@ -80,8 +80,8 @@ function Header() {
         <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 space-y-3">
           {nav.map(n => <a key={n} href={`#${n.toLowerCase()}`} className="block text-sm font-semibold text-gray-700 py-2">{n}</a>)}
           <div className="flex gap-3 pt-2">
-            <NavLink to="/login" className="flex-1 py-2 text-sm font-semibold rounded-xl text-teal-700 bg-teal-50">Iniciar sesión</NavLink>
-            <NavLink to="/register" className="flex-1 py-2 text-sm font-semibold rounded-xl text-white" style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>Registrarse</NavLink>
+            <NavLink to="/login" className="flex-1 py-2 text-sm font-semibold rounded-xl text-teal-700 bg-teal-50 text-center">Iniciar sesión</NavLink>
+            <NavLink to="/register" className="flex-1 py-2 text-sm font-semibold rounded-xl text-white text-center" style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>Registrarse</NavLink>
           </div>
         </div>
       )}
