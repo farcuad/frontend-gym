@@ -50,7 +50,7 @@ function Header() {
           <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-sm" style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>
             <FontAwesomeIcon icon={faDumbbell} className="text-xs" />
           </div>
-          <span className="font-black text-xl tracking-tight" style={{ color: P, fontFamily: "'Syne', sans-serif" }}>GymOS</span>
+          <span className="font-black text-xl tracking-tight" style={{ color: P, fontFamily: "'Syne', sans-serif" }}>FitLog</span>
         </div>
 
         {/* Desktop nav */}
@@ -205,7 +205,7 @@ function Features() {
 function SocialProof() {
   const [ref, visible] = useFadeIn();
   const testimonials = [
-    { name: "Carlos Méndez", gym: "FitZone Bogotá", text: "GymOS transformó completamente la gestión de mi gimnasio. Ahora proceso 3x más clientes con la mitad del esfuerzo.", avatar: "CM" },
+    { name: "Carlos Méndez", gym: "FitZone Bogotá", text: "FitLog transformó completamente la gestión de mi gimnasio. Ahora proceso 3x más clientes con la mitad del esfuerzo.", avatar: "CM" },
     { name: "Laura Torres", gym: "Iron Gym Medellín", text: "El asistente de IA es increíble. Me sugiere promociones en momentos exactos y mis membresías activas subieron 40%.", avatar: "LT" },
     { name: "Roberto Silva", gym: "PowerHouse Cali", text: "La integración de pagos y membresías es perfecta. Cero errores, cero dolores de cabeza. Vale cada peso.", avatar: "RS" },
   ];
@@ -216,7 +216,7 @@ function SocialProof() {
         <div className={`text-center mb-14 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ color: P, background: PL }}>Testimonios</span>
           <h2 className="mt-4 text-4xl font-black leading-tight text-gray-900">
-            Ellos ya confían en GymOS
+            Ellos ya confían en FitLog
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -400,7 +400,7 @@ function Footer() {
               <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>
                 <FontAwesomeIcon icon={faDumbbell} className="text-xs" />
               </div>
-              <span className="font-black text-xl text-white" style={{ fontFamily: "'Syne', sans-serif" }}>GymOS</span>
+              <span className="font-black text-xl text-white" style={{ fontFamily: "'Syne', sans-serif" }}>FitLog</span>
             </div>
             <p className="text-sm leading-relaxed max-w-xs">El sistema de gestión más completo para gimnasios modernos. Tecnología al servicio del fitness.</p>
           </div>
