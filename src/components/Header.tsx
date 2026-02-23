@@ -69,7 +69,7 @@ function Header({ onToggleAside }: HeaderProps) {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/");
+    navigate("/login");
   };
 
   const formatDate = (dateString: string) => {
@@ -134,7 +134,7 @@ function Header({ onToggleAside }: HeaderProps) {
       ) : alertData && alertData.clients && alertData.clients.length > 0 ? (
         alertData.clients.map((client, index) => (
           <div key={index} className="w-full p-4 flex gap-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0">
-            <div className="mt-1 text-amber-500 flex-shrink-0">
+            <div className="mt-1 text-amber-500 shrink-0">
               <FontAwesomeIcon icon={faExclamationTriangle} />
             </div>
             <div className="flex-1 min-w-0">

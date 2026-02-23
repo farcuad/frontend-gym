@@ -12,7 +12,7 @@ interface Plan {
   price: number;
   description: string;
   features: PlanFeature[];
-  icon: any; // Using any for simpler icon handling
+  icon: any;
   popular?: boolean;
   accentColor: string;
   badge?: string;
