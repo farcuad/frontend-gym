@@ -247,7 +247,7 @@ function SocialProof() {
 
 function Pricing() {
   const [ref, visible] = useFadeIn();
-  const [hovered, setHovered] = useState(null);
+  const [hovered, setHovered] = useState<number | null>(null);
 
   const plans = [
     {
