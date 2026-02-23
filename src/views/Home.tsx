@@ -50,7 +50,7 @@ function Header() {
           <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-sm" style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>
             <FontAwesomeIcon icon={faDumbbell} className="text-xs" />
           </div>
-          <span className="font-black text-xl tracking-tight" style={{ color: P, fontFamily: "'Syne', sans-serif" }}>FitLog</span>
+          <span className="font-black text-xl tracking-tight">FitLog</span>
         </div>
 
         {/* Desktop nav */}
@@ -400,7 +400,7 @@ function Footer() {
               <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white" style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>
                 <FontAwesomeIcon icon={faDumbbell} className="text-xs" />
               </div>
-              <span className="font-black text-xl text-white" style={{ fontFamily: "'Syne', sans-serif" }}>FitLog</span>
+              <span className="font-black text-xl text-white">FitLog</span>
             </div>
             <p className="text-sm leading-relaxed max-w-xs">El sistema de gestión más completo para gimnasios modernos. Tecnología al servicio del fitness.</p>
           </div>
