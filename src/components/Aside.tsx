@@ -5,7 +5,8 @@ import {
   faIdCard, 
   faRobot, 
   faDumbbell,
-  faMoneyCheckDollar
+  faMoneyCheckDollar,
+  faChartLine
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -42,7 +43,6 @@ function Aside({ isOpen, onClose }: AsideProps) {
         `}
       >
         <div className="h-20 flex items-center px-6 mb-4">
-          <NavLink to="/home">
           <div className="flex items-center gap-3">
             <div className="bg-teal-600 p-2 rounded-lg text-white shadow-lg">
               <FontAwesomeIcon icon={faDumbbell} className="size-5" />
@@ -51,13 +51,17 @@ function Aside({ isOpen, onClose }: AsideProps) {
               FIT<span className="text-teal-600">LOG</span>
             </span>
           </div>
-          </NavLink>
         </div>
 
         {/* Navigation */}
         <nav className="px-4 space-y-1 text-[15px] font-medium">
           <p className="text-[11px] uppercase tracking-wider text-gray-400 px-4 mb-2">Menú Principal</p>
           
+          <NavLink to="/home/metrics" className={navLinkClass}>
+            <FontAwesomeIcon icon={faChartLine} className="w-5" />
+            <span>Métricas</span>
+          </NavLink>
+
           <NavLink to="/home/clients" className={navLinkClass}>
             <FontAwesomeIcon icon={faUsers} className="w-5" />
             <span>Gestión de Clientes</span>

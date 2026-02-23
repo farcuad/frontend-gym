@@ -143,6 +143,10 @@ export const apiService = {
   getAlertClient: () => api.get("/clients/alert"),
 
   getSubscription: () => api.get("/subscriptions"),
+
+  getMetricsPayments: () => api.get("/metrics/payments"),
+  getMetricsClients: () => api.get("/metrics/new-clients"),
+  // getMetricsMemberships: () => api.get("/metrics/memberships"),
 };
 
 // API de tasa de cambio

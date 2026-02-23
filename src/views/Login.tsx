@@ -40,7 +40,7 @@ function AuthLogin() {
         }
         notify.success("¡Bienvenido de nuevo!");
         setLoading(false);
-        navigate("/home/clients");
+        navigate("/home/metrics");
       }
     } catch (error) {
       setLoading(false);
