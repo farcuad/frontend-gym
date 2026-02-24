@@ -58,6 +58,11 @@ export interface newMembership {
   payment_info?: PaymentInfo;
 }
 
+export interface RenewMembershipRequest {
+  plan_id?: number;
+  payment_info: PaymentInfo;
+}
+
 // 1. Crear instancia de Axios con la URL base
 const api = axios.create({
   baseURL: API_URL,
@@ -132,7 +137,8 @@ export const apiService = {
   // Membresias
   getMemberships: () => api.get("/memberships"),
   createMembership: (data: newMembership) => api.post("/memberships", data),
-  renewMembership: (id: number) => api.post(`/memberships/${id}/renew`),
+  renewMembership: (id: number, data: RenewMembershipRequest) =>
+    api.post(`/memberships/${id}/renew`, data),
   deleteMembership: (id: string | number) => api.delete(`/memberships/${id}`),
 
   getHistoryPagos: () => api.get("/payments"),

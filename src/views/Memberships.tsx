@@ -98,19 +98,22 @@ const MembershipTable: React.FC = () => {
   }, []);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isRenewOpen, setIsRenewOpen] = useState(false);
+  const [renewingMember, setRenewingMember] = useState<Memberships | null>(null);
   const fechaHoy = new Date().toISOString().split('T')[0];
   const [newMembership, setNewMembership] = useState<NewMembership>({
     client_id: 0,
     plan_id: 0,
     fecha_inicio: fechaHoy,
   });
+  const [renewPlanId, setRenewPlanId] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<"Divisas" | "Pago Móvil">("Divisas");
   const [reference, setReference] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const MySwal = withReactContent(Swal);
 
   // Obtener el precio del plan seleccionado
-  const selectedPlan = plans.find(p => p.id === newMembership.plan_id);
+  const selectedPlan = plans.find(p => p.id === (isRenewOpen ? renewPlanId : newMembership.plan_id));
   const selectedPlanPrice = Number(selectedPlan?.price) || 0;
   const amountInBs = exchangeRate ? +(selectedPlanPrice * exchangeRate).toFixed(2) : 0;
 
@@ -192,33 +195,57 @@ const MembershipTable: React.FC = () => {
   };
   
   const handleUpdate = async (member: Memberships ) => {
-    const findPlan = plans.find(plan => plan.id === member.plan_id);
-    if (!findPlan) {
-      MySwal.fire('Error', 'No se encontró el plan asociado.', 'error');
-  return;
+    setRenewingMember(member);
+    setRenewPlanId(member.plan_id);
+    setPaymentMethod("Divisas");
+    setReference("");
+    setIsRenewOpen(true);
+  };
+
+  const handleRenewMembership = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!renewingMember || !renewPlanId) {
+      MySwal.fire('Error', 'Información de renovación incompleta.', 'warning');
+      return;
+    }
+
+    if (paymentMethod === "Pago Móvil" && !reference.trim()) {
+      MySwal.fire('Error', 'Por favor ingresa la referencia bancaria.', 'warning');
+      return;
+    }
+
+    if (!exchangeRate) {
+      MySwal.fire('Error', 'No se pudo obtener la tasa de cambio. Intenta de nuevo.', 'error');
+      return;
+    }
+
+    const paymentInfo: PaymentInfo = {
+      chosen_rate_type: "BCV",
+      exchange_rate: exchangeRate,
+      amount_paid_bs: amountInBs,
+      payment_method: paymentMethod,
+      ...(paymentMethod === "Pago Móvil" && { reference: reference.trim() }),
     };
-    MySwal.fire({
-      title: 'Renovar Membersía',
-      text: `¿Dese renovar esta membersia por ${findPlan.duration_day} días?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#0d9488',
-      cancelButtonColor: '#f43f5e',
-      confirmButtonText: 'Sí, renovar',
-      cancelButtonText: 'Cancelar',
-      customClass: { popup: 'rounded-[2rem]' }
-    }).then(async(result) => {
-      if (result.isConfirmed) {
-        try{
-          await apiService.renewMembership(member.id);
-          MySwal.fire('Renovado', 'La membersia fue renovada corectamente.', 'success');
-          fetchMemberships();
-        }catch(error){
-          MySwal.fire('Error', 'No se pudo renovar el registro.', 'error');
-          console.error("Error al actualizar el registro:", error);
-        }
-      }
-    });
+
+    setIsSubmitting(true);
+    try {
+      await apiService.renewMembership(renewingMember.id, {
+        plan_id: renewPlanId,
+        payment_info: paymentInfo
+      });
+      MySwal.fire('¡Éxito!', 'Membresía renovada correctamente.', 'success');
+      setIsRenewOpen(false);
+      setRenewingMember(null);
+      setRenewPlanId(0);
+      setPaymentMethod("Divisas");
+      setReference("");
+      fetchMemberships();
+    } catch (error) {
+      console.error("Error al renovar membresía:", error);
+      MySwal.fire('Error', 'No se pudo renovar la membresía.', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getStatusColor = (estado: Memberships['estado']) => {
@@ -442,6 +469,184 @@ const MembershipTable: React.FC = () => {
       </div>
 
 
+
+      {/* Modal para renovar membresias */}
+      {isRenewOpen && renewingMember && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden max-h-[90vh] overflow-y-auto">
+            
+            <button 
+              onClick={() => setIsRenewOpen(false)}
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <FontAwesomeIcon icon={faTimes} size="lg" />
+            </button>
+
+            <div className="mb-8 mt-4">
+              <h3 className="text-2xl font-black text-gray-800">Renovar Membersía</h3>
+              <p className="text-sm text-gray-400 font-medium">Renueva la membresía de {renewingMember.client_name}.</p>
+            </div>
+
+            <form className="space-y-5" onSubmit={handleRenewMembership}>
+              <div className="relative group">
+                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Plan</label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
+                    <FontAwesomeIcon icon={faLayerGroup} className="text-xs" />
+                  </span>
+                  <select
+                    value={renewPlanId}
+                    onChange={(e) => setRenewPlanId(Number(e.target.value))}
+                    required
+                    className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
+                  >
+                    <option value="0">Selecciona un plan</option>
+                    {plans.map((plan) => (
+                      <option key={plan.id} value={plan.id}>
+                        {plan.name} - ${plan.price} ({plan.duration_day} días)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Método de Pago */}
+              <div className="relative group">
+                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-2 block">Método de Pago</label>
+                <div className="flex gap-3">
+                  {/* Divisas */}
+                  <label
+                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                      paymentMethod === "Divisas"
+                        ? "border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100"
+                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="Divisas"
+                      checked={paymentMethod === "Divisas"}
+                      onChange={() => setPaymentMethod("Divisas")}
+                      className="sr-only"
+                    />
+                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${
+                      paymentMethod === "Divisas" ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-400"
+                    }`}>
+                      <FontAwesomeIcon icon={faDollarSign} />
+                    </div>
+                    <div>
+                      <span className="font-bold text-sm text-gray-700 block">Divisas</span>
+                      <span className="text-[10px] text-gray-400">Pago en USD</span>
+                    </div>
+                  </label>
+
+                  {/* Pago Móvil */}
+                  <label
+                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                      paymentMethod === "Pago Móvil"
+                        ? "border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100"
+                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="Pago Móvil"
+                      checked={paymentMethod === "Pago Móvil"}
+                      onChange={() => setPaymentMethod("Pago Móvil")}
+                      className="sr-only"
+                    />
+                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${
+                      paymentMethod === "Pago Móvil" ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-400"
+                    }`}>
+                      <FontAwesomeIcon icon={faMobileAlt} />
+                    </div>
+                    <div>
+                      <span className="font-bold text-sm text-gray-700 block">Pago Móvil</span>
+                      <span className="text-[10px] text-gray-400">Transferencia Bs</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Referencia bancaria (solo Pago Móvil) */}
+              {paymentMethod === "Pago Móvil" && (
+                <div className="relative group animate-in slide-in-from-top-2 duration-200">
+                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Referencia Bancaria</label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
+                      <FontAwesomeIcon icon={faReceipt} className="text-xs" />
+                    </span>
+                    <input
+                      type="text"
+                      value={reference}
+                      onChange={(e) => setReference(e.target.value)}
+                      placeholder="Ej: 987654321"
+                      required
+                      className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Vista del monto a pagar */}
+              {renewPlanId > 0 && exchangeRate && (
+                <div className="bg-linear-to-br from-gray-50 to-teal-50/30 rounded-2xl p-5 space-y-3 border border-gray-100">
+                  <h4 className="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Resumen de Pago</h4>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm font-medium text-gray-500">Precio del plan</span>
+                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm">
+                      $ {selectedPlanPrice.toFixed(2)}
+                    </span>
+                  </div>
+                  {paymentMethod === "Pago Móvil" && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-500">Tasa BCV</span>
+                        <span className="text-sm font-bold text-gray-600">{exchangeRate.toFixed(2)} Bs/USD</span>
+                      </div>
+                      <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
+                        <span className="text-sm font-bold text-gray-700">Total en Bolívares</span>
+                        <span className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-black text-sm">
+                          Bs. {amountInBs.toFixed(2)}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                  {paymentMethod === "Divisas" && (
+                    <p className="text-[11px] text-gray-400 italic">El cliente pagará en divisas (USD).</p>
+                  )}
+                  {paymentMethod === "Pago Móvil" && (
+                    <p className="text-[11px] text-gray-400 italic">El cliente pagará Bs. {amountInBs.toFixed(2)} por Pago Móvil.</p>
+                  )}
+                </div>
+              )}
+
+              <div className="flex gap-3 pt-4">
+                <button 
+                  type="button" 
+                  onClick={() => setIsRenewOpen(false)} 
+                  className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 rounded-2xl transition-all"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-100 rounded-2xl transition-all disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                  ) : (
+                    "Renovar Membersía"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Modal para crear membresias */}
       {isCreateOpen && (
