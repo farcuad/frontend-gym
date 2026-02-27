@@ -157,7 +157,7 @@ export const apiService = {
 
 // API de tasa de cambio
 const EXCHANGE_API_URL =
-  "https://v6.exchangerate-api.com/v6/4c57d800c11ecff8f364f3e1/latest/USD";
+  "https://v6.exchangerate-api.com/v6/50ea4ffb185fccdeffa942a0/latest/USD";
 
 export const getExchangeRate = async (): Promise<number> => {
   const response = await axios.get(EXCHANGE_API_URL);
