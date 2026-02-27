@@ -15,7 +15,8 @@ import {
   faLayerGroup,
   faDollarSign,
   faMobileAlt,
-  faReceipt
+  faReceipt,
+  faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService, getExchangeRate } from "../services/services";
 import type { Memberships, Clients, Plans, PaymentInfo } from "../services/services";
@@ -31,6 +32,7 @@ interface NewMembership {
 const MembershipTable: React.FC = () => {
   const [memberships, setMemberships] = useState<Memberships[]>([]);
   const [clients, setClients] = useState<Clients[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [plans, setPlans] = useState<Plans[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
@@ -63,20 +65,11 @@ const MembershipTable: React.FC = () => {
         apiService.getPlans()
       ]);
 
-      const clientsData = clientsRes.data;
-      const plansData = plansRes.data;
+      const clientsData = clientsRes.data.clients;
+      const plansData = plansRes.data.plans;
 
-      if (clientsData && clientsData.clients) {
-        setClients(clientsData.clients);
-      } else if (Array.isArray(clientsData)) {
-        setClients(clientsData);
-      }
-
-      if (plansData && plansData.plans) {
-        setPlans(plansData.plans);
-      } else if (Array.isArray(plansData)) {
-        setPlans(plansData);
-      }
+      setClients(clientsData);
+      setPlans(plansData);
     } catch (error) {
       console.error("Error al obtener clientes/planes:", error);
     }
@@ -268,6 +261,10 @@ const MembershipTable: React.FC = () => {
     return `Bs. ${(price * exchangeRate).toFixed(2)}`;
   };
 
+  const filteredMemberships = memberships.filter((member) =>
+    member.client_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return (
       <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-50">
@@ -278,7 +275,7 @@ const MembershipTable: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
-      <div className="flex justify-between items-center mb-6 px-2">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6 px-2">
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 justify-start">
         <h2 className="text-xl font-black text-gray-800 flex items-center gap-3">
           <div className="bg-teal-600 text-white p-2 rounded-xl shadow-lg shadow-teal-100">
@@ -294,14 +291,29 @@ const MembershipTable: React.FC = () => {
         </div>
       )}
         </div>
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
-        >
-          <FontAwesomeIcon icon={faPlus} />
-          <span className="hidden sm:inline">Nueva Membresía</span>
-          <span className="sm:hidden">Nueva</span>
-        </button>
+
+        <div className="flex items-center gap-3 w-full xl:w-auto">
+          <div className="relative flex-1 xl:flex-none">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+              <FontAwesomeIcon icon={faSearch} className="text-sm" />
+            </span>
+            <input
+              type="text"
+              placeholder="Buscar por cliente..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full xl:w-64 pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
+            />
+          </div>
+          <button
+            onClick={() => setIsCreateOpen(true)}
+            className="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 shrink-0"
+          >
+            <FontAwesomeIcon icon={faPlus} />
+            <span className="hidden sm:inline">Nueva Membresía</span>
+            <span className="sm:hidden">Nueva</span>
+          </button>
+        </div>
       </div>
 
       
@@ -321,12 +333,12 @@ const MembershipTable: React.FC = () => {
               <th className="px-6 py-4 text-center font-bold uppercase tracking-widest text-[10px]">Acciones</th>
             </tr>
           </thead>
-          {memberships.length === 0 && <tr><td colSpan={9} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
-          {memberships.length > 0 && (
+          {filteredMemberships.length === 0 && <tr><td colSpan={9} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
+          {filteredMemberships.length > 0 && (
             <tbody className="divide-y divide-gray-50">
             
             
-            {memberships.map((member, index) => (
+            {filteredMemberships.map((member, index) => (
               <tr key={member.id} className="hover:bg-gray-50/50 transition-all group">
                 <td className="px-6 py-5 text-gray-400 font-medium">{index + 1}</td>
                 <td className="px-6 py-5">
@@ -371,10 +383,10 @@ const MembershipTable: React.FC = () => {
                 </td>
                 <td className="px-6 py-5 text-center">
                   <div className="flex justify-center gap-2">
-                    <button onClick={() => handleUpdate(member)} className="size-8 text-amber-500 hover:bg-amber-50 rounded-lg transition-colors">
+                    <button onClick={() => handleUpdate(member)} className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm">
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
-                    <button onClick={() => handleDelete(member.id)} className="size-8 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
+                    <button onClick={() => handleDelete(member.id)} className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm">
                       <FontAwesomeIcon icon={faTrashAlt} />
                     </button>
                   </div>
@@ -389,12 +401,12 @@ const MembershipTable: React.FC = () => {
 
       {/* VISTA MÓVIL (TARJETAS) */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
-        {memberships.length === 0 && (
+        {filteredMemberships.length === 0 && (
            <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
             No hay membresias disponibles
           </div>
         )}
-        {memberships.map((member) => (
+        {filteredMemberships.map((member) => (
           <div key={member.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
              {/* Header Tarjeta */}
              <div className="flex justify-between items-start gap-3">
@@ -477,7 +489,7 @@ const MembershipTable: React.FC = () => {
             
             <button 
               onClick={() => setIsRenewOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
@@ -627,14 +639,14 @@ const MembershipTable: React.FC = () => {
                 <button 
                   type="button" 
                   onClick={() => setIsRenewOpen(false)} 
-                  className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 rounded-2xl transition-all"
+                  className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 rounded-2xl transition-all"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-100 rounded-2xl transition-all disabled:opacity-50"
+                  className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-100 rounded-2xl transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
@@ -655,7 +667,7 @@ const MembershipTable: React.FC = () => {
             
             <button 
               onClick={() => setIsCreateOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
@@ -827,14 +839,14 @@ const MembershipTable: React.FC = () => {
                 <button 
                   type="button" 
                   onClick={() => setIsCreateOpen(false)} 
-                  className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 rounded-2xl transition-all"
+                  className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 rounded-2xl transition-all"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="flex-1 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-100 rounded-2xl transition-all disabled:opacity-50"
+                  className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-100 rounded-2xl transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <FontAwesomeIcon icon={faSpinner} className="animate-spin" />

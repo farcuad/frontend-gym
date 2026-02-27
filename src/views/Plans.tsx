@@ -23,24 +23,8 @@ const PlanTable: React.FC = () => {
   const fetchPlans = async () => {
     try {
       const response = await apiService.getPlans();
-      // La API devuelve { message: "...", plans: [...] }
-      // response.data contiene el objeto completo de la API
-      const apiResponse = response.data;
-
-      // Extraer el array de planes
-      if (
-        apiResponse &&
-        apiResponse.plans &&
-        Array.isArray(apiResponse.plans)
-      ) {
-        setPlans(apiResponse.plans);
-      } else if (Array.isArray(apiResponse)) {
-        // Si la respuesta es directamente un array
-        setPlans(apiResponse);
-      } else {
-        console.error("Formato de respuesta inesperado:", apiResponse);
-        setPlans([]);
-      }
+      const apiResponse = response.data.plans;
+      setPlans(apiResponse);
     } catch (error) {
       console.error("Error al obtener planes:", error);
       setPlans([]);
@@ -177,10 +161,11 @@ const PlanTable: React.FC = () => {
         </div>
         <button
           onClick={() => setIsCreateOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
+          className="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
         >
           <FontAwesomeIcon icon={faPlus} />
-          Nuevo Plan
+          <span className="hidden sm:inline">Nuevo Plan</span>
+          <span className="sm:hidden">Nuevo</span>
         </button>
       </div>
 
@@ -250,14 +235,14 @@ const PlanTable: React.FC = () => {
                   <div className="flex justify-center gap-3">
                     <button
                       onClick={() => handleEdit(plan)}
-                      className="text-amber-500 hover:text-amber-600 transition-colors p-2"
+                      className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
                       title="Editar Plan"
                     >
                       <FontAwesomeIcon icon={faEdit} />
                     </button>
                     <button
                       onClick={() => handleDelete(plan)}
-                      className="text-rose-500 hover:text-rose-600 transition-colors p-2"
+                      className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
                       title="Eliminar Plan"
                     >
                       <FontAwesomeIcon icon={faTrashAlt} />
@@ -322,7 +307,7 @@ const PlanTable: React.FC = () => {
           <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsEditOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
@@ -388,13 +373,13 @@ const PlanTable: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
+                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all"
+                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all"
                 >
                   {isSubmitting ? (
                     <FontAwesomeIcon
@@ -417,7 +402,7 @@ const PlanTable: React.FC = () => {
           <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsCreateOpen(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
@@ -509,14 +494,14 @@ const PlanTable: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
+                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all disabled:opacity-50"
+                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <FontAwesomeIcon
