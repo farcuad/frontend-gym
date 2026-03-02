@@ -33,6 +33,9 @@ const Metrics = () => {
   const [newClients, setNewClients] = useState<ClientMetric[]>([]);
   const [loading, setLoading] = useState(true);
 
+  //Estado para calcular valor del mes
+  const [stats, setStats] = useState({ totalMonth: 0, newClientsThisMonth: 0, payDiff: 0, cliDiff: 0 });
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,6 +51,31 @@ const Metrics = () => {
 
         setPayments(paymentsArray);
         setNewClients(clientsArray);
+        const now = new Date();
+      const currentMonthStr = now.toISOString().slice(0, 7); // "2026-03"
+      
+      const lastMonthDate = new Date(now.getFullYear(), now.getUTCMonth() - 1, 1);
+      const lastMonthStr = lastMonthDate.toISOString().slice(0, 7); // "2026-02"
+
+      // Buscamos los datos de ambos meses
+      const currPay = paymentsArray.find((m: any) => m.month === currentMonthStr);
+      const prevPay = paymentsArray.find((m: any) => m.month === lastMonthStr);
+      
+      const currCli = clientsArray.find((m: any) => m.month === currentMonthStr);
+      const prevCli = clientsArray.find((m: any) => m.month === lastMonthStr);
+
+      // Calculamos la diferencia de ingresos
+      const payDiff = (currPay?.total_usd || 0) - (prevPay?.total_usd || 0);
+      
+      // Calculamos la diferencia de clientes
+      const cliDiff = (currCli?.total_clients || 0) - (prevCli?.total_clients || 0);
+
+      setStats({
+        totalMonth: currPay ? parseFloat(currPay.total_usd) : 0,
+        newClientsThisMonth: currCli ? currCli.total_clients : 0,
+        payDiff,
+        cliDiff
+      });
       } catch (error) {
         console.error("Error al cargar métricas:", error);
       } finally {
@@ -84,6 +112,55 @@ const Metrics = () => {
           <p className="text-sm text-gray-500">Visualiza el crecimiento y rendimiento de tu negocio.</p>
         </div>
       </div>
+      {/* --- NUEVAS CARDS DE RESUMEN --- */}
+      <div className="grid grid-cols-2 gap-4 lg:gap-6">
+        {/* Card Recaudación */}
+        <div className="bg-blue-600 p-5 rounded-3xl shadow-sm shadow-blue-100 flex flex-col justify-between text-white min-h-[140px]">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-blue-100 text-xs font-black uppercase tracking-widest">Recaudación</span>
+            <div className="bg-blue-500/30 p-2 rounded-xl">
+               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
+          <div className="mt-2">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 className="text-2xl lg:text-3xl font-black">${stats.totalMonth.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h3>
+              <div className="flex items-center gap-1.5">
+                <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${stats.payDiff >= 0 ? 'bg-green-400/30 text-green-100' : 'bg-red-400/30 text-red-100'}`}>
+                  {stats.payDiff >= 0 ? '↑' : '↓'} ${Math.abs(stats.payDiff).toFixed(0)}
+                </span>
+                <span className="text-blue-100 text-[11px] font-medium">vs. mes pasado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Card Clientes */}
+        <div className="bg-emerald-500 p-5 rounded-3xl shadow-sm shadow-emerald-100 flex flex-col justify-between text-white min-h-[140px]">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-emerald-50 text-xs font-black uppercase tracking-widest">Clientes</span>
+            <div className="bg-emerald-400/30 p-2 rounded-xl">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.732 4c-.76-1.01-1.93-2-3.732-2s-2.972.99-3.732 2m9.464 0a4.354 4.354 0 010 5.292" />
+              </svg>
+            </div>
+          </div>
+          <div className="mt-2">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 className="text-2xl lg:text-3xl font-black">{stats.newClientsThisMonth}</h3>
+              <div className="flex items-center gap-1.5">
+                <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${stats.cliDiff >= 0 ? 'bg-emerald-300/40 text-emerald-50' : 'bg-red-400/40 text-red-50'}`}>
+                  {stats.cliDiff >= 0 ? '+' : ''}{stats.cliDiff}
+                </span>
+                <span className="text-emerald-50 text-[11px] font-medium">vs. mes pasado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* ------------------------------- */}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
         {/* 📈 Tendencia de Ventas */}
