@@ -14,7 +14,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService, getExchangeRate } from "../services/services";
 import type { Plans } from "../services/services";
-
+import axios from 'axios';
 const PlanTable: React.FC = () => {
   const [plans, setPlans] = useState<Plans[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -102,8 +102,12 @@ const PlanTable: React.FC = () => {
           );
           fetchPlans();
         } catch (error) {
-          console.error("Error al eliminar plan:", error);
-          MySwal.fire("Error", "No se pudo eliminar el plan.", "error");
+          if (axios.isAxiosError(error)) {
+              const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
+              MySwal.fire("Error", message, "error");
+            } else {
+              MySwal.fire("Error", "Error inesperado, intenta nuevamente", "error");
+            }
         }
       }
     });
