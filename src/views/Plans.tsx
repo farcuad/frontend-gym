@@ -274,10 +274,10 @@ const PlanTable: React.FC = () => {
                 </span>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm">
-                  $ {plan.price}
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm whitespace-nowrap">
+                  ${plan.price}
                 </span>
-                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold text-[10px]">
+                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold text-[10px] whitespace-nowrap">
                   {formatBs(plan.price)}
                 </span>
               </div>

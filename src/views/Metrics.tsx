@@ -34,7 +34,7 @@ const Metrics = () => {
   const [loading, setLoading] = useState(true);
 
   //Estado para calcular valor del mes
-  const [stats, setStats] = useState({ totalMonth: 0, newClientsThisMonth: 0, payDiff: 0, cliDiff: 0 });
+  const [stats, setStats] = useState({ totalMonth: 0, newClientsThisMonth: 0, payPercent: 0, cliPercent: 0 });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,30 +52,40 @@ const Metrics = () => {
         setPayments(paymentsArray);
         setNewClients(clientsArray);
         const now = new Date();
-      const currentMonthStr = now.toISOString().slice(0, 7); // "2026-03"
-      
-      const lastMonthDate = new Date(now.getFullYear(), now.getUTCMonth() - 1, 1);
-      const lastMonthStr = lastMonthDate.toISOString().slice(0, 7); // "2026-02"
+        const currentMonthStr = now.toISOString().slice(0, 7); // "2026-03"
+        
+        const lastMonthDate = new Date(now.getFullYear(), now.getUTCMonth() - 1, 1);
+        const lastMonthStr = lastMonthDate.toISOString().slice(0, 7); // "2026-02"
 
-      // Buscamos los datos de ambos meses
-      const currPay = paymentsArray.find((m: any) => m.month === currentMonthStr);
-      const prevPay = paymentsArray.find((m: any) => m.month === lastMonthStr);
-      
-      const currCli = clientsArray.find((m: any) => m.month === currentMonthStr);
-      const prevCli = clientsArray.find((m: any) => m.month === lastMonthStr);
+        // Buscamos los datos de ambos meses
+        const currPay = paymentsArray.find((m: any) => m.month === currentMonthStr);
+        const prevPay = paymentsArray.find((m: any) => m.month === lastMonthStr);
+        
+        const currCli = clientsArray.find((m: any) => m.month === currentMonthStr);
+        const prevCli = clientsArray.find((m: any) => m.month === lastMonthStr);
 
-      // Calculamos la diferencia de ingresos
-      const payDiff = (currPay?.total_usd || 0) - (prevPay?.total_usd || 0);
-      
-      // Calculamos la diferencia de clientes
-      const cliDiff = (currCli?.total_clients || 0) - (prevCli?.total_clients || 0);
+        // --- CÁLCULO DE PORCENTAJES ---
+        const calculatePercentage = (current: number, previous: number) => {
+          if (!previous || previous === 0) return current > 0 ? 100 : 0;
+          return ((current - previous) / previous) * 100;
+        };
 
-      setStats({
-        totalMonth: currPay ? parseFloat(currPay.total_usd) : 0,
-        newClientsThisMonth: currCli ? currCli.total_clients : 0,
-        payDiff,
-        cliDiff
-      });
+        const payPercent = calculatePercentage(
+          currPay ? parseFloat(currPay.total_usd) : 0,
+          prevPay ? parseFloat(prevPay.total_usd) : 0
+        );
+
+        const cliPercent = calculatePercentage(
+          currCli ? currCli.total_clients : 0,
+          prevCli ? prevCli.total_clients : 0
+        );
+
+        setStats({
+          totalMonth: currPay ? parseFloat(currPay.total_usd) : 0,
+          newClientsThisMonth: currCli ? currCli.total_clients : 0,
+          payPercent,
+          cliPercent
+        });
       } catch (error) {
         console.error("Error al cargar métricas:", error);
       } finally {
@@ -128,10 +138,12 @@ const Metrics = () => {
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h3 className="text-2xl lg:text-3xl font-black">${stats.totalMonth.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h3>
               <div className="flex items-center gap-1.5">
-                <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${stats.payDiff >= 0 ? 'bg-green-400/30 text-green-100' : 'bg-red-400/30 text-red-100'}`}>
-                  {stats.payDiff >= 0 ? '↑' : '↓'} ${Math.abs(stats.payDiff).toFixed(0)}
+                <span className={`flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg font-bold ${stats.payPercent >= 0 ? 'bg-green-400 text-green-950' : 'bg-red-400 text-red-950'}`}>
+                  {stats.payPercent >= 0 ? '↑' : '↓'} {Math.abs(stats.payPercent).toFixed(1)}%
                 </span>
-                <span className="text-blue-100 text-[11px] font-medium">vs. mes pasado</span>
+                <p className="text-blue-100/70 text-[10px] font-bold uppercase tracking-widest">
+                  {stats.payPercent >= 0 ? 'en ganancias' : 'de caída'}
+                </p>
               </div>
             </div>
           </div>
@@ -151,10 +163,12 @@ const Metrics = () => {
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <h3 className="text-2xl lg:text-3xl font-black">{stats.newClientsThisMonth}</h3>
               <div className="flex items-center gap-1.5">
-                <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${stats.cliDiff >= 0 ? 'bg-emerald-300/40 text-emerald-50' : 'bg-red-400/40 text-red-50'}`}>
-                  {stats.cliDiff >= 0 ? '+' : ''}{stats.cliDiff}
+                <span className={`flex items-center gap-1 text-[11px] px-2 py-1 rounded-lg font-bold ${stats.cliPercent >= 0 ? 'bg-emerald-400 text-emerald-950' : 'bg-red-400 text-red-950'}`}>
+                  {stats.cliPercent >= 0 ? '↑' : '↓'} {Math.abs(stats.cliPercent).toFixed(1)}%
                 </span>
-                <span className="text-emerald-50 text-[11px] font-medium">vs. mes pasado</span>
+                <p className="text-emerald-100/70 text-[10px] font-bold uppercase tracking-widest">
+                  {stats.cliPercent >= 0 ? 'en ganancias' : 'de caída'}
+                </p>
               </div>
             </div>
           </div>
