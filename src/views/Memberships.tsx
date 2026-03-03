@@ -93,7 +93,11 @@ const MembershipTable: React.FC = () => {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isRenewOpen, setIsRenewOpen] = useState(false);
   const [renewingMember, setRenewingMember] = useState<Memberships | null>(null);
-  const fechaHoy = new Date().toISOString().split('T')[0];
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const fechaHoy = `${year}-${month}-${day}`;
   const [newMembership, setNewMembership] = useState<NewMembership>({
     client_id: 0,
     plan_id: 0,
@@ -260,7 +264,13 @@ const MembershipTable: React.FC = () => {
     if (!exchangeRate || isNaN(price)) return '—';
     return `Bs. ${(price * exchangeRate).toFixed(2)}`;
   };
-
+  const formatFecha = (dateString:string) => {
+    if(!dateString) return '----';
+    // Cortamos el string en la "T" para obtener solo "YYYY-MM-DD"
+    const [year, month, day] = dateString.split('T')[0].split('-');
+    // Retornamos el formato latino que usas: DD/MM/YYYY
+    return `${day}/${month}/${year}`
+  }
   const filteredMemberships = memberships.filter((member) =>
     member.client_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -366,13 +376,13 @@ const MembershipTable: React.FC = () => {
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-2 text-gray-600">
                     <FontAwesomeIcon icon={faCalendarAlt} className="text-xs text-gray-400" />
-                    <span className="font-medium">{new Date(member.fecha_inicio).toLocaleDateString()}</span>
+                    <span className="font-medium">{formatFecha(member.fecha_inicio)}</span>
                   </div>
                 </td>
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-2 text-gray-600">
                     <FontAwesomeIcon icon={faCalendarAlt} className="text-xs text-gray-400" />
-                    <span className="font-medium">{new Date(member.fecha_vencimiento).toLocaleDateString()}</span>
+                    <span className="font-medium">{formatFecha(member.fecha_vencimiento)}</span>
                   </div>
                 </td>
                 <td className="px-6 py-5">
@@ -449,14 +459,14 @@ const MembershipTable: React.FC = () => {
                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Inicio</span>
                    <div className="flex items-center justify-end gap-1.5 text-gray-600">
                     <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-teal-500" />
-                    <span className="text-xs font-medium">{new Date(member.fecha_inicio).toLocaleDateString()}</span>
+                    <span className="text-xs font-medium">{formatFecha(member.fecha_inicio)}</span>
                   </div>
                 </div>
                  <div>
                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Vencimiento</span>
                    <div className="flex items-center gap-1.5 text-gray-600">
                     <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-rose-500" />
-                    <span className="text-xs font-medium">{new Date(member.fecha_vencimiento).toLocaleDateString()}</span>
+                    <span className="text-xs font-medium">{formatFecha(member.fecha_vencimiento)}</span>
                   </div>
                 </div>
              </div>
