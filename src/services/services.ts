@@ -156,12 +156,13 @@ export const apiService = {
 };
 
 // API de tasa de cambio
-const EXCHANGE_API_URL =
-  "https://v6.exchangerate-api.com/v6/50ea4ffb185fccdeffa942a0/latest/USD";
+const EXCHANGE_API_URL = "https://u2.rsgve.com/gym-api/api/bcv-rate";
 
 export const getExchangeRate = async (): Promise<number> => {
   const response = await axios.get(EXCHANGE_API_URL);
-  return response.data.conversion_rates.VES;
+  return response.data.rate;
 };
 
 export default api;
+// Api que me trae la tasa del banco central tambien..
+// "https://v6.exchangerate-api.com/v6/50ea4ffb185fccdeffa942a0/latest/USD";
