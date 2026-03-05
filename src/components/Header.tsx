@@ -73,12 +73,19 @@ function Header({ onToggleAside }: HeaderProps) {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-VE', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
+  if (!dateString) return "";
+
+  // dateString viene como "2026-03-05" o "2026-03-05T00:00:00..."
+  const [year, month, day] = dateString.split('T')[0].split('-');
+
+  // Creamos un array de meses para el formato 'short' que usas
+  const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  
+  const mesIndex = parseInt(month, 10) - 1;
+
+  // Retornamos el formato: "05 mar 2026"
+  return `${day} ${meses[mesIndex]} ${year}`;
+};
 
   return (
     <header className="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm">
