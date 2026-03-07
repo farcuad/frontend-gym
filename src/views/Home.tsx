@@ -124,13 +124,17 @@ function Hero() {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <button className="w-full sm:w-auto px-8 py-4 text-base font-bold rounded-2xl text-white shadow-xl hover:shadow-2xl transition-all active:scale-95"
-            style={{ background: `linear-gradient(135deg, ${P} 0%, ${PD} 100%)` }}>
-            Comenzar gratis →
-          </button>
-          <button className="w-full sm:w-auto px-8 py-4 text-base font-bold rounded-2xl text-gray-700 bg-white border border-gray-200 hover:border-teal-300 hover:text-teal-700 transition-all shadow-sm">
-            Ver demostración
-          </button>
+          <NavLink to="/login">
+            <button className="cursor-pointer w-full sm:w-auto px-8 py-4 text-base font-bold rounded-2xl text-white shadow-xl hover:shadow-2xl transition-all active:scale-95"
+              style={{ background: `linear-gradient(135deg, ${P} 0%, ${PD} 100%)` }}>
+              Comenzar gratis →
+            </button>
+          </NavLink>
+          <NavLink to="/login">
+            <button className="cursor-pointer w-full sm:w-auto px-8 py-4 text-base font-bold rounded-2xl text-gray-700 bg-white border border-gray-200 hover:border-teal-300 hover:text-teal-700 transition-all shadow-sm">
+              Ver demostración
+            </button>
+          </NavLink>
         </div>
 
         {/* Stats row
@@ -331,6 +335,7 @@ function Pricing() {
                       </li>
                     ))}
                   </ul>
+                  <NavLink to="/login">
                   <button
                     className="w-full py-4 rounded-xl font-bold text-sm transition-all duration-200 hover:shadow-lg active:scale-95"
                     style={plan.popular
@@ -339,6 +344,7 @@ function Pricing() {
                     }>
                     Comenzar ahora
                   </button>
+                  </NavLink>
                 </div>
               </div>
             </div>
@@ -381,9 +387,6 @@ function CTA() {
           <NavLink to="/register" className="px-8 py-4 bg-white font-bold rounded-2xl text-base hover:shadow-xl transition-all active:scale-95" style={{ color: P }}>
             Crear cuenta gratis
           </NavLink>
-          <button className="px-8 py-4 border-2 border-white border-opacity-50 text-white font-bold rounded-2xl text-base hover:bg-white hover:bg-opacity-10 transition-all">
-            Hablar con ventas
-          </button>
         </div>
       </div>
     </section>
