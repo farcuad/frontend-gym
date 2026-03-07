@@ -2,17 +2,7 @@ import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faTrashAlt,
-  faUser,
-  faIdCard,
-  faPhone,
-  faTimes,
-  faSpinner,
-  faPlus,
-  faSearch,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrashAlt, faUser, faIdCard, faPhone, faTimes, faSpinner, faPlus, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { Clients } from "../services/services";
 import axios from "axios";
@@ -21,6 +11,8 @@ const EmployeeTable: React.FC = () => {
   const [employees, setEmployees] = useState<Clients[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   const fetchClients = async () => {
     try {
@@ -141,6 +133,19 @@ const EmployeeTable: React.FC = () => {
   const filteredEmployees = employees.filter((person) =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  // Calculamos los índices para "rebanar" el array
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  // Estos son los clientes que se verán en la tabla/tarjetas actualmente
+  const currentEmployees = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
+
+  const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
+
+  // Resetear a la página 1 cuando se busca algo
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   if (loading) {
     return (
@@ -205,7 +210,7 @@ const EmployeeTable: React.FC = () => {
             </tr>
           </thead>
 
-          {filteredEmployees.length === 0 && (
+          {currentEmployees.length === 0 && (
             <tr>
               <td
                 colSpan={5}
@@ -216,15 +221,15 @@ const EmployeeTable: React.FC = () => {
             </tr>
           )}
 
-          {filteredEmployees.length > 0 && (
+          {currentEmployees.length > 0 && (
             <tbody className="divide-y divide-gray-50">
-              {filteredEmployees.map((person, index) => (
+              {currentEmployees.map((person, index) => (
                 <tr
                   key={person.id}
                   className="hover:bg-teal-50/30 transition-colors group"
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500 font-medium">
-                    {index + 1}
+                    {indexOfFirstItem + index + 1}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-bold text-gray-800">{person.name}</div>
@@ -265,12 +270,12 @@ const EmployeeTable: React.FC = () => {
 
       {/* VISTA MÓVIL (TARJETAS) */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
-        {filteredEmployees.length === 0 && (
+        {currentEmployees.length === 0 && (
           <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
             No hay clientes disponibles
           </div>
         )}
-        {filteredEmployees.map((person) => (
+        {currentEmployees.map((person) => (
           <div
             key={person.id}
             className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4"
@@ -322,6 +327,69 @@ const EmployeeTable: React.FC = () => {
           </div>
         ))}
       </div>
+      {/* 3. COMPONENTE DE PAGINACIÓN (Lógica de visibilidad integrada) */}
+      {filteredEmployees.length > itemsPerPage && (
+        <div className="flex items-center justify-between mt-6 px-2 py-4 border-t border-gray-50">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-xl disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-xl disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
+
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <p className="text-sm text-gray-500 font-medium">
+              Mostrando <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> a{" "}
+              <span className="text-gray-800 font-bold">
+                {Math.min(indexOfLastItem, filteredEmployees.length)}
+              </span>{" "}
+              de <span className="text-gray-800 font-bold">{filteredEmployees.length}</span> clientes
+            </p>
+            
+            <nav className="flex gap-1">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="size-9 flex items-center justify-center rounded-xl border border-gray-100 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+              >
+                <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`size-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    currentPage === page
+                      ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
+                      : "text-gray-500 hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="size-9 flex items-center justify-center rounded-xl border border-gray-100 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+              >
+                <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
+              </button>
+            </nav>
+          </div>
+        </div>
+      )}
 
       {/* MODAL DE EDICIÓN MEJORADO */}
       {isEditOpen && (

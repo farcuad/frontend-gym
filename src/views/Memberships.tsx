@@ -2,22 +2,7 @@ import React, { useState, useEffect } from "react";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEdit,
-  faTrashAlt,
-  faIdBadge,
-  faCheckCircle,
-  faTimes,
-  faUser,
-  faCalendarAlt,
-  faSpinner,
-  faPlus,
-  faLayerGroup,
-  faDollarSign,
-  faMobileAlt,
-  faReceipt,
-  faSearch
-} from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrashAlt, faIdBadge, faCheckCircle, faTimes, faUser, faCalendarAlt, faSpinner, faPlus, faLayerGroup, faDollarSign, faMobileAlt, faReceipt, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService, getExchangeRate } from "../services/services";
 import type { Memberships, Clients, Plans, PaymentInfo } from "../services/services";
 import axios from 'axios';
@@ -33,6 +18,8 @@ const MembershipTable: React.FC = () => {
   const [memberships, setMemberships] = useState<Memberships[]>([]);
   const [clients, setClients] = useState<Clients[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   const [plans, setPlans] = useState<Plans[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
@@ -275,6 +262,15 @@ const MembershipTable: React.FC = () => {
     member.client_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentMemberships = filteredMemberships.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredMemberships.length / itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   if (loading) {
     return (
       <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-50">
@@ -343,14 +339,14 @@ const MembershipTable: React.FC = () => {
               <th className="px-6 py-4 text-center font-bold uppercase tracking-widest text-[10px]">Acciones</th>
             </tr>
           </thead>
-          {filteredMemberships.length === 0 && <tr><td colSpan={9} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
-          {filteredMemberships.length > 0 && (
+          {currentMemberships.length === 0 && <tr><td colSpan={9} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
+          {currentMemberships.length > 0 && (
             <tbody className="divide-y divide-gray-50">
             
             
-            {filteredMemberships.map((member, index) => (
+            {currentMemberships.map((member, index) => (
               <tr key={member.id} className="hover:bg-gray-50/50 transition-all group">
-                <td className="px-6 py-5 text-gray-400 font-medium">{index + 1}</td>
+                <td className="px-6 py-5 text-gray-400 font-medium">{indexOfFirstItem + index + 1}</td>
                 <td className="px-6 py-5">
                   <div className="flex items-center gap-3">
                     <div className="size-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-teal-100 group-hover:text-teal-600 transition-colors">
@@ -411,12 +407,12 @@ const MembershipTable: React.FC = () => {
 
       {/* VISTA MÓVIL (TARJETAS) */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
-        {filteredMemberships.length === 0 && (
+        {currentMemberships.length === 0 && (
            <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
             No hay membresias disponibles
           </div>
         )}
-        {filteredMemberships.map((member) => (
+        {currentMemberships.map((member) => (
           <div key={member.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
              {/* Header Tarjeta */}
              <div className="flex justify-between items-start gap-3">
@@ -490,7 +486,69 @@ const MembershipTable: React.FC = () => {
         ))}
       </div>
 
+      {/* COMPONENTE DE PAGINACIÓN */}
+      {filteredMemberships.length > itemsPerPage && (
+        <div className="flex items-center justify-between mt-6 px-2 py-4 border-t border-gray-50">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-xl disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-xl disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
 
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <p className="text-sm text-gray-500 font-medium">
+              Mostrando <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> a{" "}
+              <span className="text-gray-800 font-bold">
+                {Math.min(indexOfLastItem, filteredMemberships.length)}
+              </span>{" "}
+              de <span className="text-gray-800 font-bold">{filteredMemberships.length}</span> membresías
+            </p>
+            
+            <nav className="flex gap-1">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="size-9 flex items-center justify-center rounded-xl border border-gray-100 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+              >
+                <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`size-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    currentPage === page
+                      ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
+                      : "text-gray-500 hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="size-9 flex items-center justify-center rounded-xl border border-gray-100 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+              >
+                <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
+              </button>
+            </nav>
+          </div>
+        </div>
+      )}
 
       {/* Modal para renovar membresias */}
       {isRenewOpen && renewingMember && (
