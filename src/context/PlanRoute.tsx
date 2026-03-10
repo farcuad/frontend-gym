@@ -27,6 +27,11 @@ export const PlanRoute = ({ minPlan, children }: PlanRouteProps) => {
   if (planWeights[userPlan] < planWeights[minPlan]) {
     return <Navigate to="/home/plans-gym" replace />;
   }
+  const isExpired = subscription.end_date && new Date(subscription.end_date) < new Date();
+
+  if (isExpired) {
+    return <Navigate to="/home/plans-gym" replace />;
+  }
 
   return <>{children}</>;
 };
