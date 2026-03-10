@@ -90,6 +90,7 @@ api.interceptors.request.use(
 );
 
 import { AxiosError } from "axios";
+import { notify } from "../utils/toast";
 // Interceptor de respuesta
 api.interceptors.response.use(
   (response) => response,
@@ -101,16 +102,20 @@ api.interceptors.response.use(
       localStorage.removeItem("user");
       window.location.href = "/";
     }
-
+    const currentPath = window.location.pathname;
     if (error.response?.status === 403) {
-      const code = error.response?.data?.code;
-
-      if (code === "SUBSCRIPTION_EXPIRED") {
-        window.location.href = "/home/plans-gym";
-      }
-
-      if (error.response?.data?.error === "Acceso denegado") {
-        window.location.href = "/home/plans-gym";
+      const data = error.response?.data;
+      const code = data?.code;
+      if (
+        code === "SUBSCRIPTION_EXPIRED" ||
+        data?.error === "Acceso denegado"
+      ) {
+        notify.warning(data.message || "Suscripción vencida", {
+          toastId: "sub-expired",
+        });
+        if (currentPath !== "/home/plans-gym") {
+          window.location.href = "/home/plans-gym";
+        }
       }
     }
 

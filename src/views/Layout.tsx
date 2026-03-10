@@ -27,16 +27,20 @@ function App() {
         <Header onToggleAside={toggleAside} />
         <main className="flex-1 p-4 bg-gray-50 overflow-y-auto">
           <Routes>
-            <Route path="metrics" element={<Metrics />} />
-             <Route path="clients" element={<Clients />} />
-             <Route path="plans" element={<Plans />} />
-             <Route path="memberships" element={<Memberships />} />
-             <Route path="history-pagos" element={<HistoryPagos />} />
+            {/* Estas rutas requieren que el plan NO esté vencido */}
+            <Route path="metrics" element={<PlanRoute minPlan="trial"><Metrics /></PlanRoute>} />
+            <Route path="clients" element={<PlanRoute minPlan="trial"><Clients /></PlanRoute>} />
+            <Route path="plans" element={<PlanRoute minPlan="trial"><Plans /></PlanRoute>} />
+            <Route path="memberships" element={<PlanRoute minPlan="trial"><Memberships /></PlanRoute>} />
+            <Route path="history-pagos" element={<PlanRoute minPlan="trial"><HistoryPagos /></PlanRoute>} />
 
-             <Route path="chat" element={
+            {/* Chat IA requiere Medium */}
+            <Route path="chat" element={
               <PlanRoute minPlan="Medium"><ChatIA /></PlanRoute>
-             } />
-             <Route path="plans-gym" element={<PlansGym />} />
+            } />
+
+            {/* Esta ruta es LIBRE para que el usuario pueda pagar */}
+            <Route path="plans-gym" element={<PlansGym />} />
           </Routes>
         </main>
       </div>

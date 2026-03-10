@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useSubscription } from "../context/SubscriptionContext";
 
 interface PlanRouteProps {
@@ -8,6 +8,7 @@ interface PlanRouteProps {
 
 export const PlanRoute = ({ minPlan, children }: PlanRouteProps) => {
   const { subscription, loading } = useSubscription();
+  const location = useLocation();
 
   const planWeights = {
     trial: 1,
@@ -16,11 +17,15 @@ export const PlanRoute = ({ minPlan, children }: PlanRouteProps) => {
     Premium: 3,
   };
 
-  if (loading) return null; // o un spinner
-
+  if (loading) return null; 
+  const isOnPlans = location.pathname.endsWith("/plans-gym");
+  if (isOnPlans) {
+    return <>{children}</>;
+  }
   if (!subscription) {
     return <Navigate to="/home/plans-gym" replace />;
   }
+  
 
   const userPlan = subscription.plan_type as keyof typeof planWeights;
 
