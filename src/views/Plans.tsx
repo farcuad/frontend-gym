@@ -115,14 +115,14 @@ const PlanTable: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+    if(!planUpdate || !planUpdate.id) return;
     setIsSubmitting(true);
     try {
       const { name, duration_day, price } = planUpdate!;
-      if (!planUpdate || !planUpdate.id) return;
       await apiService.updatePlan(planUpdate!.id, {
-        name,
-        duration_day,
-        price,
+        name: name,
+        duration_day: Number(duration_day),
+        price: Number(price),
       });
       MySwal.fire("¡Éxito!", "Plan actualizado correctamente.", "success");
       setIsEditOpen(false);
@@ -358,7 +358,7 @@ const PlanTable: React.FC = () => {
                       />
                     </span>
                     <input
-                      type="text"
+                      type="number"
                       value={planUpdate?.price || ""}
                       onChange={(e) =>
                         setPlanUpdate((prev) =>
