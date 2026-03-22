@@ -345,6 +345,30 @@ const PlanTable: React.FC = () => {
                     />
                   </div>
                 </div>
+                <div className="relative">
+                  <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">
+                    Duración (días)
+                  </label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
+                      <FontAwesomeIcon icon={faClock} className="text-xs" />
+                    </span>
+                    <input
+                      type="number"
+                      value={planUpdate?.duration_day || ""}
+                      onChange={(e) =>
+                        setPlanUpdate((prev) =>
+                          prev
+                            ? { ...prev, duration_day: Number(e.target.value) }
+                            : prev,
+                        )
+                      }
+                      placeholder="30"
+                      required
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                    />
+                  </div>
+                </div>
 
                 <div className="relative">
                   <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">
@@ -371,6 +395,7 @@ const PlanTable: React.FC = () => {
                     />
                   </div>
                 </div>
+                
               </div>
 
               <div className="flex gap-3 pt-4">
