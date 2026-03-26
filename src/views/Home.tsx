@@ -277,7 +277,8 @@ function Pricing() {
       description: "Solución completa con app y web",
       features: [
         { text: "Todo del plan Pro", hi: true }, { text: "App móvil", hi: true },
-        { text: "Web personalizada", hi: true }, { text: "Soporte dedicado 24/7", hi: true }
+        { text: "Web personalizada", hi: true }, { text: "Soporte dedicado 24/7", hi: true },
+        { text: "Notificaciones Automáticas", hi: true}, { text: "Recordatorio de Vencimiento", hi: true}
       ]
     }
   ];
