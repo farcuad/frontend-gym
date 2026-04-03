@@ -178,7 +178,7 @@ function AuthRegister() {
             <button
               disabled={loading || passwordInfo?.level === "very-weak"}
               type="submit"
-              className="w-full flex justify-center items-center rounded-xl bg-teal-600 px-4 py-4 text-sm font-bold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center items-center rounded-xl bg-gray-900 px-4 py-4 text-sm font-bold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creando cuenta..." : "Comenzar ahora"}
             </button>

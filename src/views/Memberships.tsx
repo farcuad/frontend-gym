@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt, faIdBadge, faCheckCircle, faTimes, faUser, faCalendarAlt, faSpinner, faPlus, faLayerGroup, faDollarSign, faMobileAlt, faReceipt, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService, getExchangeRate } from "../services/services";
 import type { Memberships, Clients, Plans, PaymentInfo } from "../services/services";
+import { SelectField } from '../components/SelectField';
 import axios from 'axios';
 interface NewMembership {
   client_id: number;
@@ -12,6 +13,8 @@ interface NewMembership {
   fecha_inicio: string;
   payment_info?: PaymentInfo;
 }
+
+
 
 
 const MembershipTable: React.FC = () => {
@@ -312,7 +315,12 @@ const MembershipTable: React.FC = () => {
             />
           </div>
           <button
-            onClick={() => setIsCreateOpen(true)}
+            onClick={() => {
+              setNewMembership({ client_id: 0, plan_id: 0, fecha_inicio: fechaHoy });
+              setPaymentMethod("Divisas");
+              setReference("");
+              setIsCreateOpen(true);
+            }}
             className="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 shrink-0"
           >
             <FontAwesomeIcon icon={faPlus} />
@@ -568,27 +576,17 @@ const MembershipTable: React.FC = () => {
             </div>
 
             <form className="space-y-5" onSubmit={handleRenewMembership}>
-              <div className="relative group">
-                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Plan</label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faLayerGroup} className="text-xs" />
-                  </span>
-                  <select
-                    value={renewPlanId}
-                    onChange={(e) => setRenewPlanId(Number(e.target.value))}
-                    required
-                    className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
-                  >
-                    <option value="0">Selecciona un plan</option>
-                    {plans.map((plan) => (
-                      <option key={plan.id} value={plan.id}>
-                        {plan.name} - ${plan.price} ({plan.duration_day} días)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              <SelectField
+                label="Plan"
+                options={[
+                  { id: 0, name: "Selecciona un plan" },
+                  ...plans.map(p => ({ id: p.id || 0, name: `${p.name} - $${p.price} (${p.duration_day} días)` }))
+                ]}
+                value={renewPlanId}
+                onChange={(val) => setRenewPlanId(val)}
+                icon={faLayerGroup}
+                placeholder="Selecciona un plan"
+              />
 
               {/* Método de Pago */}
               <div className="relative group">
@@ -746,49 +744,29 @@ const MembershipTable: React.FC = () => {
             </div>
 
             <form className="space-y-5" onSubmit={handleCreateMembership}>
-              <div className="relative group">
-                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Cliente</label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faUser} className="text-xs" />
-                  </span>
-                  <select
-                    value={newMembership.client_id}
-                    onChange={(e) => setNewMembership({...newMembership, client_id: Number(e.target.value)})}
-                    required
-                    className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
-                  >
-                    <option value="0">Selecciona un cliente</option>
-                    {clients.map((client) => (
-                      <option key={client.id} value={client.id}>
-                        {client.name} - {client.cedula}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              <SelectField
+                label="Cliente"
+                options={[
+                  { id: 0, name: "Selecciona un cliente" },
+                  ...clients.map(c => ({ id: c.id || 0, name: `${c.name} - ${c.cedula}` }))
+                ]}
+                value={newMembership.client_id}
+                onChange={(val) => setNewMembership({ ...newMembership, client_id: val })}
+                icon={faUser}
+                placeholder="Selecciona un cliente"
+              />
 
-              <div className="relative group">
-                <label className="text-[10px] font-bold text-teal-600 uppercase ml-4 mb-1 block">Plan</label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faLayerGroup} className="text-xs" />
-                  </span>
-                  <select
-                    value={newMembership.plan_id}
-                    onChange={(e) => setNewMembership({...newMembership, plan_id: Number(e.target.value)})}
-                    required
-                    className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
-                  >
-                    <option value="0">Selecciona un plan</option>
-                    {plans.map((plan) => (
-                      <option key={plan.id} value={plan.id}>
-                        {plan.name} - ${plan.price} ({plan.duration_day} días)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              <SelectField
+                label="Plan"
+                options={[
+                  { id: 0, name: "Selecciona un plan" },
+                  ...plans.map(p => ({ id: p.id || 0, name: `${p.name} - $${p.price} (${p.duration_day} días)` }))
+                ]}
+                value={newMembership.plan_id}
+                onChange={(val) => setNewMembership({ ...newMembership, plan_id: val })}
+                icon={faLayerGroup}
+                placeholder="Selecciona un plan"
+              />
 
               {/* Método de Pago */}
               <div className="relative group">
