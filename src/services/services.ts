@@ -63,6 +63,15 @@ export interface RenewMembershipRequest {
   payment_info: PaymentInfo;
 }
 
+export interface BotConfig {
+  id?: string;
+  gym_id?: number;
+  whaibot_id: string;
+  whaibot_key: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 // 1. Crear instancia de Axios con la URL base
 const api = axios.create({
   baseURL: API_URL,
@@ -157,6 +166,12 @@ export const apiService = {
 
   getMetricsPayments: () => api.get("/metrics/payments"),
   getMetricsClients: () => api.get("/metrics/new-clients"),
+
+  getConfigBots: () => api.get<{ bots: BotConfig[] }>("/bot-config"),
+  createConfigBots: (data: BotConfig) => api.post(`/bot-config`, data),
+  updateConfigBots: (id: string, data: BotConfig) =>
+    api.put(`/bot-config/${id}`, data),
+  deleteConfigBots: (id: string) => api.delete(`/bot-config/${id}`),
   // getMetricsMemberships: () => api.get("/metrics/memberships"),
 };
 

@@ -9,6 +9,7 @@ import HistoryPagos from "./HistoryPagos";
 import { useState } from "react";
 import PlansGym from "./PlansGym";
 import Metrics from "./Metrics";
+import Bots from "./Bots";
 import { PlanRoute } from "../context/PlanRoute";
 
 
@@ -33,6 +34,7 @@ function App() {
             <Route path="plans" element={<PlanRoute minPlan="trial"><Plans /></PlanRoute>} />
             <Route path="memberships" element={<PlanRoute minPlan="trial"><Memberships /></PlanRoute>} />
             <Route path="history-pagos" element={<PlanRoute minPlan="trial"><HistoryPagos /></PlanRoute>} />
+            <Route path="bots" element={<PlanRoute minPlan="trial"><Bots /></PlanRoute>} />
 
             {/* Chat IA requiere Medium */}
             <Route path="chat" element={
