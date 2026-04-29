@@ -10,6 +10,10 @@ export interface Clients {
   phone: string;
   fecha_ingreso: string;
   activo: boolean;
+  active_routine?: {
+    id: number;
+    name: string;
+  } | null;
 }
 
 export interface Plans {
@@ -222,6 +226,8 @@ export const apiService = {
 
   addRoutineCliente: (data: addRoutineCliente) => api.post(`/client-routines`, data),
   getRoutineCliente: (id: string | number) => api.get(`/client-routines/active/${id}`),
+  getClientRoutines: (id: string | number) => api.get(`/client-routines/${id}`),
+  deactivateRoutineCliente: (id: string | number) => api.put(`/client-routines/${id}/deactivate`),
   deleteRoutineCliente: (id: string | number) => api.delete(`/client-routines/${id}`),
 
   createUsers: (data: createUsers) => api.post(`/users`, data),

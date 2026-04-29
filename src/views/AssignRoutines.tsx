@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers, faLayerGroup, faSearch, faSpinner, faCalendarAlt, faTimes, faCheckCircle, faCalendarDay, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faLayerGroup, faSearch, faSpinner, faCalendarAlt, faTimes, faCheckCircle, faCalendarDay, faPlus, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import { notify } from "../utils/toast";
 import { SelectField } from "../components/SelectField";
@@ -29,7 +29,39 @@ export default function AssignRoutines() {
         apiService.getClients(),
         apiService.getRoutines()
       ]);
-      setClients(clientsRes.data.clients || []);
+      
+      const clientsData = clientsRes.data.clients || [];
+      
+      // Obtenemos las rutinas de cada cliente usando el nuevo endpoint
+      const clientsWithRoutines = await Promise.all(
+        clientsData.map(async (client: any) => {
+          try {
+            const routinesRes = await apiService.getClientRoutines(client.id);
+            const assignments = routinesRes.data.assignments || [];
+            
+            // Buscamos la asignación que esté activa
+            const activeAssignment = assignments.find((a: any) => 
+              a.is_active === true || a.is_active === 1
+            );
+
+            if (activeAssignment) {
+              return { 
+                ...client, 
+                active_routine: {
+                  ...activeAssignment,
+                  name: activeAssignment.routine_name // Usamos el nombre que ya viene en la API
+                } 
+              };
+            }
+            return { ...client, active_routine: null };
+          } catch (error) {
+            console.error(`Error cargando rutinas para cliente ${client.id}:`, error);
+            return { ...client, active_routine: null };
+          }
+        })
+      );
+
+      setClients(clientsWithRoutines);
       setRoutines(routinesRes.data.routines || []);
     } catch (error) {
       notify.error("Error al cargar datos");
@@ -70,6 +102,18 @@ export default function AssignRoutines() {
       notify.error("Error al asignar rutina");
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDeactivate = async (assignmentId: number) => {
+    if (!window.confirm("¿Estás seguro de desactivar esta rutina?")) return;
+    
+    try {
+      await apiService.deactivateRoutineCliente(assignmentId);
+      notify.success("Rutina desactivada correctamente");
+      fetchData();
+    } catch (error) {
+      notify.error("Error al desactivar rutina");
     }
   };
 
@@ -116,7 +160,7 @@ export default function AssignRoutines() {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
             <FontAwesomeIcon icon={faSpinner} className="text-teal-600 text-4xl animate-spin" />
-          <p className="text-gray-400 font-bold animate-pulse">Obteniendo lista de clientes...</p>
+          <p className="text-gray-400 font-bold animate-pulse">Obteniendo listas de clientes...</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -141,7 +185,9 @@ export default function AssignRoutines() {
                         </div>
                         <div className="min-w-0">
                           <span className="font-black text-gray-800 text-base block truncate">{client.name}</span>
-                          <span className="text-xs text-gray-400 font-medium">Cliente Activo</span>
+                          <span className="text-xs text-gray-400 font-medium">
+                            {client.active_routine ? "Con Entrenamiento" : "Sin Entrenamiento"}
+                          </span>
                         </div>
                       </div>
                     </td>
@@ -151,21 +197,62 @@ export default function AssignRoutines() {
                       </span>
                     </td>
                     <td className="px-8 py-6">
-                      <div className="flex items-center gap-2">
-                         <div className="size-2 rounded-full bg-orange-400 animate-pulse" />
-                         <span className="text-xs text-gray-500 font-bold italic tracking-tight">Sin rutina asignada</span>
-                      </div>
+                      {client.active_routine ? (
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                             <div className="size-2 rounded-full bg-teal-500 animate-pulse" />
+                             <span className="text-sm text-teal-700 font-black tracking-tight">{client.active_routine.name}</span>
+                          </div>
+                          <span className="text-[10px] text-gray-400 font-bold ml-4 uppercase tracking-tighter">Rutina Activa</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                           <div className="size-2 rounded-full bg-orange-400" />
+                           <span className="text-xs text-gray-500 font-bold italic tracking-tight">Sin rutina asignada</span>
+                        </div>
+                      )}
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <button
-                        onClick={() => {
-                          setSelectedClient(client);
-                          setShowModal(true);
-                        }}
-                        className="bg-teal-50 text-teal-600 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-teal-600 hover:text-white transition-all shadow-sm active:scale-95"
-                      >
-                        Asignar Rutina
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        {client.active_routine ? (
+                          <>
+                            <button
+                              onClick={() => {
+                                setSelectedClient(client);
+                                setAssignmentData({
+                                  routine_id: client.active_routine.routine_id || 0,
+                                  day_of_week: client.active_routine.day_of_week || 1,
+                                  start_date: client.active_routine.start_date || new Date().toISOString().split("T")[0],
+                                  end_date: client.active_routine.end_date || "",
+                                  is_active: true
+                                });
+                                setShowModal(true);
+                              }}
+                              className="bg-blue-50 text-blue-600 size-10 rounded-xl hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                              title="Actualizar Rutina"
+                            >
+                              <FontAwesomeIcon icon={faEdit} className="text-sm" />
+                            </button>
+                            <button
+                              onClick={() => handleDeactivate(client.active_routine.id)}
+                              className="bg-red-50 text-red-600 size-10 rounded-xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                              title="Desactivar Rutina"
+                            >
+                              <FontAwesomeIcon icon={faTrashAlt} className="text-sm" />
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setSelectedClient(client);
+                              setShowModal(true);
+                            }}
+                            className="bg-teal-50 text-teal-600 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-teal-600 hover:text-white transition-all shadow-sm active:scale-95"
+                          >
+                            Asignar Rutina
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -189,23 +276,61 @@ export default function AssignRoutines() {
                   </div>
                   <div className="flex flex-col items-end gap-1">
                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Estado</span>
-                     <div className="flex items-center gap-2">
-                       <div className="size-1.5 rounded-full bg-orange-400 animate-pulse" />
-                       <span className="text-[10px] text-orange-600 font-black italic">Sin rutina</span>
-                     </div>
+                     {client.active_routine ? (
+                        <div className="flex items-center gap-2">
+                          <div className="size-1.5 rounded-full bg-teal-500 animate-pulse" />
+                          <span className="text-[10px] text-teal-600 font-black">{client.active_routine.name}</span>
+                        </div>
+                     ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="size-1.5 rounded-full bg-orange-400" />
+                          <span className="text-[10px] text-orange-600 font-black italic">Sin rutina</span>
+                        </div>
+                     )}
                   </div>
                 </div>
                 
-                <button
-                  onClick={() => {
-                    setSelectedClient(client);
-                    setShowModal(true);
-                  }}
-                  className="w-full bg-teal-600 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95 flex items-center justify-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faPlus} />
-                  Asignar Rutina
-                </button>
+                <div className="grid grid-cols-1 gap-2">
+                  {client.active_routine ? (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedClient(client);
+                          setAssignmentData({
+                            routine_id: client.active_routine.routine_id || 0,
+                            day_of_week: client.active_routine.day_of_week || 1,
+                            start_date: client.active_routine.start_date || new Date().toISOString().split("T")[0],
+                            end_date: client.active_routine.end_date || "",
+                            is_active: true
+                          });
+                          setShowModal(true);
+                        }}
+                        className="flex-1 bg-blue-600 text-white py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center justify-center gap-2"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => handleDeactivate(client.active_routine.id)}
+                        className="flex-1 bg-red-600 text-white py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-100 flex items-center justify-center gap-2"
+                      >
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                        Quitar
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSelectedClient(client);
+                        setShowModal(true);
+                      }}
+                      className="w-full bg-teal-600 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95 flex items-center justify-center gap-2"
+                    >
+                      <FontAwesomeIcon icon={faPlus} />
+                      Asignar Rutina
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>
