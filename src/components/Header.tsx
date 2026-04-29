@@ -87,6 +87,15 @@ function Header({ onToggleAside }: HeaderProps) {
   return `${day} ${meses[mesIndex]} ${year}`;
 };
 
+  const [user, setUser] = useState<{ name: string } | null>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
     <header className="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm">
       {/* Left */}
@@ -181,7 +190,7 @@ function Header({ onToggleAside }: HeaderProps) {
             <div className="w-6 h-6 rounded-full bg-teal-600 flex items-center justify-center text-white text-[10px]">
               <FontAwesomeIcon icon={faUser} />
             </div>
-            <span className="hidden sm:block text-gray-700 ">Administrador</span>
+            <span className="hidden sm:block text-gray-700 ">{user?.name || "Usuario"}</span>
           </button>
 
           {isDropdownOpen && (

@@ -8,8 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { PaymentHistory } from "../services/services";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
+import { notify } from "../utils/toast";
 
 const PaymentHistoryView: React.FC = () => {
   const [payments, setPayments] = useState<PaymentHistory[]>([]);
@@ -17,8 +16,6 @@ const PaymentHistoryView: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
-
-  const MySwal = withReactContent(Swal);
 
   const fetchPayments = async () => {
     try {
@@ -42,7 +39,7 @@ const PaymentHistoryView: React.FC = () => {
       setFilteredPayments(data);
     } catch (error) {
       console.error("Error fetching payment history:", error);
-      MySwal.fire("Error", "No se pudo obtener el historial de pagos.", "error");
+      notify.error("No se pudo obtener el historial de pagos.");
     } finally {
       setLoading(false);
     }

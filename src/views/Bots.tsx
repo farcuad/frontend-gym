@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -12,6 +10,7 @@ import {
   faPlus,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
+import { notify, useConfirm } from "../utils/toast";
 import { apiService } from "../services/services";
 import type { BotConfig } from "../services/services";
 import axios from 'axios';
@@ -27,7 +26,7 @@ const BotsView: React.FC = () => {
   });
   const [botUpdate, setBotUpdate] = useState<BotConfig | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const MySwal = withReactContent(Swal);
+  const confirm = useConfirm();
 
   const fetchBots = async () => {
     try {
@@ -57,7 +56,7 @@ const BotsView: React.FC = () => {
     setIsSubmitting(true);
     try {
       await apiService.createConfigBots(newBot);
-      MySwal.fire("¡Éxito!", "Bot configurado correctamente.", "success");
+      notify.success("Bot configurado correctamente.");
       setIsCreateOpen(false);
       setNewBot({
         whaibot_id: "",
@@ -66,7 +65,7 @@ const BotsView: React.FC = () => {
       fetchBots();
     } catch (error) {
       console.error("Error al crear bot:", error);
-      MySwal.fire("Error", "No se pudo configurar el bot.", "error");
+      notify.error("No se pudo configurar el bot.");
     } finally {
       setIsSubmitting(false);
     }
@@ -78,36 +77,26 @@ const BotsView: React.FC = () => {
   };
 
   const handleDelete = async (bot: BotConfig) => {
-    MySwal.fire({
-      title: "¿Eliminar configuración?",
-      text: `El bot "${bot.whaibot_id}" será eliminado de este gimnasio.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#0d9488",
-      cancelButtonColor: "#f43f5e",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-      customClass: { popup: "rounded-3xl" },
-    }).then(async (result) => {
-      if (result.isConfirmed && bot.id) {
-        try {
-          await apiService.deleteConfigBots(bot.id);
-          MySwal.fire(
-            "¡Eliminado!",
-            "La configuración ha sido borrada con éxito.",
-            "success",
-          );
-          fetchBots();
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-              const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
-              MySwal.fire("Error", message, "error");
-            } else {
-              MySwal.fire("Error", "Error inesperado, intenta nuevamente", "error");
-            }
+    const result = await confirm(
+      "¿Eliminar configuración?",
+      `El bot "${bot.whaibot_id}" será eliminado de este gimnasio.`,
+      "warning"
+    );
+
+    if (result.isConfirmed && bot.id) {
+      try {
+        await apiService.deleteConfigBots(bot.id);
+        notify.success("La configuración ha sido borrada con éxito.");
+        fetchBots();
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
+          notify.error(message);
+        } else {
+          notify.error("Error inesperado, intenta nuevamente");
         }
       }
-    });
+    }
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -120,12 +109,12 @@ const BotsView: React.FC = () => {
         whaibot_id,
         whaibot_key,
       });
-      MySwal.fire("¡Éxito!", "Bot actualizado correctamente.", "success");
+      notify.success("Bot actualizado correctamente.");
       setIsEditOpen(false);
       fetchBots();
     } catch (error) {
       console.error("Error al actualizar bot:", error);
-      MySwal.fire("Error", "No se pudo actualizar el bot.", "error");
+      notify.error("No se pudo actualizar el bot.");
     } finally {
       setIsSubmitting(false);
     }

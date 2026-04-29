@@ -1,4 +1,6 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { notify } from "../utils/toast";
+
 const API_URL = "https://u2.rsgve.com/gym-api/api";
 
 export interface Clients {
@@ -72,6 +74,41 @@ export interface BotConfig {
   updated_at?: string;
 }
 
+export interface ExerciseBody {
+  name: string;
+  muscle_group: string | null;
+}
+
+export interface RoutinesBody {
+  name: string;
+  description: string;
+}
+
+export interface addExercisesToRoutine {
+  exercise_id: number;
+  sets: number;
+  reps: string;
+  day_of_week: number;
+  rest_time_seconds: number;
+  sort_order: number;
+}
+
+export interface addRoutineCliente {
+  client_id: number;
+  routine_id: number;
+  day_of_week?: number;
+  start_date?: string;
+  end_date: string;
+  is_active: boolean;
+}
+
+export interface createUsers {
+  name: string;
+  email: string;
+  password: string;
+  role: "trainer" | "cashier";
+}
+
 // 1. Crear instancia de Axios con la URL base
 const api = axios.create({
   baseURL: API_URL,
@@ -98,8 +135,6 @@ api.interceptors.request.use(
   },
 );
 
-import { AxiosError } from "axios";
-import { notify } from "../utils/toast";
 // Interceptor de respuesta
 api.interceptors.response.use(
   (response) => response,
@@ -119,9 +154,7 @@ api.interceptors.response.use(
         code === "SUBSCRIPTION_EXPIRED" ||
         data?.error === "Acceso denegado"
       ) {
-        notify.warning(data.message || "Suscripción vencida", {
-          toastId: "sub-expired",
-        });
+        notify.warning(data.message || "Suscripción vencida");
         if (currentPath !== "/home/plans-gym") {
           window.location.href = "/home/plans-gym";
         }
@@ -172,7 +205,29 @@ export const apiService = {
   updateConfigBots: (id: string, data: BotConfig) =>
     api.put(`/bot-config/${id}`, data),
   deleteConfigBots: (id: string) => api.delete(`/bot-config/${id}`),
-  // getMetricsMemberships: () => api.get("/metrics/memberships"),
+
+  createExercises: (data: ExerciseBody) => api.post(`/exercises`, data),
+  getExercises: () => api.get(`/exercises`),
+  updateExercises: (id: string | number, data: ExerciseBody) => api.put(`/exercises/${id}`, data),
+  deleteExercises: (id: string | number) => api.delete(`/exercises/${id}`),
+
+  createRoutines: (data: RoutinesBody) => api.post(`/routines`, data),
+  getRoutines: () => api.get(`/routines`),
+  getRoutineById: (id: string | number) => api.get(`/routines/${id}`),
+  updateRoutines: (id: string | number, data: RoutinesBody) => api.put(`/routines/${id}`, data),
+  deleteRoutines: (id: string | number) => api.delete(`/routines/${id}`),
+
+  addExercisesToRoutine: (data: addExercisesToRoutine, id: number | string) => api.post(`/routines/${id}/exercises`, data),
+  deleteExercisesToRoutine: (id: string | number) => api.delete(`/routines/exercises/${id}`),
+
+  addRoutineCliente: (data: addRoutineCliente) => api.post(`/client-routines`, data),
+  getRoutineCliente: (id: string | number) => api.get(`/client-routines/active/${id}`),
+  deleteRoutineCliente: (id: string | number) => api.delete(`/client-routines/${id}`),
+
+  createUsers: (data: createUsers) => api.post(`/users`, data),
+  getUsers: () => api.get(`/users`),
+  updateUsers: (id: string | number, data: createUsers) => api.put(`/users/${id}`, data),
+  deleteUsers: (id: string | number) => api.delete(`/users/${id}`),
 };
 
 // API de tasa de cambio

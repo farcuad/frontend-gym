@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@import "toastify-js/src/toastify.css";
 @plugin "@tailwindcss/typography";
+@import "glass-alert-animation/styles";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;

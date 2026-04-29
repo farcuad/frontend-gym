@@ -10,6 +10,12 @@ import { useState } from "react";
 import PlansGym from "./PlansGym";
 import Metrics from "./Metrics";
 import Bots from "./Bots";
+import Exercises from "./Exercises";
+import Routines from "./Routines";
+import RoutineDetail from "./RoutineDetail";
+import Users from "./Users";
+import MyRoutines from "./MyRoutines";
+import AssignRoutines from "./AssignRoutines";
 import { PlanRoute } from "../context/PlanRoute";
 
 
@@ -35,6 +41,16 @@ function App() {
             <Route path="memberships" element={<PlanRoute minPlan="trial"><Memberships /></PlanRoute>} />
             <Route path="history-pagos" element={<PlanRoute minPlan="trial"><HistoryPagos /></PlanRoute>} />
             <Route path="bots" element={<PlanRoute minPlan="trial"><Bots /></PlanRoute>} />
+
+            {/* Nuevas Rutas de Entrenamiento y Administración */}
+            <Route path="exercises" element={<PlanRoute minPlan="trial"><Exercises /></PlanRoute>} />
+            <Route path="routines" element={<PlanRoute minPlan="trial"><Routines /></PlanRoute>} />
+            <Route path="routines/:id" element={<PlanRoute minPlan="trial"><RoutineDetail /></PlanRoute>} />
+            <Route path="users" element={<PlanRoute minPlan="trial"><Users /></PlanRoute>} />
+            <Route path="assign-routines" element={<PlanRoute minPlan="trial"><AssignRoutines /></PlanRoute>} />
+            
+            {/* Ruta para Clientes */}
+            <Route path="my-routines" element={<MyRoutines />} />
 
             {/* Chat IA requiere Medium */}
             <Route path="chat" element={

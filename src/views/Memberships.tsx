@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import { notify, useConfirm } from "../utils/toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt, faIdBadge, faCheckCircle, faTimes, faUser, faCalendarAlt, faSpinner, faPlus, faLayerGroup, faDollarSign, faMobileAlt, faReceipt, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService, getExchangeRate } from "../services/services";
@@ -97,7 +96,7 @@ const MembershipTable: React.FC = () => {
   const [paymentMethod, setPaymentMethod] = useState<"Divisas" | "Pago Móvil">("Divisas");
   const [reference, setReference] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const MySwal = withReactContent(Swal);
+  const confirm = useConfirm();
 
   // Obtener el precio del plan seleccionado
   const selectedPlan = plans.find(p => p.id === (isRenewOpen ? renewPlanId : newMembership.plan_id));
@@ -107,17 +106,17 @@ const MembershipTable: React.FC = () => {
   const handleCreateMembership = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMembership.client_id || !newMembership.plan_id) {
-      MySwal.fire('Error', 'Por favor selecciona un cliente y un plan.', 'warning');
+      notify.warning('Por favor selecciona un cliente y un plan.');
       return;
     }
 
     if (paymentMethod === "Pago Móvil" && !reference.trim()) {
-      MySwal.fire('Error', 'Por favor ingresa la referencia bancaria.', 'warning');
+      notify.warning('Por favor ingresa la referencia bancaria.');
       return;
     }
 
     if (!exchangeRate) {
-      MySwal.fire('Error', 'No se pudo obtener la tasa de cambio. Intenta de nuevo.', 'error');
+      notify.error('No se pudo obtener la tasa de cambio. Intenta de nuevo.');
       return;
     }
 
@@ -137,7 +136,7 @@ const MembershipTable: React.FC = () => {
     setIsSubmitting(true);
     try {
       await apiService.createMembership(membershipData);
-      MySwal.fire('¡Éxito!', 'Membresía creada correctamente.', 'success');
+      notify.success('Membresía creada correctamente.');
       setIsCreateOpen(false);
       setNewMembership({ client_id: 0, plan_id: 0, fecha_inicio: fechaHoy });
       setPaymentMethod("Divisas");
@@ -145,7 +144,7 @@ const MembershipTable: React.FC = () => {
       fetchMemberships();
     } catch (error) {
       console.error("Error al crear membresía:", error);
-      MySwal.fire('Error', 'No se pudo crear la membresía.', 'error');
+      notify.error('No se pudo crear la membresía.');
     } finally {
       setIsSubmitting(false);
     }
@@ -153,32 +152,26 @@ const MembershipTable: React.FC = () => {
 
 
   const handleDelete = async (id: number) => {
-    MySwal.fire({
-      title: '¿Revocar Membresía?',
-      text: `Se eliminará éste registro.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#0d9488',
-      cancelButtonColor: '#f43f5e',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-      customClass: { popup: 'rounded-[2rem]' }
-    }).then(async(result) => {
-      if (result.isConfirmed) {
-        try{
-          await apiService.deleteMembership(id);
-          MySwal.fire('Eliminado', 'Registro actualizado.', 'success');
-          fetchMemberships();
-        }catch(error){
-            if (axios.isAxiosError(error)) {
-              const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
-              MySwal.fire("Error", message, "error");
-            } else {
-              MySwal.fire("Error", "Error inesperado, intenta nuevamente", "error");
-            }
+    const result = await confirm(
+      '¿Revocar Membresía?',
+      'Se eliminará éste registro.',
+      'warning'
+    );
+
+    if (result.isConfirmed) {
+      try {
+        await apiService.deleteMembership(id);
+        notify.success('Registro actualizado.');
+        fetchMemberships();
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
+          notify.error(message);
+        } else {
+          notify.error("Error inesperado, intenta nuevamente");
         }
       }
-    });
+    }
   };
   
   const handleUpdate = async (member: Memberships ) => {
@@ -192,17 +185,17 @@ const MembershipTable: React.FC = () => {
   const handleRenewMembership = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!renewingMember || !renewPlanId) {
-      MySwal.fire('Error', 'Información de renovación incompleta.', 'warning');
+      notify.warning('Información de renovación incompleta.');
       return;
     }
 
     if (paymentMethod === "Pago Móvil" && !reference.trim()) {
-      MySwal.fire('Error', 'Por favor ingresa la referencia bancaria.', 'warning');
+      notify.warning('Por favor ingresa la referencia bancaria.');
       return;
     }
 
     if (!exchangeRate) {
-      MySwal.fire('Error', 'No se pudo obtener la tasa de cambio. Intenta de nuevo.', 'error');
+      notify.error('No se pudo obtener la tasa de cambio. Intenta de nuevo.');
       return;
     }
 
@@ -220,7 +213,7 @@ const MembershipTable: React.FC = () => {
         plan_id: renewPlanId,
         payment_info: paymentInfo
       });
-      MySwal.fire('¡Éxito!', 'Membresía renovada correctamente.', 'success');
+      notify.success('Membresía renovada correctamente.');
       setIsRenewOpen(false);
       setRenewingMember(null);
       setRenewPlanId(0);
@@ -229,7 +222,7 @@ const MembershipTable: React.FC = () => {
       fetchMemberships();
     } catch (error) {
       console.error("Error al renovar membresía:", error);
-      MySwal.fire('Error', 'No se pudo renovar la membresía.', 'error');
+      notify.error('No se pudo renovar la membresía.');
     } finally {
       setIsSubmitting(false);
     }

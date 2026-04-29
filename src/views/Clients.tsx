@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrashAlt, faUser, faIdCard, faPhone, faTimes, faSpinner, faPlus, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { Clients } from "../services/services";
+import { notify, useConfirm } from "../utils/toast";
 import axios from "axios";
 
 const EmployeeTable: React.FC = () => {
@@ -13,6 +12,7 @@ const EmployeeTable: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+  const confirm = useConfirm();
 
   const fetchClients = async () => {
     try {
@@ -42,14 +42,13 @@ const EmployeeTable: React.FC = () => {
     activo: true,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const MySwal = withReactContent(Swal);
 
   const handleCreateClient = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await apiService.createClient(newClient);
-      MySwal.fire("¡Éxito!", "Cliente creado correctamente.", "success");
+      notify.success("Cliente creado correctamente.");
       setIsCreateOpen(false);
       setNewClient({
         name: "",
@@ -61,7 +60,7 @@ const EmployeeTable: React.FC = () => {
       fetchClients();
     } catch (error) {
       console.error("Error al crear cliente:", error);
-      MySwal.fire("Error", "No se pudo crear el cliente.", "error");
+      notify.error("No se pudo crear el cliente.");
     } finally {
       setIsSubmitting(false);
     }
@@ -87,15 +86,11 @@ const EmployeeTable: React.FC = () => {
         fecha_ingreso,
         activo,
       });
-      MySwal.fire(
-        "¡Actualizado!",
-        "Cliente actualizado correctamente.",
-        "success",
-      );
+      notify.success("Cliente actualizado correctamente.");
       setIsEditOpen(false);
       fetchClients();
     } catch (error) {
-      MySwal.fire("Error", "No se pudo actualizar el cliente.");
+      notify.error("No se pudo actualizar el cliente.");
       console.log(error);
     } finally {
       setIsSubmitting(false);
@@ -103,31 +98,26 @@ const EmployeeTable: React.FC = () => {
   };
 
   const handleDelete = async (client: Clients) => {
-    MySwal.fire({
-      title: "¿Estás seguro?",
-      text: `Vas a eliminar a ${client.name}. ¡No podrás revertir esto!`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#0d9488",
-      cancelButtonColor: "#f43f5e",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    }).then(async (result) => {
-      if (result.isConfirmed && client.id) {
-        try {
-          await apiService.deleteClient(client.id);
-          MySwal.fire("¡Eliminado!", "El cliente ha sido borrado.", "success");
-          fetchClients();
-        } catch (error) {
-          if(axios.isAxiosError(error)) {
-            const message = error.response?.data?.message || "No se pudo eliminar el cliente.";
-            MySwal.fire("Error", message, "error");
-          }else {
-            MySwal.fire("Error", "No se pudo eliminar el cliente.", "error");
-          }
+    const result = await confirm(
+      "¿Estás seguro?",
+      `Vas a eliminar a ${client.name}. ¡No podrás revertir esto!`,
+      "warning"
+    );
+
+    if (result.isConfirmed && client.id) {
+      try {
+        await apiService.deleteClient(client.id);
+        notify.success("El cliente ha sido borrado.");
+        fetchClients();
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.message || "No se pudo eliminar el cliente.";
+          notify.error(message);
+        } else {
+          notify.error("No se pudo eliminar el cliente.");
         }
       }
-    });
+    }
   };
 
   const filteredEmployees = employees.filter((person) =>

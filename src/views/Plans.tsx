@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -12,13 +10,16 @@ import {
   faSpinner,
   faPlus, faClock,
 } from "@fortawesome/free-solid-svg-icons";
+import { notify, useConfirm } from "../utils/toast";
 import { apiService, getExchangeRate } from "../services/services";
 import type { Plans } from "../services/services";
 import axios from 'axios';
+
 const PlanTable: React.FC = () => {
   const [plans, setPlans] = useState<Plans[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
+  const confirm = useConfirm();
 
   const fetchPlans = async () => {
     try {
@@ -52,14 +53,13 @@ const PlanTable: React.FC = () => {
   });
   const [planUpdate, setPlanUpdate] = useState<Plans | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const MySwal = withReactContent(Swal);
 
   const handleCreatePlan = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await apiService.createPlan(newPlan);
-      MySwal.fire("¡Éxito!", "Plan creado correctamente.", "success");
+      notify.success("Plan creado correctamente.");
       setIsCreateOpen(false);
       setNewPlan({
         name: "",
@@ -69,7 +69,7 @@ const PlanTable: React.FC = () => {
       fetchPlans();
     } catch (error) {
       console.error("Error al crear plan:", error);
-      MySwal.fire("Error", "No se pudo crear el plan.", "error");
+      notify.error("No se pudo crear el plan.");
     } finally {
       setIsSubmitting(false);
     }
@@ -81,36 +81,26 @@ const PlanTable: React.FC = () => {
   };
 
   const handleDelete = async (plans: Plans) => {
-    MySwal.fire({
-      title: "¿Eliminar plan?",
-      text: `El plan "${plans.name}" ya no estará disponible para nuevos socios.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#0d9488",
-      cancelButtonColor: "#f43f5e",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-      customClass: { popup: "rounded-3xl" },
-    }).then(async (result) => {
-      if (result.isConfirmed && plans.id) {
-        try {
-          await apiService.deletePlan(plans.id);
-          MySwal.fire(
-            "¡Eliminado!",
-            "El plan ha sido borrado con éxito.",
-            "success",
-          );
-          fetchPlans();
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-              const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
-              MySwal.fire("Error", message, "error");
-            } else {
-              MySwal.fire("Error", "Error inesperado, intenta nuevamente", "error");
-            }
+    const result = await confirm(
+      "¿Eliminar plan?",
+      `El plan "${plans.name}" ya no estará disponible para nuevos socios.`,
+      "warning"
+    );
+
+    if (result.isConfirmed && plans.id) {
+      try {
+        await apiService.deletePlan(plans.id);
+        notify.success("El plan ha sido borrado con éxito.");
+        fetchPlans();
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
+          notify.error(message);
+        } else {
+          notify.error("Error inesperado, intenta nuevamente");
         }
       }
-    });
+    }
   };
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -124,12 +114,12 @@ const PlanTable: React.FC = () => {
         duration_day: Number(duration_day),
         price: Number(price),
       });
-      MySwal.fire("¡Éxito!", "Plan actualizado correctamente.", "success");
+      notify.success("Plan actualizado correctamente.");
       setIsEditOpen(false);
       fetchPlans();
     } catch (error) {
       console.error("Error al actualizar plan:", error);
-      MySwal.fire("Error", "No se pudo actualizar el plan.", "error");
+      notify.error("No se pudo actualizar el plan.");
     } finally {
       setIsSubmitting(false);
     }
