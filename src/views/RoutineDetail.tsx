@@ -22,6 +22,9 @@ export default function RoutineDetail() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const isClient = user.role === "client";
+  
   const [newExerciseData, setNewExerciseData] = useState({
     exercise_id: 0,
     sets: 3,
@@ -34,16 +37,19 @@ export default function RoutineDetail() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [routineRes, exercisesRes] = await Promise.all([
-        apiService.getRoutineById(id!),
-        apiService.getExercises()
-      ]);
-
+      const routineRes = await apiService.getRoutineById(id!);
       const routineData = routineRes.data.routine || routineRes.data;
-      const exercisesList = exercisesRes.data.exercises || [];
-
       setRoutine(routineData);
-      setExercisesLibrary(exercisesList);
+
+      // Solo cargamos la librería de ejercicios si el usuario es entrenador/admin
+      if (!isClient) {
+        try {
+          const exercisesRes = await apiService.getExercises();
+          setExercisesLibrary(exercisesRes.data.exercises || []);
+        } catch (err) {
+          console.error("Error fetching exercises library:", err);
+        }
+      }
     } catch (error) {
       console.error("Error fetching routine detail:", error);
       notify.error("Error al cargar datos");
@@ -159,15 +165,19 @@ export default function RoutineDetail() {
              <div className="bg-teal-600 text-white p-2.5 md:p-3 rounded-xl md:rounded-2xl shadow-lg shadow-teal-100">
                 <FontAwesomeIcon icon={faLayerGroup} className="size-4 md:size-5" />
              </div>
-             <h2 className="font-black text-lg md:text-xl text-gray-800">Ejercicios Programados</h2>
+             <h2 className="font-black text-lg md:text-xl text-gray-800">
+               {isClient ? "Mi Entrenamiento" : "Ejercicios Programados"}
+             </h2>
           </div>
-          <button 
-            onClick={() => setShowAddModal(true)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-teal-600 text-white px-5 py-3 md:py-3.5 rounded-xl md:rounded-2xl text-xs md:text-sm font-black hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95"
-          >
-            <FontAwesomeIcon icon={faPlus} />
-            Añadir Ejercicio
-          </button>
+          {!isClient && (
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-teal-600 text-white px-5 py-3 md:py-3.5 rounded-xl md:rounded-2xl text-xs md:text-sm font-black hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+              Añadir Ejercicio
+            </button>
+          )}
         </div>
 
         <div className="space-y-4">
@@ -182,7 +192,7 @@ export default function RoutineDetail() {
                   <th className="px-8 py-5">Series</th>
                   <th className="px-8 py-5">Reps</th>
                   <th className="px-8 py-5 text-center">Descanso</th>
-                  <th className="px-8 py-5 text-right">Acciones</th>
+                  {!isClient && <th className="px-8 py-5 text-right">Acciones</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -215,14 +225,16 @@ export default function RoutineDetail() {
                          <span>{item.rest_time_seconds}s</span>
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-right">
-                      <button 
-                        onClick={() => handleRemoveExercise(item.id)}
-                        className="size-10 flex items-center justify-center bg-rose-50 text-rose-500 rounded-xl transition-all"
-                      >
-                        <FontAwesomeIcon icon={faTrash} className="text-sm" />
-                      </button>
-                    </td>
+                    {!isClient && (
+                      <td className="px-8 py-6 text-right">
+                        <button 
+                          onClick={() => handleRemoveExercise(item.id)}
+                          className="size-10 flex items-center justify-center bg-rose-50 text-rose-500 rounded-xl transition-all"
+                        >
+                          <FontAwesomeIcon icon={faTrash} className="text-sm" />
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
@@ -245,12 +257,14 @@ export default function RoutineDetail() {
                       </span>
                     </div>
                   </div>
-                  <button 
-                    onClick={() => handleRemoveExercise(item.id)}
-                    className="size-8 flex items-center justify-center bg-rose-50 text-rose-500 rounded-lg"
-                  >
-                    <FontAwesomeIcon icon={faTrash} className="text-xs" />
-                  </button>
+                  {!isClient && (
+                    <button 
+                      onClick={() => handleRemoveExercise(item.id)}
+                      className="size-8 flex items-center justify-center bg-rose-50 text-rose-500 rounded-lg"
+                    >
+                      <FontAwesomeIcon icon={faTrash} className="text-xs" />
+                    </button>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-50">

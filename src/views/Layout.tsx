@@ -43,11 +43,11 @@ function App() {
             <Route path="bots" element={<PlanRoute minPlan="trial"><Bots /></PlanRoute>} />
 
             {/* Nuevas Rutas de Entrenamiento y Administración */}
-            <Route path="exercises" element={<PlanRoute minPlan="trial"><Exercises /></PlanRoute>} />
-            <Route path="routines" element={<PlanRoute minPlan="trial"><Routines /></PlanRoute>} />
-            <Route path="routines/:id" element={<PlanRoute minPlan="trial"><RoutineDetail /></PlanRoute>} />
-            <Route path="users" element={<PlanRoute minPlan="trial"><Users /></PlanRoute>} />
-            <Route path="assign-routines" element={<PlanRoute minPlan="trial"><AssignRoutines /></PlanRoute>} />
+            <Route path="exercises" element={<PlanRoute minPlan="Premium"><Exercises /></PlanRoute>} />
+            <Route path="routines" element={<PlanRoute minPlan="Premium"><Routines /></PlanRoute>} />
+            <Route path="routines/:id" element={<PlanRoute minPlan="Premium"><RoutineDetail /></PlanRoute>} />
+            <Route path="users" element={<PlanRoute minPlan="Premium"><Users /></PlanRoute>} />
+            <Route path="assign-routines" element={<PlanRoute minPlan="Premium"><AssignRoutines /></PlanRoute>} />
             
             {/* Ruta para Clientes */}
             <Route path="my-routines" element={<MyRoutines />} />

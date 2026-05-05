@@ -32,31 +32,39 @@ export default function AssignRoutines() {
       
       const clientsData = clientsRes.data.clients || [];
       
-      // Obtenemos las rutinas de cada cliente usando el nuevo endpoint
       const clientsWithRoutines = await Promise.all(
         clientsData.map(async (client: any) => {
           try {
             const routinesRes = await apiService.getClientRoutines(client.id);
             const assignments = routinesRes.data.assignments || [];
+            const activeExercises = routinesRes.data.activeExercises || [];
             
-            // Buscamos la asignación que esté activa
-            const activeAssignment = assignments.find((a: any) => 
-              a.is_active === true || a.is_active === 1
-            );
+            const activeAssignments = assignments
+              .filter((item: any) => {
+                const a = item.assignment || item;
+                return a.is_active === true || a.is_active === 1;
+              })
+              .map((item: any) => {
+                const a = item.assignment || item;
+                const exercises = activeExercises.filter((ex: any) => 
+                  ex.routine_id === a.routine_id && ex.day_of_week === a.day_of_week
+                );
+                return { 
+                  ...a, 
+                  routine_name: a.routine_name || item.routine?.name,
+                  exercises 
+                };
+              })
+              .sort((a: any, b: any) => (a.day_of_week || 0) - (b.day_of_week || 0));
 
-            if (activeAssignment) {
-              return { 
-                ...client, 
-                active_routine: {
-                  ...activeAssignment,
-                  name: activeAssignment.routine_name // Usamos el nombre que ya viene en la API
-                } 
-              };
-            }
-            return { ...client, active_routine: null };
+            return { 
+              ...client, 
+              active_assignments: activeAssignments,
+              active_routine: activeAssignments.length > 0 ? activeAssignments[0] : null
+            };
           } catch (error) {
             console.error(`Error cargando rutinas para cliente ${client.id}:`, error);
-            return { ...client, active_routine: null };
+            return { ...client, active_assignments: [], active_routine: null };
           }
         })
       );
@@ -197,62 +205,75 @@ export default function AssignRoutines() {
                       </span>
                     </td>
                     <td className="px-8 py-6">
-                      {client.active_routine ? (
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2">
-                             <div className="size-2 rounded-full bg-teal-500 animate-pulse" />
-                             <span className="text-sm text-teal-700 font-black tracking-tight">{client.active_routine.name}</span>
-                          </div>
-                          <span className="text-[10px] text-gray-400 font-bold ml-4 uppercase tracking-tighter">Rutina Activa</span>
+                      {client.active_assignments && client.active_assignments.length > 0 ? (
+                        <div className="flex flex-col gap-2.5">
+                          {client.active_assignments.map((a: any) => (
+                            <div key={a.id} className="flex items-center justify-between group/item bg-gray-50/50 p-2 rounded-xl border border-gray-100/50 hover:border-teal-200 hover:bg-teal-50/30 transition-all">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <span className="text-[9px] bg-white text-teal-700 px-2 py-0.5 rounded-md font-black border border-teal-100 uppercase tracking-tighter shrink-0 shadow-xs">
+                                  {["", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"][a.day_of_week] || "Gral"}
+                                </span>
+                                <div className="flex flex-col min-w-0">
+                                  <span className="text-xs text-gray-700 font-bold truncate leading-tight">{a.routine_name}</span>
+                                  <span className="text-[8px] text-gray-400 font-medium uppercase tracking-widest">
+                                    {a.exercises?.length || 0} Ejercicios
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1 ml-4 shrink-0">
+                                <button
+                                  onClick={() => {
+                                    setSelectedClient(client);
+                                    setAssignmentData({
+                                      routine_id: a.routine_id || 0,
+                                      day_of_week: a.day_of_week || 1,
+                                      start_date: a.start_date?.split("T")[0] || new Date().toISOString().split("T")[0],
+                                      end_date: a.end_date?.split("T")[0] || "",
+                                      is_active: true
+                                    });
+                                    setShowModal(true);
+                                  }}
+                                  className="text-blue-500 hover:bg-blue-100 size-7 rounded-lg flex items-center justify-center transition-colors"
+                                  title="Editar esta asignación"
+                                >
+                                  <FontAwesomeIcon icon={faEdit} className="text-[10px]" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeactivate(a.id)}
+                                  className="text-red-400 hover:bg-red-100 size-7 rounded-lg flex items-center justify-center transition-colors"
+                                  title="Desactivar esta asignación"
+                                >
+                                  <FontAwesomeIcon icon={faTrashAlt} className="text-[10px]" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       ) : (
                         <div className="flex items-center gap-2">
                            <div className="size-2 rounded-full bg-orange-400" />
-                           <span className="text-xs text-gray-500 font-bold italic tracking-tight">Sin rutina asignada</span>
+                           <span className="text-xs text-gray-500 font-bold italic tracking-tight">Sin rutinas asignadas</span>
                         </div>
                       )}
                     </td>
                     <td className="px-8 py-6 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {client.active_routine ? (
-                          <>
-                            <button
-                              onClick={() => {
-                                setSelectedClient(client);
-                                setAssignmentData({
-                                  routine_id: client.active_routine.routine_id || 0,
-                                  day_of_week: client.active_routine.day_of_week || 1,
-                                  start_date: client.active_routine.start_date || new Date().toISOString().split("T")[0],
-                                  end_date: client.active_routine.end_date || "",
-                                  is_active: true
-                                });
-                                setShowModal(true);
-                              }}
-                              className="bg-blue-50 text-blue-600 size-10 rounded-xl hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center shadow-sm"
-                              title="Actualizar Rutina"
-                            >
-                              <FontAwesomeIcon icon={faEdit} className="text-sm" />
-                            </button>
-                            <button
-                              onClick={() => handleDeactivate(client.active_routine.id)}
-                              className="bg-red-50 text-red-600 size-10 rounded-xl hover:bg-red-600 hover:text-white transition-all flex items-center justify-center shadow-sm"
-                              title="Desactivar Rutina"
-                            >
-                              <FontAwesomeIcon icon={faTrashAlt} className="text-sm" />
-                            </button>
-                          </>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setSelectedClient(client);
-                              setShowModal(true);
-                            }}
-                            className="bg-teal-50 text-teal-600 px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-teal-600 hover:text-white transition-all shadow-sm active:scale-95"
-                          >
-                            Asignar Rutina
-                          </button>
-                        )}
-                      </div>
+                      <button
+                        onClick={() => {
+                          setSelectedClient(client);
+                          setAssignmentData({
+                            routine_id: 0,
+                            day_of_week: 1,
+                            start_date: new Date().toISOString().split("T")[0],
+                            end_date: "",
+                            is_active: true
+                          });
+                          setShowModal(true);
+                        }}
+                        className="bg-teal-50 text-teal-600 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 hover:text-white transition-all shadow-sm active:scale-95 border border-teal-100 flex items-center gap-2 ml-auto"
+                      >
+                        <FontAwesomeIcon icon={faPlus} className="text-[10px]" />
+                        Asignar
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -275,11 +296,14 @@ export default function AssignRoutines() {
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
-                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Estado</span>
-                     {client.active_routine ? (
-                        <div className="flex items-center gap-2">
-                          <div className="size-1.5 rounded-full bg-teal-500 animate-pulse" />
-                          <span className="text-[10px] text-teal-600 font-black">{client.active_routine.name}</span>
+                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Días</span>
+                     {client.active_assignments && client.active_assignments.length > 0 ? (
+                        <div className="flex flex-wrap justify-end gap-1 max-w-[120px]">
+                          {client.active_assignments.map((a: any) => (
+                            <span key={a.id} className="text-[8px] bg-teal-50 text-teal-700 px-1.5 py-0.5 rounded-md font-black border border-teal-100">
+                              {["", "L", "M", "X", "J", "V", "S", "D"][a.day_of_week] || "?"}
+                            </span>
+                          ))}
                         </div>
                      ) : (
                         <div className="flex items-center gap-2">
@@ -290,47 +314,72 @@ export default function AssignRoutines() {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-1 gap-2">
-                  {client.active_routine ? (
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          setSelectedClient(client);
-                          setAssignmentData({
-                            routine_id: client.active_routine.routine_id || 0,
-                            day_of_week: client.active_routine.day_of_week || 1,
-                            start_date: client.active_routine.start_date || new Date().toISOString().split("T")[0],
-                            end_date: client.active_routine.end_date || "",
-                            is_active: true
-                          });
-                          setShowModal(true);
-                        }}
-                        className="flex-1 bg-blue-600 text-white py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 flex items-center justify-center gap-2"
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => handleDeactivate(client.active_routine.id)}
-                        className="flex-1 bg-red-600 text-white py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-100 flex items-center justify-center gap-2"
-                      >
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                        Quitar
-                      </button>
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Rutinas Activas</h4>
+                  {client.active_assignments && client.active_assignments.length > 0 ? (
+                    <div className="space-y-2">
+                      {client.active_assignments.map((a: any) => (
+                        <div key={a.id} className="flex items-center justify-between bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span className="text-[9px] bg-white text-teal-700 px-2 py-1 rounded-lg font-black border border-teal-100 uppercase tracking-tighter shrink-0 shadow-xs">
+                              {["", "L", "M", "X", "J", "V", "S", "D"][a.day_of_week] || "?"}
+                            </span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-sm text-gray-800 font-bold truncate leading-tight">{a.routine_name}</span>
+                              <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{a.exercises?.length || 0} Ejercicios</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                               onClick={() => {
+                                 setSelectedClient(client);
+                                 setAssignmentData({
+                                   routine_id: a.routine_id || 0,
+                                   day_of_week: a.day_of_week || 1,
+                                   start_date: a.start_date?.split("T")[0] || new Date().toISOString().split("T")[0],
+                                   end_date: a.end_date?.split("T")[0] || "",
+                                   is_active: true
+                                 });
+                                 setShowModal(true);
+                               }}
+                               className="bg-blue-100 text-blue-600 size-9 rounded-xl flex items-center justify-center transition-colors active:scale-95"
+                             >
+                               <FontAwesomeIcon icon={faEdit} className="text-xs" />
+                             </button>
+                             <button
+                               onClick={() => handleDeactivate(a.id)}
+                               className="bg-red-100 text-red-500 size-9 rounded-xl flex items-center justify-center transition-colors active:scale-95"
+                             >
+                               <FontAwesomeIcon icon={faTrashAlt} className="text-xs" />
+                             </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ) : (
-                    <button
-                      onClick={() => {
-                        setSelectedClient(client);
-                        setShowModal(true);
-                      }}
-                      className="w-full bg-teal-600 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95 flex items-center justify-center gap-2"
-                    >
-                      <FontAwesomeIcon icon={faPlus} />
-                      Asignar Rutina
-                    </button>
+                    <div className="py-4 text-center bg-orange-50/30 rounded-2xl border border-dashed border-orange-100">
+                       <p className="text-[10px] text-orange-600 font-black italic">Sin rutinas asignadas</p>
+                    </div>
                   )}
                 </div>
+                
+                <button
+                  onClick={() => {
+                    setSelectedClient(client);
+                    setAssignmentData({
+                      routine_id: 0,
+                      day_of_week: 1,
+                      start_date: new Date().toISOString().split("T")[0],
+                      end_date: "",
+                      is_active: true
+                    });
+                    setShowModal(true);
+                  }}
+                  className="w-full bg-teal-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95 flex items-center justify-center gap-2 mt-2"
+                >
+                  <FontAwesomeIcon icon={faPlus} />
+                  Asignar Nueva Rutina
+                </button>
               </div>
             ))}
           </div>

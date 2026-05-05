@@ -160,3 +160,16 @@ Para crear usuarios, el json es así
     "password": "12345678",
     "role": "trainer"
 }
+
+## 6. Nueva Lógica de Horario Semanal (Actualización 2026)
+
+Se ha implementado una mejora para permitir que los clientes tengan un "Horario" en lugar de una sola rutina global.
+
+### Funcionamiento:
+1. **Asignación Múltiple**: Al usar el endpoint `POST /client-routines`, si envías el campo `day_of_week` (1=Lunes...7=Domingo), el sistema **no borrará** las rutinas de los otros días. Solo reemplazará la del día seleccionado.
+2. **Historial Natural**: Todas las asignaciones se guardan con su fecha de inicio y fin. Las rutinas antiguas quedan marcadas como `is_active: false`.
+3. **Detección Automática**: El endpoint de "Rutina Activa" ahora sabe qué día es hoy y busca automáticamente la rutina que le corresponde al cliente para este día.
+4. **Respaldo (Fallback)**: Si una rutina es general (no tiene ejercicios filtrados por día), el sistema mostrará todos los ejercicios de esa rutina.
+
+### Ejemplo de Tabla Semanal en Frontend:
+Para construir la tabla semanal, se recomienda usar el endpoint `GET /client-routines/:clientId` (Historial), el cual ahora devuelve el campo `day_of_week` para cada asignación activa.

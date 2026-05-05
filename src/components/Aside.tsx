@@ -146,10 +146,10 @@ function Aside({ isOpen, onClose }: AsideProps) {
           ) : (
             <>
               <p className="text-[11px] uppercase tracking-wider text-gray-400 px-4 mb-2">Mi Portal</p>
-              <NavLink to="/home/my-routines" className={navLinkClass}>
-                <FontAwesomeIcon icon={faDumbbell} className="w-5" />
-                <span>Mis Rutinas</span>
-              </NavLink>
+                <NavLink to="/home/my-routines" className={navLinkClass}>
+                  <FontAwesomeIcon icon={faDumbbell} className="w-5" />
+                  <span>Mi Horario Semanal</span>
+                </NavLink>
             </>
           )}
         </nav>
