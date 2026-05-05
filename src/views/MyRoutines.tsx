@@ -14,56 +14,65 @@ export default function MyRoutines() {
     if (!user.id) return;
     setLoading(true);
     try {
-      // 1. Cargamos la rutina de HOY específicamente
-      const todayRes = await apiService.getRoutineCliente(user.id);
-      let todayData = null;
-      if (todayRes.data.assignment && todayRes.data.routine) {
-        todayData = { 
-          ...todayRes.data.assignment, 
-          routine: todayRes.data.routine,
-          exercises: todayRes.data.routine.exercises || todayRes.data.activeExercises || []
-        };
-        setActiveRoutine(todayData);
-      }
-
-      // 2. Cargamos el HORARIO SEMANAL
+      // 1. Get all assignments for the client
       const weekRes = await apiService.getClientRoutines(user.id);
-      const assignments = weekRes.data.assignments || [];
-      const allExercises = weekRes.data.activeExercises || [];
-      const todayDay = new Date().getDay() === 0 ? 7 : new Date().getDay();
+      const allAssignments = weekRes.data.assignments || [];
+      
+      // Filter only active assignments
+      const activeAssignments = allAssignments.filter((a: any) => a.is_active === true || a.is_active === 1);
 
-      const activeWeekly = assignments
-        .filter((item: any) => {
-          const a = item.assignment || item;
-          return a.is_active === true || a.is_active === 1;
-        })
-        .map((item: any) => {
-          const a = item.assignment || item;
-          const r = item.routine || {};
-          
-          // Si es el día de hoy, preferimos la data de todayRes que es más completa
-          if (a.day_of_week === todayDay && todayData && a.routine_id === todayData.routine_id) {
-             return todayData;
+      // 2. Get unique routine IDs to avoid redundant calls
+      const uniqueRoutineIds = [...new Set(activeAssignments.map((a: any) => a.routine_id))];
+
+      // 3. Fetch full details for each unique routine (including exercises)
+      const routinesDetails = await Promise.all(
+        uniqueRoutineIds.map(async (id) => {
+          try {
+            const res = await apiService.getRoutineById(id as number);
+            return res.data.routine || res.data;
+          } catch (e) {
+            console.error(`Error fetching routine ${id}:`, e);
+            return null;
           }
-
-          const exercises = a.exercises || r.exercises || allExercises.filter((ex: any) => 
-            ex.routine_id === a.routine_id && ex.day_of_week === a.day_of_week
-          );
-
-          return { 
-            ...a, 
-            routine: { 
-              ...r,
-              name: a.routine_name || r.name, 
-              description: a.routine_description || r.description,
-              exercises
-            },
-            exercises 
-          };
         })
-        .sort((a: any, b: any) => (a.day_of_week || 0) - (b.day_of_week || 0));
+      );
+
+      // Create a map for quick access: { routineId: routineData }
+      const routinesMap = routinesDetails.reduce((acc: any, r: any) => {
+        if (r) acc[r.id] = r;
+        return acc;
+      }, {});
+
+      // 4. Build the weekly schedule with full data
+      const todayDay = new Date().getDay() === 0 ? 7 : new Date().getDay();
+      
+      const activeWeekly = activeAssignments.map((a: any) => {
+        const routineInfo = routinesMap[a.routine_id] || {};
+        
+        // Match exercises that belong to this routine AND this specific day
+        // Some routines might have exercises for different days
+        const exercises = (routineInfo.exercises || []).filter((ex: any) => 
+          !ex.day_of_week || ex.day_of_week === a.day_of_week
+        );
+
+        return {
+          ...a,
+          routine: {
+            ...routineInfo,
+            name: a.routine_name || routineInfo.name,
+            description: a.routine_description || routineInfo.description,
+          },
+          exercises: exercises
+        };
+      }).sort((a: any, b: any) => (a.day_of_week || 0) - (b.day_of_week || 0));
 
       setWeeklyAssignments(activeWeekly);
+
+      // Set today's active routine if it exists
+      const todayAssignment = activeWeekly.find((a:any) => a.day_of_week === todayDay);
+      if (todayAssignment) {
+        setActiveRoutine(todayAssignment);
+      }
 
     } catch (error) {
       console.error("Error al cargar rutinas:", error);
@@ -175,9 +184,11 @@ export default function MyRoutines() {
                     <FontAwesomeIcon icon={faDumbbell} className="size-6" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-black text-gray-800 text-lg mb-1 truncate">{item.exercise_name}</h3>
+                    <h3 className="font-black text-gray-800 text-lg mb-1 truncate">
+                      {item.exercise_name || item.name || `Ejercicio #${item.exercise_id || item.id}`}
+                    </h3>
                     <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">
-                      {item.muscle_group || 'General'}
+                      {item.muscle_group || item.muscle_name || 'General'}
                     </span>
                     <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3">
                       <div className="flex items-center gap-2">

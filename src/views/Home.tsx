@@ -255,7 +255,7 @@ function Pricing() {
 
   const plans = [
     {
-      name: "Básico", price: 29, badge: "Para empezar", icon: faBolt,
+      name: "Básico", price: 19, badge: "Para empezar", icon: faBolt,
       description: "Gestión esencial para tu gimnasio",
       features: [
         { text: "Gestión de clientes", hi: true }, { text: "Gestión de planes" },
@@ -264,21 +264,25 @@ function Pricing() {
       ]
     },
     {
-      name: "Pro", price: 49, badge: "Más popular", icon: faMagic, popular: true,
+      name: "Pro", price: 39, badge: "Más popular", icon: faMagic, popular: true,
       description: "Automatiza con inteligencia artificial",
       features: [
-        { text: "Todo del plan Básico", hi: true }, { text: "Asistente IA integrado", hi: true },
-        { text: "Respuestas automáticas" }, { text: "Análisis predictivo" },
-        { text: "Sugerencias inteligentes" }, { text: "Soporte prioritario" }
+        { text: "Todo del plan Básico", hi: true },
+        { text: "Asistente IA integrado", hi: true },
+        { text: "Notificaciones Automáticas", hi: true },
+        { text: "Recordatorio de Vencimiento", hi: true },
+        { text: "App Móvil", hi: true }
       ]
     },
     {
-      name: "Premium", price: 69, badge: "Todo incluido", icon: faMobileScreen,
+      name: "Premium", price: 59, badge: "Todo incluido", icon: faMobileScreen,
       description: "Solución completa con app y web",
       features: [
-        { text: "Todo del plan Pro", hi: true }, { text: "App móvil", hi: true },
-        { text: "Web personalizada", hi: true }, { text: "Soporte dedicado 24/7", hi: true },
-        { text: "Notificaciones Automáticas", hi: true}, { text: "Recordatorio de Vencimiento", hi: true}
+        { text: "Todo del plan Pro", hi: true },
+        { text: "Control de rutinas y ejercicios", hi: true},
+        { text: "Asignacion de rutinas a clientes", hi: true},
+        { text: "Web personalizada", hi: true }, 
+        { text: "Soporte dedicado 24/7", hi: true },
       ]
     }
   ];

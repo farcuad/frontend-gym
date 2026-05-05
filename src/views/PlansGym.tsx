@@ -24,7 +24,7 @@ const GymPricingPage: React.FC = () => {
   const plans: Plan[] = [
     {
       name: "Básico",
-      price: 29,
+      price: 19,
       description: "Gestión esencial para tu gimnasio",
       badge: "Ideal para empezar",
       accentColor: "#009689",
@@ -40,7 +40,7 @@ const GymPricingPage: React.FC = () => {
     },
     {
       name: "Pro",
-      price: 49,
+      price: 39,
       description: "Automatiza con inteligencia artificial",
       badge: "Más popular",
       popular: true,
@@ -49,24 +49,24 @@ const GymPricingPage: React.FC = () => {
       features: [
         { text: "Todo del plan Básico", highlight: true },
         { text: "Asistente IA integrado", highlight: true },
-        { text: "Respuestas automáticas" },
-        { text: "Análisis predictivo" },
-        { text: "Sugerencias inteligentes" },
-        { text: "Soporte prioritario" }
+        { text: "Notificaciones Automáticas" },
+        { text: "Recordatorio de Vencimiento" },
+        { text: "App Movil", highlight: true }
       ]
     },
     {
       name: "Premium",
-      price: 69,
+      price: 59,
       description: "Solución completa con app y web",
       badge: "Todo incluido",
       accentColor: "#009689",
       icon: faMobileScreen,
       features: [
         { text: "Todo del plan Pro", highlight: true },
-        { text: "App móvil", highlight: true },
         { text: "Web personalizada", highlight: true },
-        { text: "Soporte dedicado 24/7" }
+        { text: "Soporte dedicado 24/7" },
+        { text: "Control de rutinas y ejercicios", highlight: true},
+        { text: "Asignacion de rutinas a clientes", highlight: true}
       ]
     }
   ];
