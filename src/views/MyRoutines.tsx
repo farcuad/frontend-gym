@@ -1,15 +1,13 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDumbbell, faClock, faRedo, faCheckCircle, faCalendarAlt, faChevronRight, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faDumbbell, faClock, faRedo, faCheckCircle, faCalendarAlt, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService} from "../services/services";
-import { useNavigate } from "react-router-dom";
 
 export default function MyRoutines() {
   const [activeRoutine, setActiveRoutine] = useState<any>(null);
   const [weeklyAssignments, setWeeklyAssignments] = useState<any[]>([]);
   const [selectedDay, setSelectedDay] = useState<number>(new Date().getDay() === 0 ? 7 : new Date().getDay());
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   const fetchData = async () => {
@@ -18,28 +16,48 @@ export default function MyRoutines() {
     try {
       // 1. Cargamos la rutina de HOY específicamente
       const todayRes = await apiService.getRoutineCliente(user.id);
+      let todayData = null;
       if (todayRes.data.assignment && todayRes.data.routine) {
-        setActiveRoutine({ 
+        todayData = { 
           ...todayRes.data.assignment, 
           routine: todayRes.data.routine,
-          exercises: todayRes.data.activeExercises || []
-        });
+          exercises: todayRes.data.routine.exercises || todayRes.data.activeExercises || []
+        };
+        setActiveRoutine(todayData);
       }
 
       // 2. Cargamos el HORARIO SEMANAL
       const weekRes = await apiService.getClientRoutines(user.id);
       const assignments = weekRes.data.assignments || [];
       const allExercises = weekRes.data.activeExercises || [];
+      const todayDay = new Date().getDay() === 0 ? 7 : new Date().getDay();
 
       const activeWeekly = assignments
-        .filter((a: any) => a.is_active === true || a.is_active === 1)
-        .map((a: any) => {
-          const exercises = allExercises.filter((ex: any) => 
+        .filter((item: any) => {
+          const a = item.assignment || item;
+          return a.is_active === true || a.is_active === 1;
+        })
+        .map((item: any) => {
+          const a = item.assignment || item;
+          const r = item.routine || {};
+          
+          // Si es el día de hoy, preferimos la data de todayRes que es más completa
+          if (a.day_of_week === todayDay && todayData && a.routine_id === todayData.routine_id) {
+             return todayData;
+          }
+
+          const exercises = a.exercises || r.exercises || allExercises.filter((ex: any) => 
             ex.routine_id === a.routine_id && ex.day_of_week === a.day_of_week
           );
+
           return { 
             ...a, 
-            routine: { name: a.routine_name, description: a.routine_description },
+            routine: { 
+              ...r,
+              name: a.routine_name || r.name, 
+              description: a.routine_description || r.description,
+              exercises
+            },
             exercises 
           };
         })
@@ -146,15 +164,6 @@ export default function MyRoutines() {
               <span className="text-teal-600 font-bold text-sm">{selectedAssignment.routine?.name || selectedAssignment.routine_name}</span>
             )}
           </div>
-          {selectedAssignment && (
-            <button 
-              onClick={() => navigate(`/home/routines/${selectedAssignment.routine_id}`)}
-              className="bg-teal-50 text-teal-700 px-4 py-2 rounded-xl text-xs font-black uppercase border border-teal-100 hover:bg-teal-600 hover:text-white transition-all flex items-center gap-2"
-            >
-               <span>Ver Rutina Completa</span>
-               <FontAwesomeIcon icon={faArrowRight} />
-            </button>
-          )}
         </div>
 
         {selectedAssignment ? (
