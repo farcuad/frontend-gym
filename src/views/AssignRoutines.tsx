@@ -30,15 +30,40 @@ export default function AssignRoutines() {
         apiService.getRoutines()
       ]);
       
-      const clientsData = clientsRes.data.clients || [];
+      const clientsResponse = clientsRes.data;
+      let clientsData: any[] = [];
+      
+      if (clientsResponse && clientsResponse.clients && Array.isArray(clientsResponse.clients)) {
+        clientsData = clientsResponse.clients;
+      } else if (Array.isArray(clientsResponse)) {
+        clientsData = clientsResponse;
+      }
+      
+      const routinesResponse = routinesRes.data;
+      let routinesData: any[] = [];
+      
+      if (routinesResponse && routinesResponse.routines && Array.isArray(routinesResponse.routines)) {
+        routinesData = routinesResponse.routines;
+      } else if (Array.isArray(routinesResponse)) {
+        routinesData = routinesResponse;
+      }
       
       const clientsWithRoutines = await Promise.all(
         clientsData.map(async (client: any) => {
           try {
             const routinesRes = await apiService.getClientRoutines(client.id);
-            const assignments = routinesRes.data.assignments || [];
-            const activeExercises = routinesRes.data.activeExercises || [];
+            const apiResponse = routinesRes.data;
             
+            let assignments: any[] = [];
+            let activeExercises: any[] = [];
+            
+            if (apiResponse && apiResponse.assignments && Array.isArray(apiResponse.assignments)) {
+              assignments = apiResponse.assignments;
+              activeExercises = apiResponse.activeExercises || [];
+            } else if (Array.isArray(apiResponse)) {
+              assignments = apiResponse;
+            }
+
             const activeAssignments = assignments
               .filter((item: any) => {
                 const a = item.assignment || item;
@@ -70,7 +95,7 @@ export default function AssignRoutines() {
       );
 
       setClients(clientsWithRoutines);
-      setRoutines(routinesRes.data.routines || []);
+      setRoutines(routinesData);
     } catch (error) {
       notify.error("Error al cargar datos");
     } finally {

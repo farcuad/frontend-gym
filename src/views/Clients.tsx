@@ -17,8 +17,16 @@ const EmployeeTable: React.FC = () => {
   const fetchClients = async () => {
     try {
       const response = await apiService.getClients();
-      const apiResponse = response.data.clients;
-      setEmployees(apiResponse);
+      const apiResponse = response.data;
+      
+      if (apiResponse && apiResponse.clients && Array.isArray(apiResponse.clients)) {
+        setEmployees(apiResponse.clients);
+      } else if (Array.isArray(apiResponse)) {
+        setEmployees(apiResponse);
+      } else {
+        console.error("Formato de respuesta inesperado:", apiResponse);
+        setEmployees([]);
+      }
     } catch (error) {
       console.error("Error al obtener clientes:", error);
       setEmployees([]);

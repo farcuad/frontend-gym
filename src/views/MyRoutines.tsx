@@ -16,7 +16,16 @@ export default function MyRoutines() {
     try {
       // 1. Get all assignments for the client
       const weekRes = await apiService.getClientRoutines(user.id);
-      const allAssignments = weekRes.data.assignments || [];
+      const apiResponse = weekRes.data;
+      
+      let allAssignments: any[] = [];
+      if (apiResponse && apiResponse.assignments && Array.isArray(apiResponse.assignments)) {
+        allAssignments = apiResponse.assignments;
+      } else if (Array.isArray(apiResponse)) {
+        allAssignments = apiResponse;
+      } else if (apiResponse && apiResponse.data && Array.isArray(apiResponse.data)) {
+        allAssignments = apiResponse.data;
+      }
       
       // Filter only active assignments
       const activeAssignments = allAssignments.filter((a: any) => a.is_active === true || a.is_active === 1);

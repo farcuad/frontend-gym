@@ -25,7 +25,16 @@ export default function Users() {
     setLoading(true);
     try {
       const response = await apiService.getUsers();
-      setUsers(response.data.users);
+      const apiResponse = response.data;
+
+      if (apiResponse && apiResponse.users && Array.isArray(apiResponse.users)) {
+        setUsers(apiResponse.users);
+      } else if (Array.isArray(apiResponse)) {
+        setUsers(apiResponse);
+      } else {
+        console.error("Formato de respuesta inesperado:", apiResponse);
+        setUsers([]);
+      }
     } catch (error) {
       notify.error("Error al cargar usuarios");
     } finally {

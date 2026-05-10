@@ -21,11 +21,13 @@ const PaymentHistoryView: React.FC = () => {
     try {
       setLoading(true);
       const response = await apiService.getHistoryPagos();
-      const apiResponse = response.data.payment;
+      const apiResponse = response.data;
       
       let data: PaymentHistory[] = [];
 
-      if (apiResponse && Array.isArray(apiResponse)) {
+      if (apiResponse && apiResponse.payment && Array.isArray(apiResponse.payment)) {
+        data = apiResponse.payment;
+      } else if (Array.isArray(apiResponse)) {
         data = apiResponse;
       } else {
         console.error("Unexpected response format:", apiResponse);
