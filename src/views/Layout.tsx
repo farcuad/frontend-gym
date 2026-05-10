@@ -17,6 +17,7 @@ import Users from "./Users";
 import MyRoutines from "./MyRoutines";
 import AssignRoutines from "./AssignRoutines";
 import { PlanRoute } from "../context/PlanRoute";
+import DownloadApp from "./DownloadApp";
 
 
 function App() {
@@ -59,6 +60,10 @@ function App() {
 
             {/* Esta ruta es LIBRE para que el usuario pueda pagar */}
             <Route path="plans-gym" element={<PlansGym />} />
+            
+            {/* Ruta para descargar la App */}
+            <Route path="download-app" element={
+              <PlanRoute minPlan="Medium"><DownloadApp /></PlanRoute>} />
           </Routes>
         </main>
       </div>

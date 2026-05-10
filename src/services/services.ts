@@ -1,7 +1,8 @@
 import axios, { AxiosError } from "axios";
 import { notify } from "../utils/toast";
 
-const API_URL = "https://u2.rsgve.com/gym-api/api";
+const API_URL = import.meta.env.VITE_API_URL;
+const INTERNAL_KEY = import.meta.env.VITE_INTERNAL_SERVICE_API_KEY;
 
 export interface Clients {
   id?: number;
@@ -234,6 +235,13 @@ export const apiService = {
   getUsers: () => api.get(`/users`),
   updateUsers: (id: string | number, data: createUsers) => api.put(`/users/${id}`, data),
   deleteUsers: (id: string | number) => api.delete(`/users/${id}`),
+
+  // Configuración de la App
+  getAppConfig: () => api.get("/app-config", {
+    headers: {
+      "x-client-key": INTERNAL_KEY
+    }
+  }),
 };
 
 // API de tasa de cambio
