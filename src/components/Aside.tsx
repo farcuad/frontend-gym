@@ -187,7 +187,7 @@ function Aside({ isOpen, onClose }: AsideProps) {
                     <div className="bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
                       <FontAwesomeIcon icon={faMobileAlt} className="text-lg" />
                     </div>
-                    <h3 className="font-bold text-lg mb-1">Obtener App</h3>
+                    <h3 className="font-bold text-lg mb-1">Obtener App </h3>
                     <p className="text-teal-50 text-xs opacity-80">Entrena desde tu móvil con FitLog</p>
                   </div>
                 </div>
