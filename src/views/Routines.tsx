@@ -27,15 +27,7 @@ export default function Routines() {
     setLoading(true);
     try {
       const response = await apiService.getRoutines();
-      const apiResponse = response.data;
-      
-      if (apiResponse && apiResponse.routines && Array.isArray(apiResponse.routines)) {
-        setRoutines(apiResponse.routines);
-      } else if (Array.isArray(apiResponse)) {
-        setRoutines(apiResponse);
-      } else {
-        setRoutines([]);
-      }
+      setRoutines(response.data.routines || []);
     } catch (error) {
       notify.error("Error al cargar rutinas");
     } finally {

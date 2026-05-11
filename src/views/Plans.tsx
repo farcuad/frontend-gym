@@ -24,16 +24,9 @@ const PlanTable: React.FC = () => {
   const fetchPlans = async () => {
     try {
       const response = await apiService.getPlans();
-      const apiResponse = response.data;
+      const apiResponse = response.data.plans;
 
-      if (apiResponse && apiResponse.plans && Array.isArray(apiResponse.plans)) {
-        setPlans(apiResponse.plans);
-      } else if (Array.isArray(apiResponse)) {
-        setPlans(apiResponse);
-      } else {
-        console.error("Formato de respuesta inesperado:", apiResponse);
-        setPlans([]);
-      }
+      setPlans(apiResponse);
     } catch (error) {
       console.error("Error al obtener planes:", error);
       setPlans([]);

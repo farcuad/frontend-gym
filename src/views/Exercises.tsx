@@ -26,15 +26,7 @@ export default function Exercises() {
     setLoading(true);
     try {
       const response = await apiService.getExercises();
-      const apiResponse = response.data;
-      
-      if (apiResponse && apiResponse.exercises && Array.isArray(apiResponse.exercises)) {
-        setExercises(apiResponse.exercises);
-      } else if (Array.isArray(apiResponse)) {
-        setExercises(apiResponse);
-      } else {
-        setExercises([]);
-      }
+      setExercises(response.data.exercises || []);
     } catch (error) {
       notify.error("Error al cargar ejercicios");
     } finally {
