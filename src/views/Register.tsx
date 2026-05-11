@@ -41,7 +41,8 @@ function AuthRegister() {
     setLoading(true);
 
     try {
-      const response = await Axios.post("https://u2.rsgve.com/gym-api/api/register", formData);
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await Axios.post(`${API_URL}/register`, formData);
       if (response.status === 200) {
         notify.success("¡Tu Gimnasio ha sido registrado correctamente!");
         navigate("/login");

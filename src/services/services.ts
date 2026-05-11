@@ -245,7 +245,7 @@ export const apiService = {
 };
 
 // API de tasa de cambio
-const EXCHANGE_API_URL = "https://u2.rsgve.com/gym-api/api/bcv-rate";
+const EXCHANGE_API_URL = `${API_URL}/bcv-rate`;
 
 export const getExchangeRate = async (): Promise<number> => {
   const response = await axios.get(EXCHANGE_API_URL);

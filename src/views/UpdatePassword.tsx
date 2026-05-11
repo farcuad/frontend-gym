@@ -30,7 +30,8 @@ function AuthUpdatePassword() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await Axios.post("https://u2.rsgve.com/gym-api/api/admin/password", formData);
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await Axios.post(`${API_URL}/admin/password`, formData);
       if (response.status === 200) {
         notify.success("Tu contraseña ha sido cambiada correctamente");
         navigate("/login");

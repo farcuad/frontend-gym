@@ -45,8 +45,9 @@ function VerifyMembership() {
 
     const verify = async () => {
       try {
+        const API_URL = import.meta.env.VITE_API_URL;
         const response = await Axios.get<VerifyResponse>(
-          `https://u2.rsgve.com/gym-api/api/memberships/${id}/verify`
+          `${API_URL}/memberships/${id}/verify`
         );
 
         if (response.data.valid) {

@@ -32,9 +32,10 @@ function AuthLogin() {
     e.preventDefault();
     setLoading(true);
     try {
+      const API_URL = import.meta.env.VITE_API_URL;
       const endpoint = loginMode === "admin" 
-        ? "https://u2.rsgve.com/gym-api/api/login" 
-        : "https://u2.rsgve.com/gym-api/api/client/login";
+        ? `${API_URL}/login` 
+        : `${API_URL}/client/login`;
       
       const payload = loginMode === "admin" 
         ? { email: formData.email, password: formData.password }

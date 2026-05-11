@@ -26,7 +26,8 @@ function AuthRecoverPassword() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await Axios.post("https://u2.rsgve.com/gym-api/api/admin/forgot-password", formData);
+      const API_URL = import.meta.env.VITE_API_URL;
+      const response = await Axios.post(`${API_URL}/admin/forgot-password`, formData);
       if (response.status === 200) {
         notify.success("Revisa tu correo para recuperar tu contraseña");
         navigate("/update-password");
