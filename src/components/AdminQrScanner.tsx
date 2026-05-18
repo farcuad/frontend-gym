@@ -56,7 +56,7 @@ const AdminQrScanner: React.FC = () => {
         await handleVerify(decodedText);
       },
       (error) => {
-        // Ignoramos errores de lectura continua para no llenar la consola ni bloquear
+        throw error;
       }
     );
   };
