@@ -7,7 +7,8 @@ import {
   faDumbbell,
   faMoneyCheckDollar,
   faChartLine,
-  faMobileAlt
+  faMobileAlt,
+  faQrcode
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -93,6 +94,11 @@ function Aside({ isOpen, onClose }: AsideProps) {
                   <NavLink to="/home/history-pagos" className={navLinkClass}>
                     <FontAwesomeIcon icon={faMoneyCheckDollar} className="w-5" />
                     <span>Historial de Pagos</span>
+                  </NavLink>
+
+                  <NavLink to="/home/qr-scanner" className={navLinkClass}>
+                    <FontAwesomeIcon icon={faQrcode} className="w-5" />
+                    <span>Escáner de Acceso</span>
                   </NavLink>
                 </>
               )}

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDumbbell, faClock, faRedo, faCheckCircle, faCalendarAlt, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService} from "../services/services";
+import ClientQrView from "../components/ClientQrView";
 
 export default function MyRoutines() {
   const [activeRoutine, setActiveRoutine] = useState<any>(null);
@@ -133,6 +134,9 @@ export default function MyRoutines() {
         </div>
         <FontAwesomeIcon icon={faDumbbell} className="absolute -right-12 -bottom-12 text-white/5 text-[240px] rotate-12" />
       </div>
+
+      {/* Pase QR de Acceso Flotante */}
+      <ClientQrView />
 
       {/* Selector Semanal */}
       <div className="bg-white rounded-4xl p-4 shadow-xl shadow-gray-200/50 border border-gray-50">

@@ -18,6 +18,7 @@ import MyRoutines from "./MyRoutines";
 import AssignRoutines from "./AssignRoutines";
 import { PlanRoute } from "../context/PlanRoute";
 import DownloadApp from "./DownloadApp";
+import AdminQrScanner from "../components/AdminQrScanner";
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
             <Route path="plans" element={<PlanRoute minPlan="trial"><Plans /></PlanRoute>} />
             <Route path="memberships" element={<PlanRoute minPlan="trial"><Memberships /></PlanRoute>} />
             <Route path="history-pagos" element={<PlanRoute minPlan="trial"><HistoryPagos /></PlanRoute>} />
+            <Route path="qr-scanner" element={<PlanRoute minPlan="trial"><AdminQrScanner /></PlanRoute>} />
             <Route path="bots" element={<PlanRoute minPlan="trial"><Bots /></PlanRoute>} />
 
             {/* Nuevas Rutas de Entrenamiento y Administración */}

@@ -96,6 +96,9 @@ function Header({ onToggleAside }: HeaderProps) {
     }
   }, []);
 
+  const role = localStorage.getItem("role") || "admin";
+  const isClient = role === "client";
+
   return (
     <header className="h-16 bg-white border-b flex items-center justify-between px-6 shadow-sm">
       {/* Left */}
@@ -114,6 +117,7 @@ function Header({ onToggleAside }: HeaderProps) {
       {/* Right */}
       <div className="flex items-center gap-4 relative">
         {/* Botón Campana */}
+        {!isClient && (
         <div className="relative" ref={notificationRef}>
           <button 
             onClick={() => {
@@ -180,6 +184,7 @@ function Header({ onToggleAside }: HeaderProps) {
   </div>
 )}
         </div>
+        )}
 
         {/* User Dropdown */}
         <div className="relative" ref={userDropdownRef}>

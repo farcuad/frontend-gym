@@ -237,6 +237,11 @@ export const apiService = {
   updateUsers: (id: string | number, data: createUsers) => api.put(`/users/${id}`, data),
   deleteUsers: (id: string | number) => api.delete(`/users/${id}`),
 
+  // Accesos por QR
+  generateAccessTicket: () => api.get<{ token: string }>("/access/generate-ticket"),
+  verifyQrTicket: (token: string, membershipId: string | number = 0) => 
+    api.post(`/memberships/${membershipId}/verify-qr`, { token }),
+
   // Configuración de la App
   getAppConfig: () => api.get("/app-config", {
     headers: {
