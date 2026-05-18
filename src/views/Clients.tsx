@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrashAlt, faUser, faIdCard, faPhone, faTimes, faSpinner, faPlus, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTrashAlt, faUser, faIdCard, faPhone, faSpinner, faPlus, faSearch, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { Clients } from "../services/services";
 import { notify, useConfirm } from "../utils/toast";
 import axios from "axios";
+import { ClientForm } from "../components/ClientForm";
 
 const EmployeeTable: React.FC = () => {
   const [employees, setEmployees] = useState<Clients[]>([]);
@@ -19,7 +20,6 @@ const EmployeeTable: React.FC = () => {
       const response = await apiService.getClients();
       const apiResponse = response.data.clients;
       setEmployees(apiResponse);
-
     } catch (error) {
       console.error("Error al obtener clientes:", error);
       setEmployees([]);
@@ -35,67 +35,10 @@ const EmployeeTable: React.FC = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editClient, setEditClient] = useState<Clients | null>(null);
-  const [newClient, setNewClient] = useState<Clients>({
-    name: "",
-    cedula: "",
-    phone: "",
-    fecha_ingreso: new Date().toISOString().split("T")[0],
-    activo: true,
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleCreateClient = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await apiService.createClient(newClient);
-      notify.success("Cliente creado correctamente.");
-      setIsCreateOpen(false);
-      setNewClient({
-        name: "",
-        cedula: "",
-        phone: "",
-        fecha_ingreso: new Date().toISOString().split("T")[0],
-        activo: true,
-      });
-      fetchClients();
-    } catch (error) {
-      console.error("Error al crear cliente:", error);
-      notify.error("No se pudo crear el cliente.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const handleEdit = (client: Clients) => {
     setEditClient({ ...client });
     setIsEditOpen(true);
-  };
-
-  const handleUpdateClient = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!editClient || !editClient.id) return;
-
-    setIsSubmitting(true);
-    try {
-      const { name, cedula, phone, fecha_ingreso, activo } = editClient;
-      await apiService.updateClient(editClient.id, {
-        name,
-        cedula,
-        phone,
-        fecha_ingreso,
-        activo,
-      });
-      notify.success("Cliente actualizado correctamente.");
-      setIsEditOpen(false);
-      fetchClients();
-    } catch (error) {
-      notify.error("No se pudo actualizar el cliente.");
-      console.log(error);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const handleDelete = async (client: Clients) => {
@@ -124,16 +67,11 @@ const EmployeeTable: React.FC = () => {
   const filteredEmployees = employees.filter((person) =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  // Calculamos los índices para "rebanar" el array
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
-  // Estos son los clientes que se verán en la tabla/tarjetas actualmente
   const currentEmployees = filteredEmployees.slice(indexOfFirstItem, indexOfLastItem);
-
   const totalPages = Math.ceil(filteredEmployees.length / itemsPerPage);
 
-  // Resetear a la página 1 cuando se busca algo
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -179,6 +117,8 @@ const EmployeeTable: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* VISTA ESCRITORIO (TABLA) */}
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full bg-white text-sm">
           <thead>
@@ -202,14 +142,16 @@ const EmployeeTable: React.FC = () => {
           </thead>
 
           {currentEmployees.length === 0 && (
-            <tr>
-              <td
-                colSpan={5}
-                className="px-6 py-4 text-center font-bold text-gray-400 uppercase tracking-wider text-[13px]"
-              >
-                No hay clientes disponibles
-              </td>
-            </tr>
+            <tbody>
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-4 text-center font-bold text-gray-400 uppercase tracking-wider text-[13px]"
+                >
+                  No hay clientes disponibles
+                </td>
+              </tr>
+            </tbody>
           )}
 
           {currentEmployees.length > 0 && (
@@ -223,7 +165,16 @@ const EmployeeTable: React.FC = () => {
                     {indexOfFirstItem + index + 1}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-bold text-gray-800">{person.name}</div>
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-600 font-bold overflow-hidden shadow-inner shrink-0">
+                        {person.image ? (
+                          <img src={person.image} alt={person.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <FontAwesomeIcon icon={faUser} className="text-teal-500 text-sm" />
+                        )}
+                      </div>
+                      <div className="font-bold text-gray-800">{person.name}</div>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium">
                     {person.cedula}
@@ -271,18 +222,27 @@ const EmployeeTable: React.FC = () => {
             key={person.id}
             className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4"
           >
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-bold text-gray-800 text-lg">
-                  {person.name}
-                </h3>
-                <p className="text-sm text-gray-500 font-medium flex items-center gap-2 mt-1">
-                  <FontAwesomeIcon
-                    icon={faIdCard}
-                    className="text-xs text-teal-500"
-                  />
-                  {person.cedula}
-                </p>
+            <div className="flex justify-between items-start gap-3">
+              <div className="flex items-center gap-3">
+                <div className="size-12 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-600 font-bold overflow-hidden shadow-inner shrink-0">
+                  {person.image ? (
+                    <img src={person.image} alt={person.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <FontAwesomeIcon icon={faUser} className="text-teal-500 text-lg" />
+                  )}
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-800 text-lg">
+                    {person.name}
+                  </h3>
+                  <p className="text-sm text-gray-500 font-medium flex items-center gap-2 mt-1">
+                    <FontAwesomeIcon
+                      icon={faIdCard}
+                      className="text-xs text-teal-500"
+                    />
+                    {person.cedula}
+                  </p>
+                </div>
               </div>
               <div className="flex gap-2">
                 <button
@@ -313,12 +273,12 @@ const EmployeeTable: React.FC = () => {
                   {person.phone}
                 </span>
               </div>
-              {/* Puedes agregar más campos aquí si es necesario */}
             </div>
           </div>
         ))}
       </div>
-      {/* 3. COMPONENTE DE PAGINACIÓN (Lógica de visibilidad integrada) */}
+
+      {/* COMPONENTE DE PAGINACIÓN */}
       {filteredEmployees.length > itemsPerPage && (
         <div className="flex items-center justify-between mt-6 px-2 py-4 border-t border-gray-50">
           <div className="flex flex-1 justify-between sm:hidden">
@@ -382,199 +342,23 @@ const EmployeeTable: React.FC = () => {
         </div>
       )}
 
-      {/* MODAL DE EDICIÓN MEJORADO */}
-      {isEditOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsEditOpen(false)}
-              className="cursor-pointer absolute top-6 right-6 size-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
+      {/* MODALES REUTILIZABLES CON CLIENTFORM */}
+      <ClientForm
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        onSuccess={fetchClients}
+        clientToEdit={null}
+      />
 
-            <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-800 leading-tight">
-                Editar Cliente
-              </h3>
-              <p className="text-sm text-gray-400 font-medium">
-                Actualiza la información del miembro.
-              </p>
-            </div>
-
-            <form className="space-y-5" onSubmit={handleUpdateClient}>
-              <div className="space-y-4">
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faUser} className="text-xs" />
-                  </span>
-                  <input
-                    type="text"
-                    value={editClient?.name || ""}
-                    onChange={(e) =>
-                      setEditClient({ ...editClient!, name: e.target.value })
-                    }
-                    placeholder="Nombre completo"
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
-                  />
-                </div>
-
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faIdCard} className="text-xs" />
-                  </span>
-                  <input
-                    type="text"
-                    value={editClient?.cedula || ""}
-                    onChange={(e) =>
-                      setEditClient({ ...editClient!, cedula: e.target.value })
-                    }
-                    placeholder="Cédula"
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
-                  />
-                </div>
-
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faPhone} className="text-xs" />
-                  </span>
-                  <input
-                    type="text"
-                    value={editClient?.phone || ""}
-                    onChange={(e) =>
-                      setEditClient({ ...editClient!, phone: e.target.value })
-                    }
-                    placeholder="Teléfono"
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-8">
-                <button
-                  type="button"
-                  onClick={() => setIsEditOpen(false)}
-                  className="cursor-pointer flex-1 px-4 py-3.5 text-sm font-bold text-gray-500 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="cursor-pointer flex-1 px-4 py-3.5 text-sm font-bold text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all"
-                >
-                  {isSubmitting ? (
-                    <FontAwesomeIcon
-                      icon={faSpinner}
-                      className="animate-spin"
-                    />
-                  ) : (
-                    "Actualizar Cliente"
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL DE CREACIÓN */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setIsCreateOpen(false)}
-              className="cursor-pointer absolute top-6 right-6 size-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-
-            <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-800 leading-tight">
-                Nuevo Cliente
-              </h3>
-              <p className="text-sm text-gray-400 font-medium">
-                Ingresa los datos del nuevo miembro.
-              </p>
-            </div>
-
-            <form className="space-y-5" onSubmit={handleCreateClient}>
-              <div className="space-y-4">
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faUser} className="text-xs" />
-                  </span>
-                  <input
-                    type="text"
-                    value={newClient.name}
-                    onChange={(e) =>
-                      setNewClient({ ...newClient, name: e.target.value })
-                    }
-                    placeholder="Nombre completo"
-                    required
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
-                  />
-                </div>
-
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faIdCard} className="text-xs" />
-                  </span>
-                  <input
-                    type="text"
-                    value={newClient.cedula || ""}
-                    onChange={(e) =>
-                      setNewClient({ ...newClient, cedula: e.target.value })
-                    }
-                    placeholder="Cédula"
-                    required
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
-                  />
-                </div>
-
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
-                    <FontAwesomeIcon icon={faPhone} className="text-xs" />
-                  </span>
-                  <input
-                    type="text"
-                    value={newClient.phone || ""}
-                    onChange={(e) =>
-                      setNewClient({ ...newClient, phone: e.target.value })
-                    }
-                    placeholder="Teléfono"
-                    required
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-3 mt-8">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateOpen(false)}
-                  className="cursor-pointer flex-1 px-4 py-3.5 text-sm font-bold text-gray-500 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="cursor-pointer flex-1 px-4 py-3.5 text-sm font-bold text-white bg-teal-600 rounded-2xl hover:bg-teal-700 shadow-lg shadow-teal-100 transition-all disabled:opacity-50"
-                >
-                  {isSubmitting ? (
-                    <FontAwesomeIcon
-                      icon={faSpinner}
-                      className="animate-spin"
-                    />
-                  ) : (
-                    "Crear Cliente"
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <ClientForm
+        isOpen={isEditOpen}
+        onClose={() => {
+          setIsEditOpen(false);
+          setEditClient(null);
+        }}
+        onSuccess={fetchClients}
+        clientToEdit={editClient}
+      />
     </div>
   );
 };

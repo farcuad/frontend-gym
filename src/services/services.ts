@@ -11,6 +11,7 @@ export interface Clients {
   phone: string;
   fecha_ingreso: string;
   activo: boolean;
+  image?: string;
   active_routine?: {
     id: number;
     name: string;
