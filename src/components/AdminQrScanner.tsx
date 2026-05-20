@@ -24,13 +24,14 @@ const AdminQrScanner: React.FC = () => {
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const scannerContainerId = "qr-reader";
 
-  const initScanner = () => {
+  const initScanner = async () => {
     if (scannerRef.current) {
       try {
-        scannerRef.current.clear();
+        await scannerRef.current.clear();
       } catch (e) {
-        console.error(e);
+        console.error("Error clearing scanner:", e);
       }
+      scannerRef.current = null;
     }
 
     setResult(null);
@@ -50,13 +51,20 @@ const AdminQrScanner: React.FC = () => {
 
     scanner.render(
       async (decodedText) => {
+        // Stop scanning and turn off camera when a QR code is detected
         if (scannerRef.current) {
-          scannerRef.current.pause(true);
+          try {
+            await scannerRef.current.clear();
+          } catch (e) {
+            console.error("Error clearing scanner on detection:", e);
+          }
+          scannerRef.current = null;
         }
         await handleVerify(decodedText);
       },
       (error) => {
-        throw error;
+        // Log errors as warnings to avoid cluttering the console
+        console.warn("Scanner error:", error);
       }
     );
   };
@@ -64,8 +72,64 @@ const AdminQrScanner: React.FC = () => {
   useEffect(() => {
     initScanner();
 
+    // Función para traducir el selector de cámaras y sus opciones
+    const translateCameraSelect = () => {
+      const container = document.getElementById(scannerContainerId);
+      if (!container) return;
+
+      // 1. Traducir el label/span
+      const spans = container.querySelectorAll("span, label, p, div");
+      spans.forEach((el) => {
+        if (el.childNodes.length === 1 && el.childNodes[0].nodeType === Node.TEXT_NODE) {
+          const text = el.textContent || "";
+          if (text.includes("Select Camera")) {
+            el.textContent = text.replace("Select Camera", "Seleccionar cámara");
+          }
+        }
+      });
+
+      // 2. Traducir las opciones del select
+      const selects = container.querySelectorAll("select");
+      selects.forEach((select) => {
+        let cameraIndex = 1;
+        Array.from(select.options).forEach((option) => {
+          const text = option.text;
+          
+          if (text.startsWith("Opción ")) {
+            return;
+          }
+          
+          if (!option.value || text.toLowerCase().includes("select camera") || text.toLowerCase().includes("seleccionar")) {
+            if (text.startsWith("Seleccionar cámara")) {
+              return;
+            }
+            const match = text.match(/\((\d+)\)/);
+            const count = match ? ` (${match[1]})` : "";
+            option.text = `Seleccionar cámara${count}`;
+            return;
+          }
+          
+          const isFront = text.toLowerCase().includes("facing front") || text.toLowerCase().includes("front");
+          const isBack = text.toLowerCase().includes("facing back") || text.toLowerCase().includes("back");
+          
+          let cameraName = "";
+          if (isFront) {
+            cameraName = "Cámara frontal";
+          } else if (isBack) {
+            cameraName = "Cámara trasera";
+          } else {
+            cameraName = text;
+          }
+          
+          option.text = `Opción ${cameraIndex}: ${cameraName}`;
+          cameraIndex++;
+        });
+      });
+    };
+
     // Traductor en tiempo real para html5-qrcode
     const observer = new MutationObserver((mutations) => {
+      translateCameraSelect();
       mutations.forEach((mutation) => {
         if (mutation.type === "childList" || mutation.type === "characterData") {
           const container = document.getElementById(scannerContainerId);
@@ -95,6 +159,22 @@ const AdminQrScanner: React.FC = () => {
               }
               if (text.includes("Camera access is only supported")) {
                 text = "La cámara requiere conexión segura (HTTPS o localhost).";
+                changed = true;
+              }
+              if (text.includes("NotFoundError") || text.includes("Requested device not found")) {
+                text = "📷 No se detectó ninguna cámara en este dispositivo";
+                changed = true;
+              }
+              if (text.includes("NotAllowedError") || text.includes("Permission denied") || text.includes("Permission dismissed")) {
+                text = "🔒 Permiso de cámara denegado. Habilítalo en la configuración del navegador.";
+                changed = true;
+              }
+              if (text.includes("NotReadableError") || text.includes("Could not start video source")) {
+                text = "⚠️ La cámara está siendo usada por otra aplicación. Ciérrala e intenta de nuevo.";
+                changed = true;
+              }
+              if (text.includes("OverconstrainedError")) {
+                text = "⚠️ La cámara seleccionada no está disponible.";
                 changed = true;
               }
 
@@ -146,11 +226,7 @@ const AdminQrScanner: React.FC = () => {
 
   const handleNextScan = () => {
     setResult(null);
-    if (scannerRef.current) {
-      scannerRef.current.resume();
-    } else {
-      initScanner();
-    }
+    initScanner();
   };
 
   return (
@@ -294,11 +370,21 @@ const AdminQrScanner: React.FC = () => {
           color: #0d9488 !important; /* teal-600 */
           font-weight: 600;
         }
-        #qr-reader__dashboard_section_csr span.text-red-500, #qr-reader span[style*="color: red"] {
-          color: #ef4444 !important; /* red-500 para errores de cámara */
-          font-weight: bold;
-          display: block;
-          margin-top: 10px;
+        #qr-reader__dashboard_section_csr span.text-red-500,
+        #qr-reader span[style*="color: red"],
+        #qr-reader__dashboard_section_csr span[style*="color"] {
+          color: #f59e0b !important; /* amber-500 — amigable */
+          font-weight: 600 !important;
+          display: block !important;
+          margin: 16px auto !important;
+          padding: 14px 20px !important;
+          background: rgba(245, 158, 11, 0.08) !important;
+          border: 1px solid rgba(245, 158, 11, 0.25) !important;
+          border-radius: 14px !important;
+          font-size: 14px !important;
+          line-height: 1.5 !important;
+          text-align: center !important;
+          max-width: 360px !important;
         }
         #qr-reader__dashboard_section_swaplink {
           display: none !important;
