@@ -247,7 +247,7 @@ const AdminQrScanner: React.FC = () => {
         </div>
 
         {/* Scanner Area */}
-        <div className="p-6 flex flex-col items-center justify-center relative min-h-[400px] bg-gray-50 dark:bg-gray-900/50">
+        <div className="p-6 flex flex-col items-center justify-center relative bg-gray-50 dark:bg-gray-900/50">
           
           <div 
             className={`w-full transition-all duration-300 ${result || loading ? 'opacity-0 absolute pointer-events-none' : 'opacity-100'}`}
@@ -266,7 +266,7 @@ const AdminQrScanner: React.FC = () => {
 
           {/* Resultado: Éxito o Error */}
           {result && !loading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-white dark:bg-gray-900 z-20 animate-in fade-in zoom-in duration-300">
+            <div className="flex flex-col items-center justify-center p-6 bg-white dark:bg-gray-900 z-20 animate-in fade-in zoom-in duration-300 w-full overflow-y-auto">
               
               {result.valid ? (
                 // ✅ Modal de Éxito
