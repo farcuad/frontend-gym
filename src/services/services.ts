@@ -115,6 +115,26 @@ export interface createUsers {
   role: "trainer" | "cashier";
 }
 
+export type CategoriaGasto =
+  | 'maquinaria'
+  | 'mantenimiento'
+  | 'servicios'
+  | 'insumos'
+  | 'nomina'
+  | 'marketing'
+  | 'otros'
+  | 'alquiler';
+
+
+export interface Gastos {
+  id: number;
+  titulo: string;
+  descripcion: string;
+  monto: number;
+  categoria: CategoriaGasto;
+  fecha_gasto: string;
+}
+
 // 1. Crear instancia de Axios con la URL base
 const api = axios.create({
   baseURL: API_URL,
@@ -196,8 +216,12 @@ export const apiService = {
 
   getHistoryPagos: () => api.get("/payments"),
   // Asistente Ia
-  sendMessageIA: (preguntaUsuario: string) =>
-    api.post("/analizar", { preguntaUsuario }),
+  sendMessageIA: (preguntaUsuario: string) => api.post("/analizar", { preguntaUsuario }),
+
+  createFastos: (data: Gastos) => api.post("/gastos", data),
+  getGastos: () => api.get("/gastos"),
+  updateGastos: (id: string | number, data: Gastos) => api.put(`/gastos/${id}`, data),
+  deleteGastos: (id: string | number) => api.delete(`/gastos/${id}`),
 
   getAlertClient: () => api.get("/clients/alert"),
 
@@ -205,6 +229,7 @@ export const apiService = {
 
   getMetricsPayments: () => api.get("/metrics/payments"),
   getMetricsClients: () => api.get("/metrics/new-clients"),
+  getMetricsFinanzas: () => api.get("/metrics/finanzas"),
 
   getConfigBots: () => api.get<{ bots: BotConfig[] }>("/bot-config"),
   createConfigBots: (data: BotConfig) => api.post(`/bot-config`, data),
@@ -239,7 +264,7 @@ export const apiService = {
 
   // Accesos por QR
   generateAccessTicket: () => api.get<{ token: string }>("/access/generate-ticket"),
-  verifyQrTicket: (token: string, membershipId: string | number = 0) => 
+  verifyQrTicket: (token: string, membershipId: string | number = 0) =>
     api.post(`/memberships/${membershipId}/verify-qr`, { token }),
 
   // Configuración de la App
