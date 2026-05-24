@@ -167,7 +167,6 @@ const Metrics = () => {
 
       // Gastos list
       const resData = gastosRes.data.result;
-      console.log(resData)
       setGastos(resData);
 
       const now = new Date();
@@ -263,7 +262,8 @@ const Metrics = () => {
       return;
     }
 
-    const gastoData: Omit<Gastos, 'id'> = {
+    const gastoData: Gastos = {
+      id: editingGasto?.id || 0,
       titulo: titulo.trim(),
       descripcion: descripcion.trim(),
       monto: parseFloat(monto),
@@ -274,10 +274,10 @@ const Metrics = () => {
     setIsSubmitting(true);
     try {
       if (editingGasto && editingGasto.id) {
-        await apiService.updateGastos(editingGasto.id, { ...gastoData, id: editingGasto.id });
+        await apiService.updateGastos(editingGasto.id, gastoData);
         notify.success("Gastos actualizado correctamente.");
       } else {
-        await apiService.createFastos(gastoData as any);
+        await apiService.createFastos(gastoData);
         notify.success("Gastos registrado correctamente.");
       }
       setModalOpen(false);
