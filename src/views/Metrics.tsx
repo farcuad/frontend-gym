@@ -366,7 +366,7 @@ const Metrics = () => {
         </div>
 
         {/* Card 2: Gastos Registrados */}
-        <div className="bg-gradient-to-br from-rose-500 to-rose-600 p-5 rounded-3xl shadow-md shadow-rose-200 flex flex-col justify-between text-white min-h-[140px] relative overflow-hidden group">
+        <div className="bg-linear-to-br from-rose-500 to-rose-600 p-5 rounded-3xl shadow-md shadow-rose-200 flex flex-col justify-between text-white min-h-[140px] relative overflow-hidden group">
           <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-28 h-28">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
@@ -395,8 +395,8 @@ const Metrics = () => {
 
         {/* Card 3: Balance Neto */}
         <div className={`p-5 rounded-3xl shadow-md flex flex-col justify-between text-white min-h-[140px] relative overflow-hidden group transition-colors duration-300 ${finanzas && finanzas.balance.balance_neto >= 0
-          ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-emerald-200'
-          : 'bg-gradient-to-br from-red-500 to-red-600 shadow-red-200'
+          ? 'bg-linear-to-br from-emerald-500 to-emerald-600 shadow-emerald-200'
+          : 'bg-linear-to-br from-red-500 to-red-600 shadow-red-200'
           }`}>
           <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-28 h-28">
@@ -680,7 +680,7 @@ const Metrics = () => {
                 {donutSegments.map((seg) => (
                   <div key={seg.categoria} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: seg.hex }} />
+                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: seg.hex }} />
                       <span className="font-semibold text-gray-700">{seg.label}</span>
                     </div>
                     <div className="flex items-center gap-3">
