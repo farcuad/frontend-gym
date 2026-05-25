@@ -206,13 +206,6 @@ const Metrics = () => {
 
   const confirm = useConfirm();
 
-  // Estado para calcular valor del mes
-  const [stats, setStats] = useState({
-    totalMonth: 0,
-    newClientsThisMonth: 0,
-    payPercent: 0,
-    cliPercent: 0,
-  });
 
   const handleFilterChange = (filter: 'hoy' | 'semana' | 'mes' | 'anterior' | 'custom') => {
     setActiveFilter(filter);
@@ -264,33 +257,6 @@ const Metrics = () => {
       const resData = gastosRes.data.result;
       setGastos(resData);
 
-      const now = new Date();
-      const currentMonthStr = now.toISOString().slice(0, 7);
-      const lastMonthDate = new Date(now.getFullYear(), now.getUTCMonth() - 1, 1);
-      const lastMonthStr = lastMonthDate.toISOString().slice(0, 7);
-
-      const currPay = paymentsArray.find((m: any) => m.month === currentMonthStr);
-      const prevPay = paymentsArray.find((m: any) => m.month === lastMonthStr);
-      const currCli = clientsArray.find((m: any) => m.month === currentMonthStr);
-      const prevCli = clientsArray.find((m: any) => m.month === lastMonthStr);
-
-      const calculatePercentage = (current: number, previous: number) => {
-        if (!previous || previous === 0) return current > 0 ? 100 : 0;
-        return ((current - previous) / previous) * 100;
-      };
-
-      setStats({
-        totalMonth: currPay ? parseFloat(currPay.total_usd) : 0,
-        newClientsThisMonth: currCli ? currCli.total_clients : 0,
-        payPercent: calculatePercentage(
-          currPay ? parseFloat(currPay.total_usd) : 0,
-          prevPay ? parseFloat(prevPay.total_usd) : 0
-        ),
-        cliPercent: calculatePercentage(
-          currCli ? currCli.total_clients : 0,
-          prevCli ? prevCli.total_clients : 0
-        ),
-      });
     } catch (error) {
       console.error("Error al cargar métricas:", error);
     } finally {
