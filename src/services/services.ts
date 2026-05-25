@@ -229,7 +229,8 @@ export const apiService = {
 
   getMetricsPayments: () => api.get("/metrics/payments"),
   getMetricsClients: () => api.get("/metrics/new-clients"),
-  getMetricsFinanzas: () => api.get("/metrics/finanzas"),
+  getMetricsFinanzas: (startDate?: string, endDate?: string) =>
+    api.get("/metrics/finanzas", { params: { startDate, endDate } }),
 
   getConfigBots: () => api.get<{ bots: BotConfig[] }>("/bot-config"),
   createConfigBots: (data: BotConfig) => api.post(`/bot-config`, data),

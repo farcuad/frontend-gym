@@ -1,11 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "glass-alert-animation/styles";
 @plugin "@tailwindcss/typography";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  
+
   --color-primary: #00a884;
   --color-brand-bg: #f8fafc;
 }
@@ -21,5 +20,5 @@ body {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-variant-numeric: tabular-nums; 
+  font-variant-numeric: tabular-nums;
 }

@@ -33,11 +33,12 @@ type CategoriaItem = {
 };
 
 type FinanzasMetric = {
-  filtros: { anio: number; mes: number };
+  filtros: { startDate?: string; endDate?: string; anio?: number; mes?: number };
   balance: {
     total_ingresos: number;
     total_gastos: number;
     balance_neto: number;
+    new_clients: number;
   };
   porCategoria: CategoriaItem[];
 };
@@ -115,6 +116,66 @@ const formatFecha = (dateString: string) => {
   return `${day}/${month}/${year}`;
 };
 
+const formatDateToString = (d: Date): string => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const getHoyRange = () => {
+  const today = new Date();
+  const str = formatDateToString(today);
+  return { startDate: str, endDate: str };
+};
+
+const getEstaSemanaRange = () => {
+  const today = new Date();
+  const start = new Date();
+  start.setDate(today.getDate() - 7);
+  return {
+    startDate: formatDateToString(start),
+    endDate: formatDateToString(today),
+  };
+};
+
+const getMesActualRange = () => {
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth(), 1);
+  const end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  return {
+    startDate: formatDateToString(start),
+    endDate: formatDateToString(end),
+  };
+};
+
+const getMesAnteriorRange = () => {
+  const today = new Date();
+  const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+  const end = new Date(today.getFullYear(), today.getMonth(), 0);
+  return {
+    startDate: formatDateToString(start),
+    endDate: formatDateToString(end),
+  };
+};
+
+const formatRangeText = (start?: string, end?: string) => {
+  if (!start || !end) return "Seleccionar Rango";
+
+  const formatDate = (dateStr: string) => {
+    const [year, month, day] = dateStr.split("-");
+    const d = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    const monthName = d.toLocaleString("es-ES", { month: "short" }).replace(".", "");
+    return `${parseInt(day)} de ${monthName}`;
+  };
+
+  const startFormatted = formatDate(start);
+  const endFormatted = formatDate(end);
+  const year = start.split("-")[0];
+
+  return `${startFormatted} - ${endFormatted}, ${year}`;
+};
+
 const Metrics = () => {
   const [payments, setPayments] = useState<PaymentMetric[]>([]);
   const [newClients, setNewClients] = useState<ClientMetric[]>([]);
@@ -122,6 +183,13 @@ const Metrics = () => {
   const [finanzas, setFinanzas] = useState<FinanzasMetric | null>(null);
   const [activeTab, setActiveTab] = useState<'graficos' | 'tabla'>('graficos');
   const [modalOpen, setModalOpen] = useState(false);
+
+  // Filtros de fecha reactivos
+  const [activeFilter, setActiveFilter] = useState<'hoy' | 'semana' | 'mes' | 'anterior' | 'custom'>('mes');
+  const [customStartDate, setCustomStartDate] = useState(getTodayString());
+  const [customEndDate, setCustomEndDate] = useState(getTodayString());
+  const [appliedDates, setAppliedDates] = useState<{ startDate?: string; endDate?: string }>(() => getMesActualRange());
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   // Gastos list
   const [gastos, setGastos] = useState<Gastos[]>([]);
@@ -146,12 +214,39 @@ const Metrics = () => {
     cliPercent: 0,
   });
 
-  const fetchData = async () => {
+  const handleFilterChange = (filter: 'hoy' | 'semana' | 'mes' | 'anterior' | 'custom') => {
+    setActiveFilter(filter);
+    setIsPopoverOpen(false);
+    if (filter === 'hoy') {
+      setAppliedDates(getHoyRange());
+    } else if (filter === 'semana') {
+      setAppliedDates(getEstaSemanaRange());
+    } else if (filter === 'mes') {
+      setAppliedDates(getMesActualRange());
+    } else if (filter === 'anterior') {
+      setAppliedDates(getMesAnteriorRange());
+    }
+  };
+
+  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setCustomEndDate(val);
+    if (customStartDate && val) {
+      if (new Date(customStartDate) > new Date(val)) {
+        notify.warning("La fecha de inicio no puede ser posterior a la fecha de fin.");
+        return;
+      }
+      setAppliedDates({ startDate: customStartDate, endDate: val });
+      setIsPopoverOpen(false);
+    }
+  };
+
+  const fetchData = async (startDate?: string, endDate?: string) => {
     try {
       const [payRes, clientRes, finRes, gastosRes] = await Promise.all([
         apiService.getMetricsPayments(),
         apiService.getMetricsClients(),
-        apiService.getMetricsFinanzas(),
+        apiService.getMetricsFinanzas(startDate, endDate),
         apiService.getGastos(),
       ]);
 
@@ -204,8 +299,8 @@ const Metrics = () => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(appliedDates.startDate, appliedDates.endDate);
+  }, [appliedDates]);
 
   const openNewModal = () => {
     setEditingGasto(null);
@@ -238,7 +333,7 @@ const Metrics = () => {
       try {
         await apiService.deleteGastos(id);
         notify.success("Gasto eliminado correctamente.");
-        fetchData();
+        fetchData(appliedDates.startDate, appliedDates.endDate);
       } catch (error) {
         console.error("Error al eliminar gasto:", error);
         notify.error("No se pudo eliminar el gasto.");
@@ -281,7 +376,7 @@ const Metrics = () => {
         notify.success("Gastos registrado correctamente.");
       }
       setModalOpen(false);
-      fetchData();
+      fetchData(appliedDates.startDate, appliedDates.endDate);
     } catch (error) {
       console.error("Error al guardar gasto:", error);
       notify.error("No se pudo guardar el gasto.");
@@ -325,11 +420,111 @@ const Metrics = () => {
   return (
     <div className="space-y-6">
       {/* Título */}
-      <div className="pl-1">
-        <h1 className="text-2xl font-black text-gray-800">Métricas del Gimnasio</h1>
-        <p className="text-sm text-gray-500">Visualiza el crecimiento y rendimiento de tu negocio.</p>
-      </div>
+      <div className="pl-1 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-black text-gray-800">Métricas del Gimnasio</h1>
+          <p className="text-sm text-gray-500">Visualiza el crecimiento y rendimiento de tu negocio.</p>
+        </div>
+        <div className="bg-white p-3 sm:p-4 rounded-3xl border border-gray-100 shadow-sm transition-all duration-300 w-full md:w-auto shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {/* Predefined buttons */}
+            <div className="flex flex-wrap gap-1 rounded-2xl bg-gray-50 p-1 border border-gray-100">
+              <button
+                type="button"
+                onClick={() => handleFilterChange('hoy')}
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-xl transition-all duration-200 cursor-pointer ${activeFilter === 'hoy'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
+                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100/50'
+                  }`}
+              >
+                Hoy
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFilterChange('semana')}
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-xl transition-all duration-200 cursor-pointer ${activeFilter === 'semana'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
+                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100/50'
+                  }`}
+              >
+                Semana
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFilterChange('mes')}
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-xl transition-all duration-200 cursor-pointer ${activeFilter === 'mes'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
+                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100/50'
+                  }`}
+              >
+                Mes Actual
+              </button>
+              <button
+                type="button"
+                onClick={() => handleFilterChange('anterior')}
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-xl transition-all duration-200 cursor-pointer ${activeFilter === 'anterior'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
+                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100/50'
+                  }`}
+              >
+                Mes Anterior
+              </button>
+            </div>
 
+            {/* Custom Popover Date Range Picker */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveFilter('custom');
+                  setIsPopoverOpen(!isPopoverOpen);
+                }}
+                className={`w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-2xl transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border ${activeFilter === 'custom'
+                  ? 'bg-yellow-400 text-gray-900 border-yellow-400 shadow-md shadow-yellow-100 font-bold'
+                  : 'bg-white text-gray-500 border-gray-100 hover:text-gray-800 hover:bg-gray-50'
+                  }`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 sm:w-4 sm:h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                </svg>
+                <span>{formatRangeText(appliedDates.startDate, appliedDates.endDate)}</span>
+              </button>
+
+              {isPopoverOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40 bg-transparent cursor-default"
+                    onClick={() => setIsPopoverOpen(false)}
+                  />
+                  <div className="absolute right-0 mt-2 z-50 bg-white p-4 rounded-3xl border border-gray-100 shadow-xl w-72 space-y-3 animate-fadeIn">
+                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-wider">Seleccionar Período</h3>
+                    <div className="space-y-2">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider ml-1">Desde</label>
+                        <input
+                          type="date"
+                          value={customStartDate}
+                          onChange={(e) => setCustomStartDate(e.target.value)}
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider ml-1">Hasta</label>
+                        <input
+                          type="date"
+                          value={customEndDate}
+                          onChange={handleEndDateChange}
+                          className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
       {/* ============================= */}
       {/* FILA DE 4 CARDS KPI           */}
       {/* ============================= */}
@@ -352,14 +547,14 @@ const Metrics = () => {
           </div>
           <div>
             <h3 className="text-2xl lg:text-3xl font-black tracking-tight mt-2">
-              ${stats.totalMonth.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ${(finanzas?.balance.total_ingresos ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </h3>
             <div className="flex items-center gap-1.5 mt-2">
-              <span className={`text-[11px] px-2 py-0.5 rounded-md font-bold ${stats.payPercent >= 0 ? 'bg-white/20' : 'bg-red-400/40'}`}>
-                {stats.payPercent >= 0 ? '↑' : '↓'} {Math.abs(stats.payPercent).toFixed(1)}%
+              <span className={`text-[11px] px-2 py-0.5 rounded-md font-bold ${(finanzas?.balance?.total_gastos ?? 0) >= 0 ? 'bg-white/20' : 'bg-red-400/40'}`}>
+                {(finanzas?.balance?.total_gastos ?? 0) >= 0 ? '↑' : '↓'} {(finanzas?.balance?.total_gastos ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
               <p className="text-blue-100/70 text-[10px] font-bold uppercase tracking-wider">
-                {stats.payPercent >= 0 ? 'en ganancias' : 'de caída'}
+                {(finanzas?.balance?.total_gastos ?? 0) >= 0 ? 'en ganancias' : 'de caída'}
               </p>
             </div>
           </div>
@@ -444,11 +639,11 @@ const Metrics = () => {
           </div>
           <div>
             <h3 className="text-2xl lg:text-3xl font-black tracking-tight mt-2">
-              {stats.newClientsThisMonth}
+              {finanzas?.balance.new_clients ?? 0}
             </h3>
             <div className="flex items-center gap-1.5 mt-2">
-              <span className={`text-[11px] px-2 py-0.5 rounded-md font-bold ${stats.cliPercent >= 0 ? 'bg-white/20' : 'bg-red-400/40'}`}>
-                {stats.cliPercent >= 0 ? '↑' : '↓'} {Math.abs(stats.cliPercent).toFixed(1)}%
+              <span className={`text-[11px] px-2 py-0.5 rounded-md font-bold ${(finanzas?.balance.new_clients ?? 0) >= 0 ? 'bg-white/20' : 'bg-red-400/40'}`}>
+                {(finanzas?.balance.new_clients ?? 0) >= 0 ? '↑' : '↓'} {Math.abs((finanzas?.balance.new_clients ?? 0)).toFixed(1)}%
               </span>
               <p className="text-emerald-100/70 text-[10px] font-bold uppercase tracking-wider">En clientes</p>
             </div>
