@@ -17,7 +17,7 @@ import Users from "./Users";
 import MyRoutines from "./MyRoutines";
 import AssignRoutines from "./AssignRoutines";
 import { PlanRoute } from "../context/PlanRoute";
-import DownloadApp from "./DownloadApp";
+// import DownloadApp from "./DownloadApp";
 import AdminQrScanner from "../components/AdminQrScanner";
 
 
@@ -51,7 +51,7 @@ function App() {
             <Route path="routines/:id" element={<PlanRoute minPlan="Premium"><RoutineDetail /></PlanRoute>} />
             <Route path="users" element={<PlanRoute minPlan="Premium"><Users /></PlanRoute>} />
             <Route path="assign-routines" element={<PlanRoute minPlan="Premium"><AssignRoutines /></PlanRoute>} />
-            
+
             {/* Ruta para Clientes */}
             <Route path="my-routines" element={<MyRoutines />} />
 
@@ -62,10 +62,10 @@ function App() {
 
             {/* Esta ruta es LIBRE para que el usuario pueda pagar */}
             <Route path="plans-gym" element={<PlansGym />} />
-            
-            {/* Ruta para descargar la App */}
+
+            {/* Ruta para descargar la App
             <Route path="download-app" element={
-              <PlanRoute minPlan="Medium"><DownloadApp /></PlanRoute>} />
+              <PlanRoute minPlan="Medium"><DownloadApp /></PlanRoute>} /> */}
           </Routes>
         </main>
       </div>

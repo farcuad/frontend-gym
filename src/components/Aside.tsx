@@ -1,13 +1,12 @@
-import { NavLink, useNavigate } from "react-router-dom";
-import { 
-  faUsers, 
-  faLayerGroup, 
-  faIdCard, 
-  faRobot, 
+import { NavLink } from "react-router-dom";
+import {
+  faUsers,
+  faLayerGroup,
+  faIdCard,
+  faRobot,
   faDumbbell,
   faMoneyCheckDollar,
   faChartLine,
-  faMobileAlt,
   faQrcode
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,14 +17,13 @@ interface AsideProps {
 }
 
 function Aside({ isOpen, onClose }: AsideProps) {
-  const navigate = useNavigate();
   const role = localStorage.getItem("role") || "admin"; // Fallback a admin si no hay rol
 
   // Clase para los links (activos vs inactivos)
   const navLinkClass = ({ isActive }: { isActive: boolean }) => `
     flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200
-    ${isActive 
-      ? "bg-teal-600 text-white shadow-md shadow-teal-200" 
+    ${isActive
+      ? "bg-teal-600 text-white shadow-md shadow-teal-200"
       : "text-gray-500 hover:bg-teal-50 hover:text-teal-600"}
   `;
 
@@ -68,7 +66,7 @@ function Aside({ isOpen, onClose }: AsideProps) {
           {!isClient ? (
             <>
               <p className="text-[11px] uppercase tracking-wider text-gray-400 px-4 mb-2">Menú Principal</p>
-              
+
               {isCashier && (
                 <>
                   <NavLink to="/home/metrics" className={navLinkClass}>
@@ -151,53 +149,17 @@ function Aside({ isOpen, onClose }: AsideProps) {
                 </div>
               )}
 
-              {/* Botón para obtener la App */}
-              <div className="mt-6 px-4 pb-4">
-                <div 
-                  onClick={() => navigate('/home/download-app')}
-                  className="bg-linear-to-br from-teal-500 to-teal-700 rounded-2xl p-5 text-white shadow-lg shadow-teal-200 cursor-pointer group hover:scale-[1.02] transition-all duration-300 relative overflow-hidden"
-                >
-                  <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-125 transition-transform duration-500">
-                    <FontAwesomeIcon icon={faMobileAlt} className="text-8xl rotate-12" />
-                  </div>
-                  
-                  <div className="relative z-10">
-                    <div className="bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
-                      <FontAwesomeIcon icon={faMobileAlt} className="text-lg" />
-                    </div>
-                    <h3 className="font-bold text-lg mb-1">Obtener App</h3>
-                    <p className="text-teal-50 text-xs opacity-80">Entrena desde tu móvil con FitLog</p>
-                  </div>
-                </div>
-              </div>
+
             </>
           ) : (
             <>
               <p className="text-[11px] uppercase tracking-wider text-gray-400 px-4 mb-2">Mi Portal</p>
-                <NavLink to="/home/my-routines" className={navLinkClass}>
-                  <FontAwesomeIcon icon={faDumbbell} className="w-5" />
-                  <span>Mi Horario Semanal</span>
-                </NavLink>
+              <NavLink to="/home/my-routines" className={navLinkClass}>
+                <FontAwesomeIcon icon={faDumbbell} className="w-5" />
+                <span>Mi Horario Semanal</span>
+              </NavLink>
 
-              {/* Botón para obtener la App para clientes también */}
-              <div className="mt-6 px-2">
-                <div 
-                  onClick={() => navigate('/home/download-app')}
-                  className="bg-linear-to-br from-teal-500 to-teal-700 rounded-2xl p-5 text-white shadow-lg shadow-teal-200 cursor-pointer group hover:scale-[1.02] transition-all duration-300 relative overflow-hidden"
-                >
-                  <div className="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-125 transition-transform duration-500">
-                    <FontAwesomeIcon icon={faMobileAlt} className="text-8xl rotate-12" />
-                  </div>
-                  
-                  <div className="relative z-10">
-                    <div className="bg-white/20 w-10 h-10 rounded-xl flex items-center justify-center mb-3">
-                      <FontAwesomeIcon icon={faMobileAlt} className="text-lg" />
-                    </div>
-                    <h3 className="font-bold text-lg mb-1">Obtener App </h3>
-                    <p className="text-teal-50 text-xs opacity-80">Entrena desde tu móvil con FitLog</p>
-                  </div>
-                </div>
-              </div>
+
             </>
           )}
         </nav>
