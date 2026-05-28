@@ -33,19 +33,19 @@ function AuthLogin() {
     setLoading(true);
     try {
       const API_URL = import.meta.env.VITE_API_URL;
-      const endpoint = loginMode === "admin" 
-        ? `${API_URL}/login` 
+      const endpoint = loginMode === "admin"
+        ? `${API_URL}/login`
         : `${API_URL}/client/login`;
-      
-      const payload = loginMode === "admin" 
+
+      const payload = loginMode === "admin"
         ? { email: formData.email, password: formData.password }
         : { cedula: formData.cedula };
 
       const response = await Axios.post(endpoint, payload);
-      
+
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
-        
+
         // Manejar datos de usuario/cliente
         const userData = response.data.user || response.data.client;
         if (userData) {
@@ -53,15 +53,15 @@ function AuthLogin() {
           // Guardar el rol explícitamente para el Aside
           const role = loginMode === "client" ? "client" : userData.role;
           localStorage.setItem("role", role);
-          
+
           if (userData.plan_type) {
             localStorage.setItem("plan_type", userData.plan_type);
           }
         }
-        
+
         notify.success("¡Bienvenido de nuevo!");
         setLoading(false);
-        
+
         // Redirección basada en rol
         if (loginMode === "client") {
           navigate("/home/my-routines");
@@ -77,7 +77,7 @@ function AuthLogin() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-900">
       {/* SECCIÓN IZQUIERDA: Banner Visual */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-teal-700 items-center justify-center overflow-hidden">
         <div className="relative z-10 text-center px-10">
@@ -95,27 +95,27 @@ function AuthLogin() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12">
         <div className="w-full max-w-md space-y-8">
           <div className="text-left">
-            <h2 className="text-4xl font-bold tracking-tight text-gray-900">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-100">
               {loginMode === "admin" ? "Iniciar Sesión" : "Acceso Clientes"}
             </h2>
-            <p className="mt-2 text-gray-500">
-              {loginMode === "admin" 
+            <p className="mt-2 text-gray-400">
+              {loginMode === "admin"
                 ? "Bienvenido de nuevo. Por favor, ingresa tus datos de acceso administrativo."
                 : "Ingresa tu número de cédula para ver tus rutinas y progreso."}
             </p>
           </div>
 
           {/* TABS DE LOGIN */}
-          <div className="flex p-1 bg-gray-200 rounded-xl">
+          <div className="flex p-1 bg-gray-700 rounded-xl">
             <button
               onClick={() => setLoginMode("admin")}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${loginMode === "admin" ? "bg-white text-teal-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${loginMode === "admin" ? "bg-gray-800 text-teal-600 shadow-sm" : "text-gray-400 hover:text-gray-300"}`}
             >
               Personal
             </button>
             <button
               onClick={() => setLoginMode("client")}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${loginMode === "client" ? "bg-white text-teal-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${loginMode === "client" ? "bg-gray-800 text-teal-600 shadow-sm" : "text-gray-400 hover:text-gray-300"}`}
             >
               Clientes
             </button>
@@ -127,7 +127,7 @@ function AuthLogin() {
                 <>
                   {/* Input Email */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-300 mb-2">
                       Correo Electrónico
                     </label>
                     <div className="relative group">
@@ -137,7 +137,7 @@ function AuthLogin() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 pr-12 text-gray-900 transition-all focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
+                        className="block w-full rounded-xl border  border-gray-700 bg-gray-700 px-4 py-3.5 pr-12 text-white transition-all focus:bg-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
                         placeholder="nombre@gimnasio.com"
                       />
                       <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400 group-focus-within:text-teal-500 transition-colors">
@@ -148,7 +148,7 @@ function AuthLogin() {
 
                   {/* Input Contraseña */}
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    <label className="block text-sm font-semibold text-gray-300 mb-2">
                       Contraseña
                     </label>
                     <div className="relative group">
@@ -158,7 +158,7 @@ function AuthLogin() {
                         value={formData.password}
                         onChange={handleChange}
                         required
-                        className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 pr-12 text-gray-900 transition-all focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
+                        className="block w-full rounded-xl border  border-gray-700 bg-gray-700 px-4 py-3.5 pr-12 text-white transition-all focus:bg-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
                         placeholder="••••••••"
                       />
                       <button
@@ -174,7 +174,7 @@ function AuthLogin() {
               ) : (
                 /* MODO CLIENTE: Input Cédula */
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-semibold text-gray-300 mb-2">
                     Cédula de Identidad
                   </label>
                   <div className="relative group">
@@ -184,7 +184,7 @@ function AuthLogin() {
                       value={formData.cedula}
                       onChange={handleChange}
                       required
-                      className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3.5 pr-12 text-gray-900 transition-all focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
+                      className="block w-full rounded-xl border  border-gray-700 bg-gray-900 px-4 py-3.5 pr-12 text-gray-100 transition-all focus:bg-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
                       placeholder="V-12345678"
                     />
                     <div className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400 group-focus-within:text-teal-500 transition-colors">
@@ -197,8 +197,8 @@ function AuthLogin() {
 
             {loginMode === "admin" && (
               <div className="flex items-center justify-between">
-                <NavLink 
-                  to="/recover-password" 
+                <NavLink
+                  to="/recover-password"
                   className="text-sm font-medium text-teal-600 hover:text-teal-700 transition-colors"
                 >
                   ¿Olvidaste tu contraseña?
@@ -209,7 +209,7 @@ function AuthLogin() {
             <button
               disabled={loading}
               type="submit"
-              className="w-full flex justify-center items-center rounded-xl bg-gray-900 px-4 py-4 text-sm font-bold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all shadow-lg active:scale-[0.98]"
+              className="w-full flex justify-center items-center rounded-xl bg-gray-700 px-4 py-4 text-sm font-bold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all shadow-lg active:scale-[0.98]"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -223,7 +223,7 @@ function AuthLogin() {
             </button>
 
             {loginMode === "admin" && (
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-sm text-gray-400">
                 ¿No tienes una cuenta?{" "}
                 <NavLink to="/register" className="font-bold text-teal-600 hover:underline">
                   Regístrate ahora

@@ -73,7 +73,7 @@ const GymPricingPage: React.FC = () => {
   const primaryColor = "#009689";
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 sm:py-20 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-900 py-12 sm:py-20 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 right-0 -translate-y-12 translate-x-12 w-64 h-64 rounded-full opacity-10" style={{ backgroundColor: primaryColor }}></div>
       <div className="absolute bottom-0 left-0 translate-y-12 -translate-x-12 w-96 h-96 rounded-full opacity-5" style={{ backgroundColor: primaryColor }}></div>
@@ -82,12 +82,12 @@ const GymPricingPage: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12 sm:mb-20 space-y-4">
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-gray-100">
             Elige tu plan <br />
             <span style={{ color: primaryColor }}>y transforma tu gym</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto px-4">
             Gestiona clientes, pagos y membresías con tecnología de vanguardia
           </p>
         </div>
@@ -102,7 +102,7 @@ const GymPricingPage: React.FC = () => {
               onMouseEnter={() => setHoveredPlan(index)}
               onMouseLeave={() => setHoveredPlan(null)}
             >
-              <div className={`h-full bg-white rounded-2xl shadow-lg overflow-hidden border-t-4 ${plan.popular ? 'shadow-2xl' : 'border-gray-100'
+              <div className={`h-full bg-gray-800 rounded-2xl shadow-lg overflow-hidden border-t-4 ${plan.popular ? 'shadow-2xl' : 'border-gray-800'
                 }`} style={{ borderTopColor: primaryColor }}>
 
                 {plan.popular && (
@@ -124,13 +124,13 @@ const GymPricingPage: React.FC = () => {
                     </div>
 
                     <div>
-                      <h3 className="text-2xl font-bold text-gray-800 mb-1">{plan.name}</h3>
-                      <p className="text-gray-500 text-sm leading-relaxed">{plan.description}</p>
+                      <h3 className="text-2xl font-bold text-gray-200 mb-1">{plan.name}</h3>
+                      <p className="text-gray-400 text-sm leading-relaxed">{plan.description}</p>
                     </div>
 
                     <div className="flex items-baseline gap-1">
-                      <span className="text-5xl font-bold text-gray-900">${plan.price}</span>
-                      <span className="text-gray-500 font-medium">/mes</span>
+                      <span className="text-5xl font-bold text-gray-100">${plan.price}</span>
+                      <span className="text-gray-400 font-medium">/mes</span>
                     </div>
                   </div>
 
@@ -143,7 +143,7 @@ const GymPricingPage: React.FC = () => {
                         >
                           <FontAwesomeIcon icon={faCheck} className="text-[10px]" strokeWidth={3} />
                         </div>
-                        <span className={`text-sm ${feature.highlight ? 'text-gray-900 font-semibold' : 'text-gray-600'}`}>
+                        <span className={`text-sm ${feature.highlight ? 'text-gray-100 font-semibold' : 'text-gray-400'}`}>
                           {feature.text}
                         </span>
                       </li>
@@ -174,16 +174,16 @@ const GymPricingPage: React.FC = () => {
             { icon: faClock, text: "Disponible 24/7" },
             { icon: faArrowTrendUp, text: "Reportes en tiempo real" }
           ].map((feature, index) => (
-            <div key={index} className="flex items-center gap-4 p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div key={index} className="flex items-center gap-4 p-6 bg-gray-800 rounded-xl shadow-sm border border-gray-700 border-gray-800 hover:shadow-md transition-shadow">
               <div style={{ color: primaryColor }}>
                 <FontAwesomeIcon icon={feature.icon} className="size-5" />
               </div>
-              <span className="text-gray-700 font-medium text-sm">{feature.text}</span>
+              <span className="text-gray-300 font-medium text-sm">{feature.text}</span>
             </div>
           ))}
         </div>
 
-        <div className="text-center mt-16 text-gray-600">
+        <div className="text-center mt-16 text-gray-400">
           <p>
             ¿No estás seguro qué plan elegir?{' '}
             <button className="font-bold border-b-2 hover:opacity-80 transition-opacity" style={{ color: primaryColor, borderColor: `${primaryColor}40` }}>

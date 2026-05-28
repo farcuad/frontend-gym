@@ -2,11 +2,13 @@
 @import "glass-alert-animation/styles";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --color-primary: #00a884;
-  --color-brand-bg: #f8fafc;
+  --color-brand-bg: #111827;
 }
 
 body {
@@ -14,11 +16,40 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   background-color: var(--color-brand-bg);
-  color: #1e293b;
+  color: #f3f4f6;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
+}
+
+/* ─── Inputs / Selects globales en modo oscuro ─────────────────────────── */
+input,
+textarea,
+select {
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+  border-color: #374151 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6b7280 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  background-color: #1f2937 !important;
+  outline-color: #0d9488;
+}
+
+/* Recharts tooltip label color */
+.recharts-tooltip-label {
+  color: #94a3b8 !important;
+}
+.recharts-tooltip-item {
+  color: #f3f4f6 !important;
 }

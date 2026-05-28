@@ -78,7 +78,7 @@ const EmployeeTable: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-4 bg-white rounded-3xl border border-gray-100 shadow-sm flex items-center justify-center min-h-50">
+      <div className="p-4 bg-gray-800 rounded-3xl border  border-gray-800 shadow-sm flex items-center justify-center min-h-50">
         <FontAwesomeIcon
           icon={faSpinner}
           className="text-teal-600 text-2xl animate-spin"
@@ -88,9 +88,9 @@ const EmployeeTable: React.FC = () => {
   }
 
   return (
-    <div className="p-4 bg-white rounded-3xl border border-gray-100 shadow-sm">
+    <div className="p-4 bg-gray-800 rounded-3xl border  border-gray-800 shadow-sm">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
+        <h2 className="text-xl font-black text-gray-200 flex items-center gap-2">
           <FontAwesomeIcon icon={faUser} className="text-teal-600" />
           Clientes
         </h2>
@@ -104,12 +104,12 @@ const EmployeeTable: React.FC = () => {
               placeholder="Buscar por nombre..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full sm:w-64 pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
+              className="w-full sm:w-64 pl-9 pr-4 py-2.5 bg-gray-900 border border-gray-700  rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
             />
           </div>
           <button
             onClick={() => setIsCreateOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 shrink-0 cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-200 shrink-0 cursor-pointer"
           >
             <FontAwesomeIcon icon={faPlus} />
             <span className="hidden sm:inline">Nuevo Cliente</span>
@@ -120,16 +120,16 @@ const EmployeeTable: React.FC = () => {
 
       {/* VISTA ESCRITORIO (TABLA) */}
       <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full bg-white text-sm">
+        <table className="min-w-full bg-gray-800 text-sm">
           <thead>
-            <tr className="border-b border-gray-100">
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-wider text-[11px]">
+            <tr className="border-b border-gray-700">
+              <th className="px-6 py-4 text-left font-bold text-gray-300 uppercase tracking-wider text-[11px]">
                 #
               </th>
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-wider text-[11px]">
+              <th className="px-6 py-4 text-left font-bold text-gray-300 uppercase tracking-wider text-[11px]">
                 Nombre
               </th>
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-wider text-[11px]">
+              <th className="px-6 py-4 text-left font-bold text-gray-300 uppercase tracking-wider text-[11px]">
                 Cédula
               </th>
               <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-wider text-[11px]">
@@ -155,45 +155,45 @@ const EmployeeTable: React.FC = () => {
           )}
 
           {currentEmployees.length > 0 && (
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y">
               {currentEmployees.map((person, index) => (
                 <tr
                   key={person.id}
-                  className="hover:bg-teal-50/30 transition-colors group"
+                  className="hover:bg-teal-900/30/30 transition-colors group"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500 font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-400 font-medium">
                     {indexOfFirstItem + index + 1}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-600 font-bold overflow-hidden shadow-inner shrink-0">
+                      <div className="size-10 rounded-xl bg-teal-900/30 border border-teal-200 flex items-center justify-center text-teal-600 font-bold overflow-hidden shadow-inner shrink-0">
                         {person.image ? (
                           <img src={person.image} alt={person.name} className="w-full h-full object-cover" />
                         ) : (
                           <FontAwesomeIcon icon={faUser} className="text-teal-500 text-sm" />
                         )}
                       </div>
-                      <div className="font-bold text-gray-800">{person.name}</div>
+                      <div className="font-bold text-gray-200">{person.name}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-400 font-medium">
                     {person.cedula}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-600 font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-400 font-medium">
                     {person.phone}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="flex justify-center gap-2">
                       <button
                         onClick={() => handleEdit(person)}
-                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
+                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border  border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
                         title="Editar"
                       >
                         <FontAwesomeIcon icon={faEdit} className="text-xs" />
                       </button>
                       <button
                         onClick={() => handleDelete(person)}
-                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border  border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
                         title="Eliminar"
                       >
                         <FontAwesomeIcon
@@ -220,11 +220,11 @@ const EmployeeTable: React.FC = () => {
         {currentEmployees.map((person) => (
           <div
             key={person.id}
-            className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4"
+            className="bg-gray-800 p-5 rounded-2xl border border-gray-700 shadow-sm flex flex-col gap-4"
           >
             <div className="flex justify-between items-start gap-3">
               <div className="flex items-center gap-3">
-                <div className="size-12 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-600 font-bold overflow-hidden shadow-inner shrink-0">
+                <div className="size-12 rounded-xl bg-teal-900/30 border border-teal-200 flex items-center justify-center text-teal-600 font-bold overflow-hidden shadow-inner shrink-0">
                   {person.image ? (
                     <img src={person.image} alt={person.name} className="w-full h-full object-cover" />
                   ) : (
@@ -232,10 +232,10 @@ const EmployeeTable: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-800 text-lg">
+                  <h3 className="font-bold text-gray-200 text-lg">
                     {person.name}
                   </h3>
-                  <p className="text-sm text-gray-500 font-medium flex items-center gap-2 mt-1">
+                  <p className="text-sm text-gray-400 font-medium flex items-center gap-2 mt-1">
                     <FontAwesomeIcon
                       icon={faIdCard}
                       className="text-xs text-teal-500"
@@ -265,7 +265,7 @@ const EmployeeTable: React.FC = () => {
                 <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
                   Teléfono
                 </span>
-                <span className="text-sm font-medium text-gray-600 flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-400 flex items-center gap-2">
                   <FontAwesomeIcon
                     icon={faPhone}
                     className="text-xs text-teal-500"
@@ -285,33 +285,33 @@ const EmployeeTable: React.FC = () => {
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-xl disabled:opacity-50"
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-900/30 rounded-xl disabled:opacity-50"
             >
               Anterior
             </button>
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-xl disabled:opacity-50"
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-900/30 rounded-xl disabled:opacity-50"
             >
               Siguiente
             </button>
           </div>
 
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <p className="text-sm text-gray-500 font-medium">
-              Mostrando <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> a{" "}
-              <span className="text-gray-800 font-bold">
+            <p className="text-sm text-gray-400 font-medium">
+              Mostrando <span className="text-gray-200 font-bold">{indexOfFirstItem + 1}</span> a{" "}
+              <span className="text-gray-200 font-bold">
                 {Math.min(indexOfLastItem, filteredEmployees.length)}
               </span>{" "}
-              de <span className="text-gray-800 font-bold">{filteredEmployees.length}</span> clientes
+              de <span className="text-gray-200 font-bold">{filteredEmployees.length}</span> clientes
             </p>
-            
+
             <nav className="flex gap-1">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="size-9 flex items-center justify-center rounded-xl border border-gray-100 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+                className="size-9 flex items-center justify-center rounded-xl border border-gray-700  text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
               >
                 <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
               </button>
@@ -320,11 +320,10 @@ const EmployeeTable: React.FC = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`size-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    currentPage === page
-                      ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
-                      : "text-gray-500 hover:bg-gray-100"
-                  }`}
+                  className={`size-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
+                    ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
+                    : "text-gray-400 hover:bg-gray-700"
+                    }`}
                 >
                   {page}
                 </button>
@@ -333,7 +332,7 @@ const EmployeeTable: React.FC = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="size-9 flex items-center justify-center rounded-xl border border-gray-100 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+                className="size-9 flex items-center justify-center rounded-xl border border-gray-700  text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
               >
                 <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
               </button>

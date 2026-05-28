@@ -118,10 +118,10 @@ export default function MyRoutines() {
       <div className="bg-linear-to-br from-teal-800 to-teal-600 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-4">
-            <span className="bg-white/20 backdrop-blur-md text-white px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-white/10">
+            <span className="bg-gray-800/20 backdrop-blur-md text-white px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-gray-700 border-white/10">
               {activeRoutine ? "Plan de Hoy Activo" : "Sin Entrenamiento Hoy"}
             </span>
-            <span className="bg-teal-400/20 text-teal-100 px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-teal-400/20">
+            <span className="bg-teal-400/20 text-teal-100 px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-gray-700 border-teal-400/20">
                {getDayName(new Date().getDay() === 0 ? 7 : new Date().getDay())}
             </span>
           </div>
@@ -139,9 +139,9 @@ export default function MyRoutines() {
       <ClientQrView />
 
       {/* Selector Semanal */}
-      <div className="bg-white rounded-4xl p-4 shadow-xl shadow-gray-200/50 border border-gray-50">
+      <div className="bg-gray-800 rounded-4xl p-4 shadow-xl shadow-gray-200/50 border border-gray-700 border-gray-50">
         <div className="flex items-center justify-between mb-4 px-2">
-          <h2 className="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2">
+          <h2 className="text-sm font-black text-gray-200 uppercase tracking-widest flex items-center gap-2">
             <FontAwesomeIcon icon={faCalendarAlt} className="text-teal-600" />
             Horario Semanal
           </h2>
@@ -157,12 +157,12 @@ export default function MyRoutines() {
                 onClick={() => setSelectedDay(day.id)}
                 className={`
                   flex-1 flex flex-col items-center gap-2 py-4 rounded-2xl transition-all duration-300
-                  ${isSelected ? 'bg-teal-600 text-white shadow-lg shadow-teal-200 scale-105' : 'bg-gray-50 text-gray-400 hover:bg-gray-100'}
+                  ${isSelected ? 'bg-teal-600 text-white shadow-lg shadow-teal-200 scale-105' : 'bg-gray-900 text-gray-400 hover:bg-gray-700'}
                   ${hasRoutine && !isSelected ? 'border-b-4 border-teal-500/30' : 'border-b-4 border-transparent'}
                 `}
               >
                 <span className="text-[10px] font-black uppercase">{day.label}</span>
-                {hasRoutine && <div className={`size-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-teal-50'}`}></div>}
+                {hasRoutine && <div className={`size-1.5 rounded-full ${isSelected ? 'bg-gray-800' : 'bg-teal-900/30'}`}></div>}
               </button>
             );
           })}
@@ -173,7 +173,7 @@ export default function MyRoutines() {
       <div className="space-y-6">
         <div className="flex items-center justify-between px-4">
           <div className="flex flex-col">
-            <h2 className="text-2xl font-black text-gray-800 tracking-tight">Rutina del {getDayName(selectedDay)}</h2>
+            <h2 className="text-2xl font-black text-gray-200 tracking-tight">Rutina del {getDayName(selectedDay)}</h2>
             {selectedAssignment && (
               <span className="text-teal-600 font-bold text-sm">{selectedAssignment.routine?.name || selectedAssignment.routine_name}</span>
             )}
@@ -184,43 +184,43 @@ export default function MyRoutines() {
           <div className="grid gap-4">
             {(selectedAssignment.routine?.exercises || selectedAssignment.exercises)?.length > 0 ? (
               (selectedAssignment.routine?.exercises || selectedAssignment.exercises).map((item: any, idx: number) => (
-                <div key={idx} className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm flex items-center gap-5 hover:border-teal-500/30 transition-all group relative overflow-hidden">
-                  <div className="bg-gray-50 size-14 rounded-2xl text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-all flex items-center justify-center shrink-0">
+                <div key={idx} className="bg-gray-800 rounded-3xl p-5 border border-gray-700 border-gray-800 shadow-sm flex items-center gap-5 hover:border-teal-500/30 transition-all group relative overflow-hidden">
+                  <div className="bg-gray-900 size-14 rounded-2xl text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-all flex items-center justify-center shrink-0">
                     <FontAwesomeIcon icon={faDumbbell} className="size-6" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-black text-gray-800 text-lg mb-1 truncate">
+                    <h3 className="font-black text-gray-200 text-lg mb-1 truncate">
                       {item.exercise_name || item.name || `Ejercicio #${item.exercise_id || item.id}`}
                     </h3>
-                    <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest bg-teal-50 px-2 py-0.5 rounded-md border border-teal-100">
+                    <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest bg-teal-900/30 px-2 py-0.5 rounded-md border border-gray-700 border-teal-100">
                       {item.muscle_group || item.muscle_name || 'General'}
                     </span>
                     <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3">
                       <div className="flex items-center gap-2">
-                        <div className="size-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                        <div className="size-8 rounded-lg bg-gray-900 flex items-center justify-center">
                            <FontAwesomeIcon icon={faRedo} className="text-teal-500 text-xs" />
                         </div>
                         <div className="flex flex-col">
                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Series</span>
-                           <span className="font-black text-gray-700 text-sm">{item.sets}</span>
+                           <span className="font-black text-gray-300 text-sm">{item.sets}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="size-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                        <div className="size-8 rounded-lg bg-gray-900 flex items-center justify-center">
                            <FontAwesomeIcon icon={faCheckCircle} className="text-teal-500 text-xs" />
                         </div>
                         <div className="flex flex-col">
                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Reps</span>
-                           <span className="font-black text-gray-700 text-sm">{item.reps}</span>
+                           <span className="font-black text-gray-300 text-sm">{item.reps}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="size-8 rounded-lg bg-gray-50 flex items-center justify-center">
+                        <div className="size-8 rounded-lg bg-gray-900 flex items-center justify-center">
                            <FontAwesomeIcon icon={faClock} className="text-teal-500 text-xs" />
                         </div>
                         <div className="flex flex-col">
                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">Descanso</span>
-                           <span className="font-black text-gray-700 text-sm">{item.rest_time_seconds}s</span>
+                           <span className="font-black text-gray-300 text-sm">{item.rest_time_seconds}s</span>
                         </div>
                       </div>
                     </div>
@@ -229,17 +229,17 @@ export default function MyRoutines() {
                 </div>
               ))
             ) : (
-              <div className="bg-white rounded-3xl p-12 text-center border border-dashed border-gray-200">
+              <div className="bg-gray-800 rounded-3xl p-12 text-center border border-gray-700 border-dashed border-gray-700">
                  <p className="text-gray-400 font-bold">Esta rutina no tiene ejercicios registrados.</p>
               </div>
             )}
           </div>
         ) : (
-          <div className="text-center py-20 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm mx-4 sm:mx-0">
-            <div className="bg-gray-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+          <div className="text-center py-20 bg-gray-800 rounded-[2.5rem] border border-gray-700 border-gray-800 shadow-sm mx-4 sm:mx-0">
+            <div className="bg-gray-900 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
               <FontAwesomeIcon icon={faCalendarAlt} className="text-gray-200 text-4xl" />
             </div>
-            <h3 className="text-2xl font-black text-gray-800 mb-2">Día sin rutina</h3>
+            <h3 className="text-2xl font-black text-gray-200 mb-2">Día sin rutina</h3>
             <p className="text-gray-400 font-medium max-w-xs mx-auto text-sm px-6">
               No tienes actividades programadas para el <span className="text-teal-600 font-black">{getDayName(selectedDay)}</span>. ¡Aprovecha para descansar!
             </p>

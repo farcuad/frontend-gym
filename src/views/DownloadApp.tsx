@@ -36,19 +36,19 @@ const DownloadApp = () => {
     return (
       <div className="flex flex-col items-center justify-center h-[80vh]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
-        <p className="mt-4 text-gray-600 font-medium">Cargando información...</p>
+        <p className="mt-4 text-gray-400 font-medium">Cargando información...</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+      <div className="bg-gray-800 rounded-3xl shadow-xl overflow-hidden border border-gray-700 border-gray-800">
         <div className="md:flex">
           {/* Left Side: Visual/Mockup */}
           <div className="md:w-1/2 bg-teal-600 p-12 text-white flex flex-col justify-center items-center text-center">
             <div className="relative mb-8">
-               <div className="bg-white/10 backdrop-blur-md p-6 rounded-full">
+               <div className="bg-gray-800/10 backdrop-blur-md p-6 rounded-full">
                   <FontAwesomeIcon icon={faMobileAlt} className="text-7xl" />
                </div>
                <div className="absolute -top-2 -right-2 bg-yellow-400 text-teal-900 text-xs font-bold px-2 py-1 rounded-full animate-bounce">
@@ -70,24 +70,24 @@ const DownloadApp = () => {
               <span className="text-gray-400 text-xs">v{config?.version_label || "1.0.0"}</span>
             </div>
 
-            <h1 className="text-2xl font-bold text-gray-800 mb-6">Instrucciones de Instalación</h1>
+            <h1 className="text-2xl font-bold text-gray-200 mb-6">Instrucciones de Instalación</h1>
             
             <div className="space-y-6 mb-10">
               <div className="flex gap-4">
-                <div className="shrink-0 w-8 h-8 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center font-bold">1</div>
-                <p className="text-gray-600 text-sm">
+                <div className="shrink-0 w-8 h-8 bg-teal-900/30 text-teal-600 rounded-full flex items-center justify-center font-bold">1</div>
+                <p className="text-gray-400 text-sm">
                   Haz clic en el botón <span className="font-semibold">Descargar APK</span> para bajar el instalador a tu dispositivo.
                 </p>
               </div>
               <div className="flex gap-4">
-                <div className="shrink-0 w-8 h-8 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center font-bold">2</div>
-                <p className="text-gray-600 text-sm">
+                <div className="shrink-0 w-8 h-8 bg-teal-900/30 text-teal-600 rounded-full flex items-center justify-center font-bold">2</div>
+                <p className="text-gray-400 text-sm">
                   Si tu teléfono bloquea la instalación, ve a <span className="font-semibold">Ajustes</span> y habilita <span className="font-semibold">"Fuentes desconocidas"</span>.
                 </p>
               </div>
               <div className="flex gap-4">
-                <div className="shrink-0 w-8 h-8 bg-teal-50 text-teal-600 rounded-full flex items-center justify-center font-bold">3</div>
-                <p className="text-gray-600 text-sm">
+                <div className="shrink-0 w-8 h-8 bg-teal-900/30 text-teal-600 rounded-full flex items-center justify-center font-bold">3</div>
+                <p className="text-gray-400 text-sm">
                   Abre el archivo descargado y sigue los pasos para completar la instalación.
                 </p>
               </div>
@@ -104,14 +104,14 @@ const DownloadApp = () => {
                 <span>Descargar APK</span>
               </a>
             ) : (
-              <div className="bg-amber-50 border border-amber-200 p-4 rounded-xl flex gap-3 text-amber-700">
+              <div className="bg-amber-50 border border-gray-700 border-amber-200 p-4 rounded-xl flex gap-3 text-amber-700">
                 <FontAwesomeIcon icon={faInfoCircle} className="mt-1" />
                 <p className="text-sm">El enlace de descarga no está disponible en este momento. Por favor, contacta al administrador.</p>
               </div>
             )}
 
-            <div className="mt-8 pt-8 border-t border-gray-100">
-              <div className="flex items-center gap-2 text-gray-500 text-xs">
+            <div className="mt-8 pt-8 border-t border-gray-800">
+              <div className="flex items-center gap-2 text-gray-400 text-xs">
                 <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
                 <span>Seguro y verificado</span>
               </div>

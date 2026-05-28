@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faMicrophone, 
-  faMicrophoneSlash, 
-  faPaperPlane, 
-  faRobot, 
-  faUserCircle 
+import {
+  faMicrophone,
+  faMicrophoneSlash,
+  faPaperPlane,
+  faRobot,
+  faUserCircle
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import ReactMarkdown from "react-markdown";
@@ -50,7 +50,7 @@ const ChatIA: React.FC = () => {
     try {
       const response = await apiService.sendMessageIA(preguntaUsuario);
       const aiResponse = response.data?.respuesta || response.data?.response || response.data?.message || "No pude procesar tu solicitud.";
-      
+
       setIsTyping(false);
       setMessages((prev) => [
         ...prev,
@@ -83,16 +83,16 @@ const ChatIA: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-130px)] w-full border border-gray-200 rounded-3xl bg-white shadow-2xl overflow-hidden mb-4">
-      
+    <div className="flex flex-col h-[calc(100vh-130px)] w-full border  border-gray-700 rounded-3xl bg-gray-800 shadow-2xl overflow-hidden mb-4">
+
       {/* HEADER DEL CHAT */}
-      <div className="bg-white border-b p-5 flex items-center justify-between shadow-sm">
+      <div className="bg-gray-800 border-b border-gray-700 p-5 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
           <div className="bg-teal-100 text-teal-600 p-2.5 rounded-2xl">
             <FontAwesomeIcon icon={faRobot} className="size-5" />
           </div>
           <div>
-            <h2 className="font-bold text-gray-800 leading-tight">FitLog AI</h2>
+            <h2 className="font-bold text-gray-200 leading-tight">FitLog AI</h2>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               <span className="text-[11px] text-gray-400 font-medium uppercase tracking-wider">En línea</span>
@@ -102,27 +102,26 @@ const ChatIA: React.FC = () => {
       </div>
 
       {/* ÁREA DE MENSAJES */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#f8fafc]">
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#1c3349]">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start animate-in slide-in-from-left-2"}`}>
             <div className={`flex gap-3 max-w-[85%] ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-              
+
               {/* Avatar Icon */}
               <div className={`mt-auto mb-1 text-2xl ${msg.role === "user" ? "text-teal-600" : "text-gray-300"}`}>
                 <FontAwesomeIcon icon={msg.role === "user" ? faUserCircle : faRobot} className="size-6" />
               </div>
 
               {/* Burbuja */}
-              <div className={`p-4 rounded-3xl shadow-sm text-sm leading-relaxed ${
-              msg.role === "user" ? "bg-teal-600 text-white rounded-br-none" : "bg-white text-gray-700 border border-gray-100 rounded-bl-none"
-              }`}>
+              <div className={`p-4 rounded-3xl shadow-sm text-sm leading-relaxed ${msg.role === "user" ? "bg-teal-600 text-white rounded-br-none" : "bg-gray-800 text-gray-300 border  border-gray-800 rounded-bl-none"
+                }`}>
                 {msg.role === "model" ? (
                   <div className="prose prose-sm max-w-none prose-teal prose-p:leading-relaxed prose-li:my-1">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
-                    </div>
-                  ) : (
-                      msg.content
-                  )}
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  </div>
+                ) : (
+                  msg.content
+                )}
               </div>
             </div>
           </div>
@@ -130,7 +129,7 @@ const ChatIA: React.FC = () => {
 
         {isTyping && (
           <div className="flex justify-start animate-pulse">
-            <div className="bg-white border border-gray-100 p-4 rounded-3xl rounded-bl-none flex gap-2 items-center shadow-sm">
+            <div className="bg-gray-800 border  border-gray-800 p-4 rounded-3xl rounded-bl-none flex gap-2 items-center shadow-sm">
               <div className="flex gap-1">
                 <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce"></div>
                 <div className="w-1.5 h-1.5 bg-gray-300 rounded-full animate-bounce [animation-delay:0.2s]"></div>
@@ -144,18 +143,17 @@ const ChatIA: React.FC = () => {
       </div>
 
       {/* INPUT / ÁREA DE ESCRITURA */}
-      <div className="p-4 bg-white border-t border-gray-100">
-        <form 
-          onSubmit={handleSend} 
-          className="flex items-end gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-200 focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-400/20 focus-within:bg-white transition-all outline-none"
+      <div className="p-4 bg-gray-800 border-t border-gray-800">
+        <form
+          onSubmit={handleSend}
+          className="flex items-end gap-3 bg-gray-900 p-2 rounded-2xl border  border-gray-700 focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-400/20 focus-within:bg-gray-800 transition-all outline-none"
         >
-          
+
           <button
             type="button"
             onClick={handleVoiceInput}
-            className={`flex items-center justify-center size-10 rounded-xl transition-all mb-0.5 ${
-              isListening ? "bg-red-500 text-white shadow-lg shadow-red-200" : "text-gray-400 hover:bg-gray-200 hover:text-gray-600"
-            }`}
+            className={`flex items-center justify-center size-10 rounded-xl transition-all mb-0.5 ${isListening ? "bg-red-500 text-white shadow-lg shadow-red-200" : "text-gray-400 hover:bg-gray-700 hover:text-gray-400"
+              }`}
           >
             <FontAwesomeIcon icon={isListening ? faMicrophoneSlash : faMicrophone} />
           </button>
@@ -177,7 +175,7 @@ const ChatIA: React.FC = () => {
               }
             }}
             placeholder={isListening ? "Escuchando tu voz..." : "Escribe un comando o usa el micrófono..."}
-            className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-gray-700 placeholder:text-gray-400 resize-none py-2.5 min-h-[40px] max-h-[150px] outline-none"
+            className="flex-1 bg-transparent border-none focus:ring-0 text-sm text-gray-300 placeholder:text-gray-400 resize-none py-2.5 min-h-[40px] max-h-[150px] outline-none"
             rows={1}
           />
 

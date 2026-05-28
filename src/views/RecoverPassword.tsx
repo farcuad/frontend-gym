@@ -41,7 +41,7 @@ function AuthRecoverPassword() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-900">
       {/* BARRA LATERAL IZQUIERDA (Banner Visual) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-teal-900 items-center justify-center overflow-hidden">
         {/* <img 
@@ -50,7 +50,7 @@ function AuthRecoverPassword() {
           className="absolute inset-0 w-full h-full object-cover opacity-20"
         /> */}
         <div className="relative z-10 text-center px-12">
-          <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-teal-500/10 border border-teal-500/20 backdrop-blur-sm">
+          <div className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-teal-500/10 border border-gray-700  backdrop-blur-sm">
             <FontAwesomeIcon icon={faUnlockAlt} className="text-teal-400 text-3xl" />
           </div>
           <h1 className="text-4xl font-black text-white mb-4 tracking-tight">RECUPERA TU ACCESO</h1>
@@ -58,7 +58,7 @@ function AuthRecoverPassword() {
             No dejes que nada detenga el entrenamiento. Ingresa tu correo y te ayudaremos a volver al panel de control de tu gimnasio.
           </p>
           <div className="mt-8">
-             <FontAwesomeIcon icon={faDumbbell} className="text-white/20 text-6xl" />
+            <FontAwesomeIcon icon={faDumbbell} className="text-white/20 text-6xl" />
           </div>
         </div>
       </div>
@@ -67,24 +67,24 @@ function AuthRecoverPassword() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-16">
         <div className="w-full max-w-md space-y-8">
           {/* Botón Volver */}
-          <NavLink 
-            to="/login" 
-            className="group inline-flex items-center text-sm font-semibold text-gray-500 hover:text-teal-600 transition-colors"
+          <NavLink
+            to="/login"
+            className="group inline-flex items-center text-sm font-semibold text-gray-400 hover:text-teal-600 transition-colors"
           >
             <FontAwesomeIcon icon={faArrowLeft} className="mr-2 group-hover:-translate-x-1 transition-transform" />
             Volver al Login
           </NavLink>
 
           <div className="text-left">
-            <h2 className="text-4xl font-bold tracking-tight text-gray-900">¿Problemas para entrar?</h2>
-            <p className="mt-3 text-gray-500">
+            <h2 className="text-4xl font-bold tracking-tight text-gray-100">¿Problemas para entrar?</h2>
+            <p className="mt-3 text-gray-400">
               Escribe el correo electrónico asociado a tu cuenta de <span className="font-semibold text-teal-600">FitLog</span>.
             </p>
           </div>
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-widest mb-2">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-widest mb-2">
                 Correo Electrónico
               </label>
               <div className="relative group">
@@ -94,7 +94,7 @@ function AuthRecoverPassword() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-4 pr-12 text-gray-900 transition-all focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
+                  className="block w-full rounded-xl border  border-gray-700 bg-gray-700 px-4 py-4 pr-12 text-gray-100 transition-all focus:bg-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
                   placeholder="ejemplo@gym.com"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 group-focus-within:text-teal-500 transition-colors pointer-events-none">
@@ -106,7 +106,7 @@ function AuthRecoverPassword() {
             <button
               disabled={loading}
               type="submit"
-              className="w-full flex justify-center items-center rounded-xl bg-gray-900 px-4 py-4 text-sm font-bold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all shadow-lg active:scale-[0.98] disabled:opacity-70"
+              className="w-full flex justify-center items-center rounded-xl bg-gray-700 px-4 py-4 text-sm font-bold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-all shadow-lg active:scale-[0.98] disabled:opacity-70"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
@@ -121,7 +121,7 @@ function AuthRecoverPassword() {
           </form>
 
           <div className="pt-4 text-center">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-400">
               ¿Ya recordaste tu contraseña?{" "}
               <NavLink to="/login" className="font-bold text-teal-600 hover:underline">
                 Haz clic aquí

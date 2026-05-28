@@ -32,7 +32,7 @@ const BotsView: React.FC = () => {
     try {
       const response = await apiService.getConfigBots();
       const data = response.data.bots;
-      
+
       if (data && !Array.isArray(data)) {
         // Si viene un solo objeto, lo convertimos en array
         setBots([data]);
@@ -101,7 +101,7 @@ const BotsView: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!botUpdate || !botUpdate.id) return;
+    if (!botUpdate || !botUpdate.id) return;
     setIsSubmitting(true);
     try {
       const { whaibot_id, whaibot_key } = botUpdate!;
@@ -122,7 +122,7 @@ const BotsView: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-[200px]">
+      <div className="p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm flex items-center justify-center min-h-[200px]">
         <FontAwesomeIcon
           icon={faSpinner}
           className="text-teal-600 text-2xl animate-spin"
@@ -132,16 +132,16 @@ const BotsView: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
+    <div className="p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 justify-start">
-          <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
+          <h2 className="text-xl font-black text-gray-200 flex items-center gap-2">
             <FontAwesomeIcon icon={faRobot} className="text-teal-600" />
             Configuración de Bots
           </h2>
         </div>
         {bots.length === 0 && (
-            <button
+          <button
             onClick={() => setIsCreateOpen(true)}
             className="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
           >
@@ -153,9 +153,9 @@ const BotsView: React.FC = () => {
       </div>
 
       <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full bg-white text-sm">
+        <table className="min-w-full bg-gray-800 text-sm">
           <thead>
-            <tr className="border-b border-gray-100">
+            <tr className="border-b  border-gray-800">
               <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
                 #
               </th>
@@ -174,61 +174,61 @@ const BotsView: React.FC = () => {
             </tr>
           </thead>
           {bots.length === 0 && (
-              <tbody>
-                <tr>
-                    <td
-                    colSpan={5}
-                    className="px-6 py-10 whitespace-nowrap text-center text-gray-400 font-bold text-[15px]"
-                    >
-                    No hay bots configurados para este gimnasio.
-                    </td>
-                </tr>
-              </tbody>
+            <tbody>
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-10 whitespace-nowrap text-center text-gray-400 font-bold text-[15px]"
+                >
+                  No hay bots configurados para este gimnasio.
+                </td>
+              </tr>
+            </tbody>
           )}
           {bots.length > 0 && (
             <tbody className="divide-y divide-gray-50">
-            {bots.map((bot, index) => (
-              <tr
-                key={bot.id}
-                className="hover:bg-gray-50/50 transition-colors group"
-              >
-                <td className="px-6 py-5 whitespace-nowrap text-gray-400 font-medium">
-                  {index + 1}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap">
-                  <span className="font-bold text-gray-700">{bot.whaibot_id}</span>
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap">
-                  <span className="bg-teal-50 text-teal-700 px-3 py-1 rounded-full font-bold text-xs">
-                    ••••••••{bot.whaibot_key.slice(-4)}
-                  </span>
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-gray-500">
+              {bots.map((bot, index) => (
+                <tr
+                  key={bot.id}
+                  className="hover:bg-gray-900/50 transition-colors group"
+                >
+                  <td className="px-6 py-5 whitespace-nowrap text-gray-400 font-medium">
+                    {index + 1}
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="font-bold text-gray-300">{bot.whaibot_id}</span>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="bg-teal-900/30 text-teal-700 px-3 py-1 rounded-full font-bold text-xs">
+                      ••••••••{bot.whaibot_key.slice(-4)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap text-gray-400">
                     {bot.created_at ? new Date(bot.created_at).toLocaleDateString() : '—'}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-center">
-                  <div className="flex justify-center gap-3">
-                    <button
-                      onClick={() => handleEdit(bot)}
-                      className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
-                      title="Editar Bot"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(bot)}
-                      className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
-                      title="Eliminar Bot"
-                    >
-                      <FontAwesomeIcon icon={faTrashAlt} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap text-center">
+                    <div className="flex justify-center gap-3">
+                      <button
+                        onClick={() => handleEdit(bot)}
+                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border  border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
+                        title="Editar Bot"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(bot)}
+                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border  border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                        title="Eliminar Bot"
+                      >
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           )}
-          
+
         </table>
       </div>
 
@@ -240,29 +240,29 @@ const BotsView: React.FC = () => {
           </div>
         )}
         {bots.map((bot) => (
-          <div key={bot.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
+          <div key={bot.id} className="bg-gray-800 p-5 rounded-2xl border  border-gray-800 shadow-sm flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-bold text-gray-800 text-lg">{bot.whaibot_id}</h3>
-                <span className="bg-teal-50 text-teal-700 px-3 py-1 rounded-full font-bold text-xs mt-2 inline-block">
+                <h3 className="font-bold text-gray-200 text-lg">{bot.whaibot_id}</h3>
+                <span className="bg-teal-900/30 text-teal-700 px-3 py-1 rounded-full font-bold text-xs mt-2 inline-block">
                   Key: ••••••••{bot.whaibot_key.slice(-4)}
                 </span>
               </div>
             </div>
 
             <div className="flex gap-2 pt-3 border-t border-gray-50 mt-2">
-               <button
-                  onClick={() => handleEdit(bot)}
-                  className="flex-1 py-2 rounded-xl bg-amber-50 text-amber-600 font-bold text-xs hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faEdit} /> Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(bot)}
-                  className="flex-1 py-2 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faTrashAlt} /> Eliminar
-                </button>
+              <button
+                onClick={() => handleEdit(bot)}
+                className="flex-1 py-2 rounded-xl bg-amber-600 text-whitefont-bold text-xs hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <FontAwesomeIcon icon={faEdit} /> Editar
+              </button>
+              <button
+                onClick={() => handleDelete(bot)}
+                className="flex-1 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+              </button>
             </div>
           </div>
         ))}
@@ -271,16 +271,16 @@ const BotsView: React.FC = () => {
       {/* MODAL DE EDICIÓN */}
       {isEditOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
+          <div className="bg-gray-800 rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsEditOpen(false)}
-              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-400 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
 
             <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-800">Editar Bot</h3>
+              <h3 className="text-2xl font-black text-gray-200">Editar Bot</h3>
               <p className="text-sm text-gray-400 font-medium italic">
                 Actualiza las credenciales de Whaibot.
               </p>
@@ -305,7 +305,7 @@ const BotsView: React.FC = () => {
                         )
                       }
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -326,7 +326,7 @@ const BotsView: React.FC = () => {
                         )
                       }
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -336,7 +336,7 @@ const BotsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
+                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-900 rounded-2xl hover:bg-gray-700 transition-all"
                 >
                   Cancelar
                 </button>
@@ -362,16 +362,16 @@ const BotsView: React.FC = () => {
       {/* MODAL DE CREACIÓN */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
+          <div className="bg-gray-800 rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsCreateOpen(false)}
-              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-400 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
 
             <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-800">Configurar Bot</h3>
+              <h3 className="text-2xl font-black text-gray-200">Configurar Bot</h3>
               <p className="text-sm text-gray-400 font-medium italic">
                 Ingresa las credenciales de tu instancia de Whaibot.
               </p>
@@ -395,7 +395,7 @@ const BotsView: React.FC = () => {
                       }
                       placeholder="Ej: mi_bot_123"
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -416,7 +416,7 @@ const BotsView: React.FC = () => {
                       }
                       placeholder="Ej: abc-123-key"
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -426,7 +426,7 @@ const BotsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
+                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-900 rounded-2xl hover:bg-gray-700 transition-all"
                 >
                   Cancelar
                 </button>

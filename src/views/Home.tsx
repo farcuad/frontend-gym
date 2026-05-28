@@ -20,9 +20,9 @@ function useFadeIn() {
 }
 
 // ── Palette & helpers ───────────────────────────────────────────────────────
-const P = "#009689";
-const PD = "#007a6e";
-const PL = "#e0f5f3";
+const P = "#00a884";
+const PD = "#008f6f";
+const PL = "rgba(0, 168, 132, 0.1)";
 
 // ── Components ──────────────────────────────────────────────────────────────
 
@@ -39,9 +39,9 @@ function Header() {
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
-        background: scrolled ? "rgba(255,255,255,0.97)" : "transparent",
+        background: scrolled ? "rgba(17, 24, 39, 0.97)" : "transparent",
         backdropFilter: scrolled ? "blur(10px)" : "none",
-        boxShadow: scrolled ? "0 2px 20px rgba(0,150,137,0.1)" : "none",
+        boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.5)" : "none",
       }}
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -56,13 +56,13 @@ function Header() {
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-8">
           {nav.map(n => (
-            <a key={n} href={`#${n.toLowerCase()}`} className="text-sm font-semibold text-gray-600 hover:text-teal-600 transition-colors">{n}</a>
+            <a key={n} href={`#${n.toLowerCase()}`} className="text-sm font-semibold text-gray-400 hover:text-teal-600 transition-colors">{n}</a>
           ))}
         </nav>
 
         {/* CTA buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <NavLink to="/login" className="px-4 py-2 text-sm font-semibold rounded-xl text-teal-700 bg-teal-50 hover:bg-teal-100 transition-colors">Iniciar sesión</NavLink>
+          <NavLink to="/login" className="px-4 py-2 text-sm font-semibold rounded-xl text-teal-400 bg-teal-900/30 hover:bg-teal-900/60 transition-colors">Iniciar sesión</NavLink>
           <NavLink to="/register" className="px-4 py-2 text-sm font-semibold rounded-xl text-white transition-all hover:shadow-lg active:scale-95"
             style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>
             Registrarse
@@ -70,17 +70,17 @@ function Header() {
         </div>
 
         {/* Mobile toggle */}
-        <button className="md:hidden text-gray-700" onClick={() => setOpen(!open)}>
+        <button className="md:hidden text-gray-300" onClick={() => setOpen(!open)}>
           <FontAwesomeIcon icon={open ? faTimes : faBars} className="text-xl" />
         </button>
       </div>
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-6 py-4 space-y-3">
-          {nav.map(n => <a key={n} href={`#${n.toLowerCase()}`} className="block text-sm font-semibold text-gray-700 py-2">{n}</a>)}
+        <div className="md:hidden bg-gray-800 border-t border-gray-800 px-6 py-4 space-y-3">
+          {nav.map(n => <a key={n} href={`#${n.toLowerCase()}`} className="block text-sm font-semibold text-gray-300 py-2">{n}</a>)}
           <div className="flex gap-3 pt-2">
-            <NavLink to="/login" className="flex-1 py-2 text-sm font-semibold rounded-xl text-teal-700 bg-teal-50 text-center">Iniciar sesión</NavLink>
+            <NavLink to="/login" className="flex-1 py-2 text-sm font-semibold rounded-xl text-teal-400 bg-teal-900/30 text-center hover:bg-teal-900/60 transition-colors">Iniciar sesión</NavLink>
             <NavLink to="/register" className="flex-1 py-2 text-sm font-semibold rounded-xl text-white text-center" style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>Registrarse</NavLink>
           </div>
         </div>
@@ -91,7 +91,7 @@ function Header() {
 
 function Hero() {
   return (
-    <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden" style={{ background: "linear-gradient(160deg, #f0fdfb 0%, #ffffff 50%, #f8fffe 100%)" }}>
+    <section className="relative pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden bg-gray-900">
       {/* Decorative blobs */}
       <div className="absolute top-20 right-0 w-[600px] h-[600px] rounded-full opacity-10 blur-3xl pointer-events-none" style={{ background: P }} />
       <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] rounded-full opacity-8 blur-3xl pointer-events-none" style={{ background: P }} />
@@ -103,13 +103,13 @@ function Hero() {
       }} />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-8 border"
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-8 border border-gray-700"
           style={{ color: P, background: PL, borderColor: `${P}30` }}>
           <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: P }} />
           Sistema de gestión #1 para gimnasios
         </div>
 
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.15] mb-6 text-gray-900">
+        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.15] mb-6 text-gray-100">
           Gestiona tu gym<br />
           <span className="relative">
             <span style={{ color: P }}>sin complicaciones</span>
@@ -119,7 +119,7 @@ function Hero() {
           </span>
         </h1>
 
-        <p className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
           Clientes, membresías, pagos y planes de entrenamiento — todo en un solo lugar, potenciado con Inteligencia Artificial.
         </p>
 
@@ -131,22 +131,22 @@ function Hero() {
             </button>
           </NavLink>
           <NavLink to="/login">
-            <button className="cursor-pointer w-full sm:w-auto px-8 py-4 text-base font-bold rounded-2xl text-gray-700 bg-white border border-gray-200 hover:border-teal-300 hover:text-teal-700 transition-all shadow-sm">
+            <button className="cursor-pointer w-full sm:w-auto px-8 py-4 text-base font-bold rounded-2xl text-gray-300 bg-gray-800 border border-gray-700 hover:border-teal-400 hover:text-teal-400 transition-all shadow-sm">
               Ver demostración
             </button>
           </NavLink>
         </div>
 
         {/* Stats row
-        <div className="inline-grid grid-cols-3 gap-px rounded-2xl overflow-hidden shadow-lg bg-gray-200">
+        <div className="inline-grid grid-cols-3 gap-px rounded-2xl overflow-hidden shadow-lg bg-gray-700">
           {[
             { value: "+2,400", label: "Gimnasios activos" },
             { value: "98%", label: "Satisfacción" },
             { value: "24/7", label: "Soporte IA" },
           ].map((s, i) => (
-            <div key={i} className="bg-white px-8 py-5 text-center">
+            <div key={i} className="bg-gray-800 px-8 py-5 text-center">
               <div className="text-2xl font-black" style={{ color: P }}>{s.value}</div>
-              <div className="text-xs text-gray-500 mt-1 font-medium">{s.label}</div>
+              <div className="text-xs text-gray-400 mt-1 font-medium">{s.label}</div>
             </div>
           ))}
         </div> */}
@@ -167,21 +167,21 @@ function Features() {
   ];
 
   return (
-    <section id="características" className="py-24 bg-white" ref={ref}>
+    <section id="características" className="py-24 bg-gray-800" ref={ref}>
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className={`text-center mb-16 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ color: P, background: PL }}>Características</span>
-          <h2 className="mt-4 text-4xl sm:text-5xl font-black leading-tight text-gray-900">
+          <h2 className="mt-4 text-4xl sm:text-5xl font-black leading-tight text-gray-100">
             Todo lo que necesitas,<br />en un solo sistema
           </h2>
-          <p className="mt-4 text-gray-500 text-lg max-w-xl mx-auto">Herramientas profesionales diseñadas específicamente para la industria del fitness.</p>
+          <p className="mt-4 text-gray-400 text-lg max-w-xl mx-auto">Herramientas profesionales diseñadas específicamente para la industria del fitness.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f, i) => (
             <div
               key={f.id}
-              className={`group relative bg-white border border-gray-100 rounded-2xl p-7 hover:shadow-xl hover:border-teal-200 transition-all duration-300 cursor-pointer overflow-hidden ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              className={`group relative bg-gray-800 border border-gray-700 rounded-2xl p-7 hover:shadow-xl hover:border-teal-200 transition-all duration-300 cursor-pointer overflow-hidden ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
               style={{ transitionDelay: `${i * 80}ms` }}
             >
               {/* Hover background */}
@@ -192,8 +192,8 @@ function Features() {
                   style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>
                   <FontAwesomeIcon icon={f.icon} className="text-sm" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">{f.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{f.description}</p>
+                <h3 className="text-lg font-bold text-gray-100 mb-2">{f.title}</h3>
+                <p className="text-gray-400 text-sm leading-relaxed">{f.description}</p>
                 <div className="mt-4 text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: P }}>
                   Explorar →
                 </div>
@@ -215,11 +215,11 @@ function SocialProof() {
   ];
 
   return (
-    <section className="py-24" style={{ background: "linear-gradient(160deg, #f0fdfb, #fff)" }} ref={ref}>
+    <section className="py-24 bg-gray-900" ref={ref}>
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className={`text-center mb-14 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ color: P, background: PL }}>Testimonios</span>
-          <h2 className="mt-4 text-4xl font-black leading-tight text-gray-900">
+          <h2 className="mt-4 text-4xl font-black leading-tight text-gray-100">
             Ellos ya confían en FitLog
           </h2>
         </div>
@@ -227,17 +227,17 @@ function SocialProof() {
           {testimonials.map((t, i) => (
             <div
               key={i}
-              className={`bg-white rounded-2xl p-7 shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-300 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              className={`bg-gray-800 rounded-2xl p-7 shadow-sm border border-gray-700 hover:shadow-lg transition-all duration-300 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
               style={{ transitionDelay: `${i * 100}ms` }}
             >
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, j) => <span key={j} className="text-amber-400 text-sm">★</span>)}
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
+              <p className="text-gray-400 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: `linear-gradient(135deg, ${P}, ${PD})` }}>{t.avatar}</div>
                 <div>
-                  <div className="text-sm font-bold text-gray-900">{t.name}</div>
+                  <div className="text-sm font-bold text-gray-100">{t.name}</div>
                   <div className="text-xs text-gray-400">{t.gym}</div>
                 </div>
               </div>
@@ -287,15 +287,15 @@ function Pricing() {
   ];
 
   return (
-    <section id="planes" className="py-24 bg-white" ref={ref}>
+    <section id="planes" className="py-24 bg-gray-800" ref={ref}>
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className={`text-center mb-16 transition-all duration-700 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ color: P, background: PL }}>Planes</span>
-          <h2 className="mt-4 text-4xl sm:text-5xl font-black leading-tight text-gray-900">
+          <h2 className="mt-4 text-4xl sm:text-5xl font-black leading-tight text-gray-100">
             Elige tu plan y<br />
             <span style={{ color: P }}>transforma tu gym</span>
           </h2>
-          <p className="mt-4 text-gray-500 text-lg max-w-xl mx-auto">Sin contratos de permanencia. Cancela cuando quieras.</p>
+          <p className="mt-4 text-gray-400 text-lg max-w-xl mx-auto">Sin contratos de permanencia. Cancela cuando quieras.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -313,7 +313,7 @@ function Pricing() {
                   {plan.badge}
                 </div>
               )}
-              <div className={`h-full bg-white rounded-2xl overflow-hidden border-2 transition-all duration-300 ${plan.popular ? "shadow-2xl" : "shadow-sm border-gray-100"}`}
+              <div className={`h-full bg-gray-800 rounded-2xl overflow-hidden border-2 transition-all duration-300 ${plan.popular ? "shadow-2xl" : "shadow-sm border-gray-800"}`}
                 style={{ borderColor: plan.popular ? P : "transparent" }}>
                 <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${P}, ${PD})` }} />
                 <div className="p-8 space-y-7">
@@ -322,10 +322,10 @@ function Pricing() {
                       style={{ background: `linear-gradient(135deg, ${P}, ${PD})`, transform: hovered === i ? "rotate(6deg)" : "none", transition: "transform 0.3s" }}>
                       <FontAwesomeIcon icon={plan.icon} className="text-sm" />
                     </div>
-                    <h3 className="text-2xl font-black text-gray-900">{plan.name}</h3>
-                    <p className="text-gray-500 text-sm mt-1">{plan.description}</p>
+                    <h3 className="text-2xl font-black text-gray-100">{plan.name}</h3>
+                    <p className="text-gray-400 text-sm mt-1">{plan.description}</p>
                     <div className="flex items-end gap-1 mt-4">
-                      <span className="text-5xl font-black text-gray-900">${plan.price}</span>
+                      <span className="text-5xl font-black text-gray-100">${plan.price}</span>
                       <span className="text-gray-400 text-sm mb-2 font-medium">/mes</span>
                     </div>
                   </div>
@@ -335,7 +335,7 @@ function Pricing() {
                         <div className="w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ background: PL, color: P }}>
                           <FontAwesomeIcon icon={faCheck} style={{ fontSize: 9 }} />
                         </div>
-                        <span className={`text-sm ${f.hi ? "font-semibold text-gray-900" : "text-gray-500"}`}>{f.text}</span>
+                        <span className={`text-sm ${f.hi ? "font-semibold text-gray-100" : "text-gray-400"}`}>{f.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -363,9 +363,9 @@ function Pricing() {
             { icon: faClock, text: "Disponible 24/7" },
             { icon: faArrowTrendUp, text: "Reportes en tiempo real" }
           ].map((f, i) => (
-            <div key={i} className="flex items-center gap-3 p-5 bg-gray-50 rounded-xl border border-gray-100 hover:shadow-md transition-shadow">
+            <div key={i} className="flex items-center gap-3 p-5 bg-gray-900 rounded-xl border border-gray-700 hover:shadow-md transition-shadow">
               <FontAwesomeIcon icon={f.icon} style={{ color: P }} />
-              <span className="text-sm font-medium text-gray-700">{f.text}</span>
+              <span className="text-sm font-medium text-gray-300">{f.text}</span>
             </div>
           ))}
         </div>
@@ -388,7 +388,7 @@ function CTA() {
           ¿Listo para llevar tu gimnasio al siguiente nivel?
         </h2>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <NavLink to="/register" className="px-8 py-4 bg-white font-bold rounded-2xl text-base hover:shadow-xl transition-all active:scale-95" style={{ color: P }}>
+          <NavLink to="/register" className="px-8 py-4 bg-gray-800 font-bold rounded-2xl text-base hover:shadow-xl transition-all active:scale-95 text-white" >
             Crear cuenta gratis
           </NavLink>
         </div>

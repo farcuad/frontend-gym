@@ -84,7 +84,7 @@ const PlanTable: React.FC = () => {
   const handleDelete = async (plans: Plans) => {
     const result = await confirm(
       "¿Eliminar plan?",
-      `El plan "${plans.name}" ya no estará disponible para nuevos socios.`,
+      `El plan "${plans.name}" ya no estará disponible para nuevos clientes.`,
       "warning"
     );
 
@@ -106,7 +106,7 @@ const PlanTable: React.FC = () => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(!planUpdate || !planUpdate.id) return;
+    if (!planUpdate || !planUpdate.id) return;
     setIsSubmitting(true);
     try {
       const { name, duration_day, price } = planUpdate!;
@@ -128,7 +128,7 @@ const PlanTable: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-[200px]">
+      <div className="p-6 bg-gray-800 rounded-[2.5rem] border border-gray-800 shadow-sm flex items-center justify-center min-h-[200px]">
         <FontAwesomeIcon
           icon={faSpinner}
           className="text-teal-600 text-2xl animate-spin"
@@ -138,21 +138,21 @@ const PlanTable: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
+    <div className="p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 justify-start">
-        <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
-          <FontAwesomeIcon icon={faLayerGroup} className="text-teal-600" />
-          Planes de Suscripción
-        </h2>
-        
-        {exchangeRate && (
-        <div className="mt-2 md:mt-0 px-2">
-          <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-xs font-bold">
-            Tasa BCV: {exchangeRate.toFixed(2)} Bs
-          </span>
-        </div>
-      )}
+          <h2 className="text-xl font-black text-gray-200 flex items-center gap-2">
+            <FontAwesomeIcon icon={faLayerGroup} className="text-teal-600" />
+            Planes de Suscripción
+          </h2>
+
+          {exchangeRate && (
+            <div className="mt-2 md:mt-0 px-2">
+              <span className="inline-flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold">
+                Tasa BCV: {exchangeRate.toFixed(2)} Bs
+              </span>
+            </div>
+          )}
         </div>
         <button
           onClick={() => setIsCreateOpen(true)}
@@ -165,9 +165,9 @@ const PlanTable: React.FC = () => {
       </div>
 
       <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full bg-white text-sm">
+        <table className="min-w-full bg-gray-800 text-sm">
           <thead>
-            <tr className="border-b border-gray-100">
+            <tr className="border-b border-gray-800">
               <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
                 #
               </th>
@@ -189,66 +189,66 @@ const PlanTable: React.FC = () => {
             </tr>
           </thead>
           {plans.length === 0 && (
-              <tr>
-                <td
-                  colSpan={6}
-                  className="px-6 py-5 whitespace-nowrap text-center text-gray-400 font-bold text-[15px]"
-                >
-                  No hay planes de suscripción disponibles.
-                </td>
-              </tr>
+            <tr>
+              <td
+                colSpan={6}
+                className="px-6 py-5 whitespace-nowrap text-center text-gray-400 font-bold text-[15px]"
+              >
+                No hay planes de suscripción disponibles.
+              </td>
+            </tr>
           )}
           {plans.length > 0 && (
             <tbody className="divide-y divide-gray-50">
-            {plans.map((plan, index) => (
-              <tr
-                key={plan.id}
-                className="hover:bg-gray-50/50 transition-colors group"
-              >
-                <td className="px-6 py-5 whitespace-nowrap text-gray-400 font-medium">
-                  {index + 1}
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap">
-                  <span className="font-bold text-gray-700">{plan.name}</span>
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap">
-                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold text-xs">
-                    {plan.duration_day} días
-                  </span>
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap">
-                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs">
-                    $ {plan.price}
-                  </span>
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap">
-                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold text-xs">
-                    {formatBs(plan.price)}
-                  </span>
-                </td>
-                <td className="px-6 py-5 whitespace-nowrap text-center">
-                  <div className="flex justify-center gap-3">
-                    <button
-                      onClick={() => handleEdit(plan)}
-                      className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
-                      title="Editar Plan"
-                    >
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(plan)}
-                      className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
-                      title="Eliminar Plan"
-                    >
-                      <FontAwesomeIcon icon={faTrashAlt} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+              {plans.map((plan, index) => (
+                <tr
+                  key={plan.id}
+                  className="hover:bg-gray-900/50 transition-colors group"
+                >
+                  <td className="px-6 py-5 whitespace-nowrap text-gray-400 font-medium">
+                    {index + 1}
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="font-bold text-gray-300">{plan.name}</span>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="bg-blue-900 text-white px-3 py-1 rounded-full font-bold text-xs">
+                      {plan.duration_day} días
+                    </span>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="bg-green-900 text-white px-3 py-1 rounded-full font-bold text-xs">
+                      $ {plan.price}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="bg-blue-900 text-white px-3 py-1 rounded-full font-bold text-xs">
+                      {formatBs(plan.price)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap text-center">
+                    <div className="flex justify-center gap-3">
+                      <button
+                        onClick={() => handleEdit(plan)}
+                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
+                        title="Editar Plan"
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(plan)}
+                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                        title="Eliminar Plan"
+                      >
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           )}
-          
+
         </table>
       </div>
 
@@ -260,37 +260,37 @@ const PlanTable: React.FC = () => {
           </div>
         )}
         {plans.map((plan) => (
-          <div key={plan.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
+          <div key={plan.id} className="bg-gray-800 p-5 rounded-2xl border border-gray-800 shadow-sm flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-bold text-gray-800 text-lg">{plan.name}</h3>
-                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold text-xs mt-2 inline-block">
+                <h3 className="font-bold text-gray-200 text-lg">{plan.name}</h3>
+                <span className="bg-blue-900 text-white px-3 py-1 rounded-full font-bold text-xs mt-2 inline-block">
                   {plan.duration_day} días
                 </span>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm whitespace-nowrap">
+                <span className="bg-green-900 text-white px-3 py-1 rounded-full font-bold text-sm whitespace-nowrap">
                   ${plan.price}
                 </span>
-                <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold text-[10px] whitespace-nowrap">
+                <span className="bg-blue-900 text-white px-2 py-0.5 rounded-full font-bold text-[10px] whitespace-nowrap">
                   {formatBs(plan.price)}
                 </span>
               </div>
             </div>
 
             <div className="flex gap-2 pt-3 border-t border-gray-50 mt-2">
-               <button
-                  onClick={() => handleEdit(plan)}
-                  className="flex-1 py-2 rounded-xl bg-amber-50 text-amber-600 font-bold text-xs hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faEdit} /> Editar
-                </button>
-                <button
-                  onClick={() => handleDelete(plan)}
-                  className="flex-1 py-2 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faTrashAlt} /> Eliminar
-                </button>
+              <button
+                onClick={() => handleEdit(plan)}
+                className="flex-1 py-2 rounded-xl bg-amber-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2"
+              >
+                <FontAwesomeIcon icon={faEdit} /> Editar
+              </button>
+              <button
+                onClick={() => handleDelete(plan)}
+                className="flex-1 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2"
+              >
+                <FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+              </button>
             </div>
           </div>
         ))}
@@ -299,16 +299,16 @@ const PlanTable: React.FC = () => {
       {/* MODAL DE EDICIÓN DE PLAN */}
       {isEditOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
+          <div className="bg-gray-800 rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsEditOpen(false)}
-              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-400 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
 
             <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-800">Editar Plan</h3>
+              <h3 className="text-2xl font-black text-gray-200">Editar Plan</h3>
               <p className="text-sm text-gray-400 font-medium italic">
                 Ajusta los costos y beneficios.
               </p>
@@ -332,7 +332,7 @@ const PlanTable: React.FC = () => {
                           prev ? { ...prev, name: e.target.value } : prev,
                         )
                       }
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -356,7 +356,7 @@ const PlanTable: React.FC = () => {
                       }
                       placeholder="30"
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -382,18 +382,18 @@ const PlanTable: React.FC = () => {
                             : prev,
                         )
                       }
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
-                
+
               </div>
 
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setIsEditOpen(false)}
-                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
+                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-900 rounded-2xl hover:bg-gray-700 transition-all"
                 >
                   Cancelar
                 </button>
@@ -419,16 +419,16 @@ const PlanTable: React.FC = () => {
       {/* MODAL DE CREACIÓN */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
+          <div className="bg-gray-800 rounded-4xl shadow-2xl w-full max-w-md p-8 relative animate-in zoom-in-95 duration-200">
             <button
               onClick={() => setIsCreateOpen(false)}
-              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-400 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
 
             <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-800">Nuevo Plan</h3>
+              <h3 className="text-2xl font-black text-gray-200">Nuevo Plan</h3>
               <p className="text-sm text-gray-400 font-medium italic">
                 Crea un nuevo plan de suscripción.
               </p>
@@ -452,7 +452,7 @@ const PlanTable: React.FC = () => {
                       }
                       placeholder="Ej: Mensualidad con entrenador"
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -476,7 +476,7 @@ const PlanTable: React.FC = () => {
                       }
                       placeholder="30"
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -504,7 +504,7 @@ const PlanTable: React.FC = () => {
                       }
                       placeholder="25.00"
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -514,7 +514,7 @@ const PlanTable: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsCreateOpen(false)}
-                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all"
+                  className="cursor-pointer flex-1 px-4 py-4 text-xs font-black uppercase tracking-widest text-gray-400 bg-gray-900 rounded-2xl hover:bg-gray-700 transition-all"
                 >
                   Cancelar
                 </button>

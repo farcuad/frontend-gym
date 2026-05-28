@@ -367,7 +367,7 @@ const Metrics = () => {
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center text-gray-500 font-medium">
+      <div className="flex h-64 items-center justify-center text-gray-400 font-medium">
         Cargando estadísticas...
       </div>
     );
@@ -388,19 +388,19 @@ const Metrics = () => {
       {/* Título */}
       <div className="pl-1 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-1">
-          <h1 className="text-2xl font-black text-gray-800">Métricas del Gimnasio</h1>
-          <p className="text-sm text-gray-500">Visualiza el crecimiento y rendimiento de tu negocio.</p>
+          <h1 className="text-2xl font-black text-gray-200">Métricas del Gimnasio</h1>
+          <p className="text-sm text-gray-400">Visualiza el crecimiento y rendimiento de tu negocio.</p>
         </div>
-        <div className="bg-white p-3 sm:p-4 rounded-3xl border border-gray-100 shadow-sm transition-all duration-300 w-full md:w-auto shrink-0">
+        <div className="bg-gray-800 p-3 sm:p-4 rounded-3xl border  border-gray-800 shadow-sm transition-all duration-300 w-full md:w-auto shrink-0">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Predefined buttons */}
-            <div className="flex flex-wrap gap-1 rounded-2xl bg-gray-50 p-1 border border-gray-100">
+            <div className="flex flex-wrap gap-1 rounded-2xl bg-gray-900 p-1 border  border-gray-800">
               <button
                 type="button"
                 onClick={() => handleFilterChange('hoy')}
                 className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-xl transition-all duration-200 cursor-pointer ${activeFilter === 'hoy'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
-                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100/50'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
                   }`}
               >
                 Hoy
@@ -410,7 +410,7 @@ const Metrics = () => {
                 onClick={() => handleFilterChange('semana')}
                 className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-xl transition-all duration-200 cursor-pointer ${activeFilter === 'semana'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
-                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100/50'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
                   }`}
               >
                 Semana
@@ -420,7 +420,7 @@ const Metrics = () => {
                 onClick={() => handleFilterChange('mes')}
                 className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-xl transition-all duration-200 cursor-pointer ${activeFilter === 'mes'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
-                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100/50'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
                   }`}
               >
                 Mes Actual
@@ -430,7 +430,7 @@ const Metrics = () => {
                 onClick={() => handleFilterChange('anterior')}
                 className={`px-3 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-xl transition-all duration-200 cursor-pointer ${activeFilter === 'anterior'
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-100'
-                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100/50'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/50'
                   }`}
               >
                 Mes Anterior
@@ -445,9 +445,9 @@ const Metrics = () => {
                   setActiveFilter('custom');
                   setIsPopoverOpen(!isPopoverOpen);
                 }}
-                className={`w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-2xl transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border ${activeFilter === 'custom'
-                  ? 'bg-yellow-400 text-gray-900 border-yellow-400 shadow-md shadow-yellow-100 font-bold'
-                  : 'bg-white text-gray-500 border-gray-100 hover:text-gray-800 hover:bg-gray-50'
+                className={`w-full sm:w-auto px-3 py-2 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-black rounded-2xl transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 border border-gray-700 ${activeFilter === 'custom'
+                  ? 'bg-yellow-400 text-gray-100 border-yellow-400 shadow-md shadow-yellow-100 font-bold'
+                  : 'bg-gray-800 text-gray-400 border-gray-800 hover:text-gray-200 hover:bg-gray-900'
                   }`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5 sm:w-4 sm:h-4">
@@ -462,7 +462,7 @@ const Metrics = () => {
                     className="fixed inset-0 z-40 bg-transparent cursor-default"
                     onClick={() => setIsPopoverOpen(false)}
                   />
-                  <div className="absolute right-0 mt-2 z-50 bg-white p-4 rounded-3xl border border-gray-100 shadow-xl w-72 space-y-3 animate-fadeIn">
+                  <div className="absolute right-0 mt-2 z-50 bg-gray-800 p-4 rounded-3xl border  border-gray-800 shadow-xl w-72 space-y-3 animate-fadeIn">
                     <h3 className="text-xs font-black text-gray-400 uppercase tracking-wider">Seleccionar Período</h3>
                     <div className="space-y-2">
                       <div className="space-y-1">
@@ -471,7 +471,7 @@ const Metrics = () => {
                           type="date"
                           value={customStartDate}
                           onChange={(e) => setCustomStartDate(e.target.value)}
-                          className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                          className="w-full px-3 py-2 bg-gray-900 border  border-gray-800 rounded-xl text-xs font-bold text-gray-300 focus:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                         />
                       </div>
                       <div className="space-y-1">
@@ -480,7 +480,7 @@ const Metrics = () => {
                           type="date"
                           value={customEndDate}
                           onChange={handleEndDateChange}
-                          className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-bold text-gray-700 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                          className="w-full px-3 py-2 bg-gray-900 border  border-gray-800 rounded-xl text-xs font-bold text-gray-300 focus:bg-gray-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
                         />
                       </div>
                     </div>
@@ -505,7 +505,7 @@ const Metrics = () => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-blue-100 text-[10px] font-black tracking-widest uppercase">Recaudación</span>
-            <div className="bg-white/15 p-2 rounded-xl">
+            <div className="bg-gray-800/15 p-2 rounded-xl">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
               </svg>
@@ -516,7 +516,7 @@ const Metrics = () => {
               ${(finanzas?.balance.total_ingresos ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </h3>
             <div className="flex items-center gap-1.5 mt-2">
-              <span className={`text-[11px] px-2 py-0.5 rounded-md font-bold ${(finanzas?.balance?.total_gastos ?? 0) >= 0 ? 'bg-white/20' : 'bg-red-400/40'}`}>
+              <span className={`text-[11px] px-2 py-0.5 rounded-md font-bold ${(finanzas?.balance?.total_gastos ?? 0) >= 0 ? 'bg-gray-800/20' : 'bg-red-400/40'}`}>
                 {(finanzas?.balance?.total_gastos ?? 0) >= 0 ? '↑' : '↓'} {(finanzas?.balance?.total_gastos ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </span>
               <p className="text-blue-100/70 text-[10px] font-bold uppercase tracking-wider">
@@ -535,7 +535,7 @@ const Metrics = () => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-rose-100 text-[10px] font-black tracking-widest uppercase">Gastos Registrados</span>
-            <div className="bg-white/15 p-2 rounded-xl">
+            <div className="bg-gray-800/15 p-2 rounded-xl">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.25 6 9 12.75l4.286-4.286a11.948 11.948 0 0 1 4.306 6.43l.761 2.87M21 21H3" />
               </svg>
@@ -546,7 +546,7 @@ const Metrics = () => {
               ${finanzas?.balance.total_gastos.toLocaleString('en-US', { minimumFractionDigits: 2 }) ?? '0.00'}
             </h3>
             <div className="flex items-center gap-1.5 mt-2">
-              <span className="bg-white/20 text-[11px] px-2 py-0.5 rounded-md font-bold">
+              <span className="bg-gray-800/20 text-[11px] px-2 py-0.5 rounded-md font-bold">
                 {finanzas?.porCategoria.length ?? 0} Rubros
               </span>
               <p className="text-rose-100/70 text-[10px] font-bold uppercase tracking-wider">En este período</p>
@@ -566,7 +566,7 @@ const Metrics = () => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-white/80 text-[10px] font-black tracking-widest uppercase">Balance Neto</span>
-            <div className="bg-white/15 p-2 rounded-xl">
+            <div className="bg-gray-800/15 p-2 rounded-xl">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
@@ -578,7 +578,7 @@ const Metrics = () => {
               ${finanzas?.balance.balance_neto.toLocaleString('en-US', { minimumFractionDigits: 2 }) ?? '0.00'}
             </h3>
             <div className="flex items-center gap-1.5 mt-2">
-              <span className="bg-white/20 text-[11px] px-2 py-0.5 rounded-md font-bold">
+              <span className="bg-gray-800/20 text-[11px] px-2 py-0.5 rounded-md font-bold">
                 {finanzas && finanzas.balance.balance_neto >= 0 ? 'Rentabilidad verde' : 'Déficit temporal'}
               </span>
               <p className="text-white/60 text-[10px] font-bold uppercase tracking-wider">
@@ -597,7 +597,7 @@ const Metrics = () => {
           </div>
           <div className="flex justify-between items-center">
             <span className="text-emerald-50 text-[10px] font-black tracking-widest uppercase">Nuevos Clientes</span>
-            <div className="bg-white/15 p-2 rounded-xl">
+            <div className="bg-gray-800/15 p-2 rounded-xl">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
               </svg>
@@ -608,7 +608,7 @@ const Metrics = () => {
               {finanzas?.balance.new_clients ?? 0}
             </h3>
             <div className="flex items-center gap-1.5 mt-2">
-              <span className={`text-[11px] px-2 py-0.5 rounded-md font-bold ${(finanzas?.balance.new_clients ?? 0) >= 0 ? 'bg-white/20' : 'bg-red-400/40'}`}>
+              <span className={`text-[11px] px-2 py-0.5 rounded-md font-bold ${(finanzas?.balance.new_clients ?? 0) >= 0 ? 'bg-gray-800/20' : 'bg-red-400/40'}`}>
                 {(finanzas?.balance.new_clients ?? 0) >= 0 ? '↑' : '↓'} {Math.abs((finanzas?.balance.new_clients ?? 0)).toFixed(1)}%
               </span>
               <p className="text-emerald-100/70 text-[10px] font-bold uppercase tracking-wider">En clientes</p>
@@ -623,16 +623,16 @@ const Metrics = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-8">
 
         {/* Columna Izquierda — Tabs, Gráficas o Tabla */}
-        <div className="lg:col-span-8 bg-white rounded-3xl p-6 shadow-sm border border-gray-100">
+        <div className="lg:col-span-8 bg-gray-800 rounded-3xl p-6 shadow-sm border  border-gray-800">
 
           {/* Header: Tabs + Botón Registrar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 pb-4 mb-6 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b  border-gray-800 pb-4 mb-6 gap-4">
             <div className="flex items-center gap-6">
               <button
                 onClick={() => setActiveTab('graficos')}
                 className={`pb-2 text-sm font-bold tracking-tight border-b-2 transition-all ${activeTab === 'graficos'
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-400 hover:text-gray-600'
+                  : 'border-transparent text-gray-400 hover:text-gray-400'
                   }`}
               >
                 Gráficas de Tendencia
@@ -641,7 +641,7 @@ const Metrics = () => {
                 onClick={() => setActiveTab('tabla')}
                 className={`pb-2 text-sm font-bold tracking-tight border-b-2 transition-all flex items-center gap-2 ${activeTab === 'tabla'
                   ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-400 hover:text-gray-600'
+                  : 'border-transparent text-gray-400 hover:text-gray-400'
                   }`}
               >
                 Administrar Gastos
@@ -666,7 +666,7 @@ const Metrics = () => {
               {/* AreaChart — Pagos */}
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
+                  <h2 className="text-base font-bold text-gray-200 flex items-center gap-2">
                     <span className="w-1.5 h-6 rounded-full bg-sky-500" />
                     Historial de Pagos en USD (Ingresos)
                   </h2>
@@ -684,7 +684,7 @@ const Metrics = () => {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} interval={0} dy={10} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
-                      <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }} />
+                      <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.4)', backgroundColor: '#1f2937', color: '#f3f4f6', padding: '12px' }} />
                       <Area type="monotone" dataKey="total" name="Cifra (USD)" stroke="#0ea5e9" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -694,7 +694,7 @@ const Metrics = () => {
               {/* BarChart — Clientes */}
               <div className="pt-6 border-t border-gray-50">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
+                  <h2 className="text-base font-bold text-gray-200 flex items-center gap-2">
                     <span className="w-1.5 h-6 rounded-full bg-emerald-500" />
                     Historial de Nuevos Clientes
                   </h2>
@@ -706,7 +706,7 @@ const Metrics = () => {
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                       <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} interval={0} dy={10} />
                       <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
-                      <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', padding: '12px' }} />
+                      <Tooltip cursor={{ fill: 'rgba(255,255,255,0.04)' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.4)', backgroundColor: '#1f2937', color: '#f3f4f6', padding: '12px' }} />
                       <Bar dataKey="total" name="Nuevos Clientes" fill="#10b981" radius={[6, 6, 0, 0]} barSize={window.innerWidth < 640 ? 25 : 40} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -719,24 +719,24 @@ const Metrics = () => {
           {activeTab === 'tabla' && (
             <div>
               <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-2">
-                <h4 className="font-black text-gray-800 text-base">Registro Detallado de Gastos</h4>
+                <h4 className="font-black text-gray-200 text-base">Registro Detallado de Gastos</h4>
                 <span className="text-xs text-gray-400">
                   Mostrando {gastos.length} transacciones registradas
                 </span>
               </div>
 
               {gastos.length === 0 ? (
-                <div className="text-center py-12 text-gray-400 border border-dashed border-gray-200 rounded-2xl">
+                <div className="text-center py-12 text-gray-400 border border-dashed border-gray-700 rounded-2xl">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 mx-auto text-gray-300 mb-3">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                   </svg>
                   <p className="font-semibold">No hay gastos registrados en este período.</p>
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-2xl border border-gray-100">
+                <div className="overflow-x-auto rounded-2xl border  border-gray-800">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-gray-50 border-b border-gray-100 text-[11px] font-black uppercase tracking-wider text-gray-400">
+                      <tr className="bg-gray-900 border-b  border-gray-800 text-[11px] font-black uppercase tracking-wider text-gray-400">
                         <th className="py-3 px-4">Concepto / Gasto</th>
                         <th className="py-3 px-4">Categoría</th>
                         <th className="py-3 px-4">Monto</th>
@@ -748,8 +748,8 @@ const Metrics = () => {
                       {gastos.map((item) => {
                         const meta = getCategoriaColor(item.categoria);
                         return (
-                          <tr key={item.id} className="hover:bg-gray-50/60 transition-colors">
-                            <td className="py-3.5 px-4 font-semibold text-gray-800">
+                          <tr key={item.id} className="hover:bg-gray-900/60 transition-colors">
+                            <td className="py-3.5 px-4 font-semibold text-gray-200">
                               <div className="flex flex-col">
                                 <span>{item.titulo}</span>
                                 {item.descripcion && (
@@ -762,10 +762,10 @@ const Metrics = () => {
                                 {meta.label}
                               </span>
                             </td>
-                            <td className="py-3.5 px-4 font-black text-gray-900">
+                            <td className="py-3.5 px-4 font-black text-gray-100">
                               ${item.monto}
                             </td>
-                            <td className="py-3.5 px-4 text-xs font-bold text-gray-500">
+                            <td className="py-3.5 px-4 text-xs font-bold text-gray-400">
                               {formatFecha(item.fecha_gasto)}
                             </td>
                             <td className="py-3.5 px-4">
@@ -781,7 +781,7 @@ const Metrics = () => {
                                 </button>
                                 <button
                                   onClick={() => item.id && handleDeleteGasto(Number(item.id))}
-                                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-900/30 transition-colors"
                                   title="Eliminar"
                                 >
                                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
@@ -806,8 +806,8 @@ const Metrics = () => {
 
           {/* Distribución de Gastos */}
           {finanzas && donutSegments.length > 0 && (
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-base font-black text-gray-800 mb-1">Distribución de Gastos</h3>
+            <div className="bg-gray-800 rounded-3xl shadow-sm border  border-gray-800 p-6">
+              <h3 className="text-base font-black text-gray-200 mb-1">Distribución de Gastos</h3>
               <p className="text-xs text-gray-400 mb-6">Porcentaje asignado por cada rubro</p>
 
               {/* SVG Donut */}
@@ -830,7 +830,7 @@ const Metrics = () => {
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center text-center pointer-events-none">
                   <span className="text-[9px] font-black tracking-widest uppercase text-gray-400">Gastos</span>
-                  <span className="text-xl font-black text-gray-800 mt-0.5">
+                  <span className="text-xl font-black text-gray-200 mt-0.5">
                     ${finanzas.balance.total_gastos.toFixed(2)}
                   </span>
                 </div>
@@ -842,11 +842,11 @@ const Metrics = () => {
                   <div key={seg.categoria} className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: seg.hex }} />
-                      <span className="font-semibold text-gray-700">{seg.label}</span>
+                      <span className="font-semibold text-gray-300">{seg.label}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-xs text-gray-400 font-medium">{seg.pct.toFixed(1)}%</span>
-                      <span className="font-black text-gray-800">${seg.total.toFixed(2)}</span>
+                      <span className="font-black text-gray-200">${seg.total.toFixed(2)}</span>
                     </div>
                   </div>
                 ))}
@@ -859,14 +859,14 @@ const Metrics = () => {
       {/* Modal para Registrar/Editar Gasto */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full border border-gray-100 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
-              <h3 className="text-lg font-black text-gray-800">
+          <div className="bg-gray-800 rounded-3xl p-8 shadow-2xl max-w-md w-full border border-gray-800 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6 border-b border-gray-800 pb-4">
+              <h3 className="text-lg font-black text-gray-200">
                 {editingGasto ? "Actualizar Gasto" : "Registrar Nuevo Gasto"}
               </h3>
               <button
                 onClick={() => setModalOpen(false)}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-400 hover:bg-gray-700 transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -885,7 +885,7 @@ const Metrics = () => {
                     onChange={(e) => setTitulo(e.target.value)}
                     placeholder="Ej: Pago de alquiler del local"
                     required
-                    className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 shadow-xs"
+                    className="w-full px-5 py-4 bg-gray-900 border  border-gray-800 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 shadow-xs"
                   />
                 </div>
               </div>
@@ -899,7 +899,7 @@ const Metrics = () => {
                     onChange={(e) => setDescripcion(e.target.value)}
                     placeholder="Detalles adicionales del gasto..."
                     rows={3}
-                    className="w-full px-5 py-3 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 shadow-xs resize-none"
+                    className="w-full px-5 py-3 bg-gray-900 border border-gray-800 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 shadow-xs resize-none"
                   />
                 </div>
               </div>
@@ -918,7 +918,7 @@ const Metrics = () => {
                     onChange={(e) => setMonto(e.target.value)}
                     placeholder="0.00"
                     required
-                    className="w-full pl-9 pr-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 shadow-xs"
+                    className="w-full pl-9 pr-5 py-4 bg-gray-900 border border-gray-800 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 shadow-xs"
                   />
                 </div>
               </div>
@@ -942,17 +942,17 @@ const Metrics = () => {
                     value={fechaGasto}
                     onChange={(e) => setFechaGasto(e.target.value)}
                     required
-                    className="w-full px-5 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 shadow-xs"
+                    className="w-full px-5 py-4 bg-gray-900 border border-gray-800 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 shadow-xs"
                   />
                 </div>
               </div>
 
               {/* Acciones del formulario */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-800">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="px-4 py-2 text-sm font-bold text-gray-500 hover:bg-gray-100 rounded-xl transition-colors"
+                  className="px-4 py-2 text-sm font-bold text-gray-400 hover:bg-gray-700 rounded-xl transition-colors"
                 >
                   Cancelar
                 </button>

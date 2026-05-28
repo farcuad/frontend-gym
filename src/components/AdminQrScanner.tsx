@@ -94,11 +94,11 @@ const AdminQrScanner: React.FC = () => {
         let cameraIndex = 1;
         Array.from(select.options).forEach((option) => {
           const text = option.text;
-          
+
           if (text.startsWith("Opción ")) {
             return;
           }
-          
+
           if (!option.value || text.toLowerCase().includes("select camera") || text.toLowerCase().includes("seleccionar")) {
             if (text.startsWith("Seleccionar cámara")) {
               return;
@@ -108,10 +108,10 @@ const AdminQrScanner: React.FC = () => {
             option.text = `Seleccionar cámara${count}`;
             return;
           }
-          
+
           const isFront = text.toLowerCase().includes("facing front") || text.toLowerCase().includes("front");
           const isBack = text.toLowerCase().includes("facing back") || text.toLowerCase().includes("back");
-          
+
           let cameraName = "";
           if (isFront) {
             cameraName = "Cámara frontal";
@@ -120,7 +120,7 @@ const AdminQrScanner: React.FC = () => {
           } else {
             cameraName = text;
           }
-          
+
           option.text = `Opción ${cameraIndex}: ${cameraName}`;
           cameraIndex++;
         });
@@ -231,12 +231,12 @@ const AdminQrScanner: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[500px] w-full p-6">
-      <div className="w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden relative">
-        
+      <div className="w-full max-w-2xl bg-gray-900 rounded-3xl shadow-2xl border  border-gray-800 overflow-hidden relative">
+
         {/* Header */}
         <div className="bg-linear-to-r from-teal-700 to-teal-500 p-6 text-center shadow-md">
           <div className="flex justify-center mb-2">
-            <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm">
+            <div className="bg-gray-800/20 p-3 rounded-full backdrop-blur-sm">
               <Camera className="w-8 h-8 text-white" />
             </div>
           </div>
@@ -247,9 +247,9 @@ const AdminQrScanner: React.FC = () => {
         </div>
 
         {/* Scanner Area */}
-        <div className="p-6 flex flex-col items-center justify-center relative bg-gray-50 dark:bg-gray-900/50">
-          
-          <div 
+        <div className="p-6 flex flex-col items-center justify-center relative bg-gray-900/50">
+
+          <div
             className={`w-full transition-all duration-300 ${result || loading ? 'opacity-0 absolute pointer-events-none' : 'opacity-100'}`}
           >
             {/* Contenedor del escáner */}
@@ -258,7 +258,7 @@ const AdminQrScanner: React.FC = () => {
 
           {/* Estado de carga */}
           {loading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-10">
+            <div className="absolute inset-0 flex flex-col items-center justify-center  bg-gray-900/80 backdrop-blur-sm z-10">
               <div className="w-16 h-16 border-4 border-teal-500 border-t-transparent rounded-full animate-spin mb-4 shadow-lg"></div>
               <p className="text-teal-600 dark:text-teal-400 font-semibold text-lg animate-pulse">Verificando acceso...</p>
             </div>
@@ -266,14 +266,14 @@ const AdminQrScanner: React.FC = () => {
 
           {/* Resultado: Éxito o Error */}
           {result && !loading && (
-            <div className="flex flex-col items-center justify-center p-6 bg-white dark:bg-gray-900 z-20 animate-in fade-in zoom-in duration-300 w-full overflow-y-auto">
-              
+            <div className="flex flex-col items-center justify-center p-6 bg-gray-900 z-20 animate-in fade-in zoom-in duration-300 w-full overflow-y-auto">
+
               {result.valid ? (
                 // ✅ Modal de Éxito
                 <div className="w-full max-w-sm flex flex-col items-center text-center">
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full"></div>
-                    <div className="relative w-32 h-32 rounded-full border-4 border-teal-500 shadow-xl overflow-hidden bg-gray-100 flex items-center justify-center">
+                    <div className="relative w-32 h-32 rounded-full border-4 border-teal-500 shadow-xl overflow-hidden bg-gray-700 flex items-center justify-center">
                       {result.data?.image ? (
                         <img src={result.data.image} alt="Foto del cliente" className="w-full h-full object-cover" />
                       ) : (
@@ -288,22 +288,22 @@ const AdminQrScanner: React.FC = () => {
                   <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">
                     {result.data?.socio || "Cliente Valido"}
                   </h2>
-                  <p className="text-teal-700 dark:text-teal-400 font-medium mb-6 bg-teal-50 dark:bg-teal-900/30 px-4 py-2 rounded-lg border border-teal-100 dark:border-teal-800 shadow-sm">
+                  <p className="text-teal-700 dark:text-teal-400 font-medium mb-6 bg-teal-900/30 px-4 py-2 rounded-lg border border-gray-700  dark:border-teal-800 shadow-sm">
                     {result.message}
                   </p>
 
-                  <div className="w-full bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-8 border border-gray-100 dark:border-gray-700 shadow-sm">
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-3 border-b border-gray-200 dark:border-gray-700 pb-3">
+                  <div className="w-full  bg-gray-800 rounded-xl p-4 mb-8 border  border-gray-700 shadow-sm">
+                    <div className="flex items-center text-sm  text-gray-300 mb-3 border-b  border-gray-700 pb-3">
                       <Calendar className="w-5 h-5 mr-3 text-teal-500" />
                       <span className="font-semibold text-gray-900 dark:text-white mr-2">Plan:</span>
                       {result.data?.plan || "N/A"}
                     </div>
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-3 border-b border-gray-200 dark:border-gray-700 pb-3">
+                    <div className="flex items-center text-sm  text-gray-300 mb-3 border-b  border-gray-700 pb-3">
                       <User className="w-5 h-5 mr-3 text-teal-500" />
                       <span className="font-semibold text-gray-900 dark:text-white mr-2">Cédula:</span>
                       {result.data?.cedula || "N/A"}
                     </div>
-                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <div className="flex items-center text-sm  text-gray-300">
                       <Clock className="w-5 h-5 mr-3 text-teal-500" />
                       <span className="font-semibold text-gray-900 dark:text-white mr-2">Ingreso:</span>
                       {result.data?.check_in_time ? new Date(result.data.check_in_time).toLocaleTimeString() : new Date().toLocaleTimeString()}
@@ -322,7 +322,7 @@ const AdminQrScanner: React.FC = () => {
                 <div className="w-full max-w-sm flex flex-col items-center text-center">
                   <div className="relative mb-6">
                     <div className="absolute inset-0 bg-red-500/20 blur-3xl rounded-full"></div>
-                    <div className="relative bg-white dark:bg-gray-800 p-6 rounded-full border-4 border-red-500 shadow-2xl">
+                    <div className="relative bg-gray-800 p-6 rounded-full border-4 border-red-500 shadow-2xl">
                       <AlertTriangle className="w-20 h-20 text-red-500" />
                     </div>
                   </div>
@@ -330,10 +330,10 @@ const AdminQrScanner: React.FC = () => {
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
                     Acceso Denegado
                   </h2>
-                  
-                  <div className="w-full bg-red-50 dark:bg-red-900/20 p-5 rounded-2xl border border-red-100 dark:border-red-500/30 mb-8 shadow-inner text-left relative overflow-hidden">
-                     <div className="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
-                     <p className="text-red-700 dark:text-red-400 font-medium pl-2 text-lg leading-relaxed">
+
+                  <div className="w-full bg-red-50 dark:bg-red-900/20 p-5 rounded-2xl border border-gray-700  dark:border-red-500/30 mb-8 shadow-inner text-left relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-2 h-full bg-red-500"></div>
+                    <p className="text-red-700 dark:text-red-400 font-medium pl-2 text-lg leading-relaxed">
                       {result.message}
                     </p>
                   </div>
@@ -352,7 +352,7 @@ const AdminQrScanner: React.FC = () => {
 
         </div>
       </div>
-      
+
       <style>{`
         /* Overrides for html5-qrcode UI to match our clean design */
         #qr-reader {

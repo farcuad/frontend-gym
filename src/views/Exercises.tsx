@@ -87,7 +87,7 @@ export default function Exercises() {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
-          <h1 className="text-xl font-black text-gray-800 tracking-tight shrink-0">Biblioteca de Ejercicios</h1>          
+          <h1 className="text-xl font-black text-gray-200 tracking-tight shrink-0">Biblioteca de Ejercicios</h1>          
         </div>
         <div className="relative group flex-1 max-w-md">
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-gray-400">
@@ -96,7 +96,7 @@ export default function Exercises() {
             <input
               type="text"
               placeholder="Buscar ejercicio..."
-              className="block w-full pl-10 pr-4 py-2.5 bg-white border border-gray-100 rounded-xl shadow-sm focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all font-bold text-gray-700 text-sm placeholder:text-gray-300"
+              className="block w-full pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 border-gray-800 rounded-xl shadow-sm focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 outline-none transition-all font-bold text-gray-300 text-sm placeholder:text-gray-300"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -122,15 +122,15 @@ export default function Exercises() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filteredExercises.map((ex) => (
-            <div key={ex.id} className="bg-white p-5 rounded-2xl border border-gray-50 shadow-sm transition-all group relative overflow-hidden">
+            <div key={ex.id} className="bg-gray-800 p-5 rounded-2xl border border-gray-700 border-gray-50 shadow-sm transition-all group relative overflow-hidden">
               <div className="flex items-start justify-between relative z-10">
                 <div className="flex items-center gap-4">
-                  <div className="bg-teal-50 size-11 rounded-xl flex items-center justify-center text-teal-600 shadow-inner">
+                  <div className="bg-teal-900/30 size-11 rounded-xl flex items-center justify-center text-teal-600 shadow-inner">
                     <FontAwesomeIcon icon={faDumbbell} className="text-lg" />
                   </div>
                   <div>
-                    <h3 className="font-black text-base text-gray-800 line-clamp-1">{ex.name}</h3>
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded-md mt-1 inline-block">
+                    <h3 className="font-black text-base text-gray-200 line-clamp-1">{ex.name}</h3>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-900 px-2 py-0.5 rounded-md mt-1 inline-block">
                       {ex.muscle_group || "General"}
                     </span>
                   </div>
@@ -149,7 +149,7 @@ export default function Exercises() {
                   </button>
                   <button 
                     onClick={() => handleDelete(ex.id)}
-                    className="size-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                    className="size-8 flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-900/30 rounded-lg transition-all"
                   >
                     <FontAwesomeIcon icon={faTrash} className="text-xs" />
                   </button>
@@ -158,8 +158,8 @@ export default function Exercises() {
             </div>
           ))}
           {filteredExercises.length === 0 && (
-            <div className="col-span-full flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[2.5rem] border-2 border-dashed border-gray-200 text-center space-y-4">
-              <div className="bg-white p-4 rounded-full shadow-sm text-gray-300">
+            <div className="col-span-full flex flex-col items-center justify-center py-20 bg-gray-900/50 rounded-[2.5rem] border-2 border-dashed border-gray-700 text-center space-y-4">
+              <div className="bg-gray-800 p-4 rounded-full shadow-sm text-gray-300">
                  <FontAwesomeIcon icon={faDumbbell} size="2x" />
               </div>
               <p className="text-gray-400 font-bold">No se encontraron ejercicios.</p>
@@ -172,16 +172,16 @@ export default function Exercises() {
       {/* Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-md z-60 flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl relative">
+          <div className="bg-gray-800 rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl relative">
             <button 
               onClick={() => setShowModal(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors z-10"
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-400 transition-colors z-10"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
 
-            <div className="p-8 border-b border-gray-50">
-              <h2 className="text-2xl font-black text-gray-800">
+            <div className="p-8 border-b border-gray-700 border-gray-50">
+              <h2 className="text-2xl font-black text-gray-200">
                 {editingExercise ? "Editar Ejercicio" : "Nuevo Ejercicio"}
               </h2>
               <p className="text-gray-400 font-medium text-sm">Completa la información del ejercicio.</p>
@@ -197,7 +197,7 @@ export default function Exercises() {
                   <input
                     required
                     type="text"
-                    className="w-full pl-11 pr-6 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
+                    className="w-full pl-11 pr-6 py-4 bg-gray-900 border border-gray-700 border-transparent rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300"
                     placeholder="Ej: Press de Banca"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -213,7 +213,7 @@ export default function Exercises() {
                   </span>
                   <input
                     type="text"
-                    className="w-full pl-11 pr-6 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
+                    className="w-full pl-11 pr-6 py-4 bg-gray-900 border border-gray-700 border-transparent rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300"
                     placeholder="Ej: Pecho, Espalda, Piernas"
                     value={formData.muscle_group || ""}
                     onChange={(e) => setFormData({ ...formData, muscle_group: e.target.value })}
@@ -225,7 +225,7 @@ export default function Exercises() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 transition-all"
+                  className="flex-1 px-4 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-900 transition-all"
                 >
                   Cancelar
                 </button>

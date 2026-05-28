@@ -160,7 +160,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
 
   return (
     <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/50 backdrop-blur-md animate-in fade-in duration-300 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 flex flex-col animate-in zoom-in-95 duration-200">
+      <div className="bg-gray-800 rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-700 border-gray-800 flex flex-col animate-in zoom-in-95 duration-200">
         {/* Encabezado con gradiente premium */}
         <div className="bg-linear-to-r from-teal-600 to-teal-500 px-8 py-6 text-white flex justify-between items-center shadow-md">
           <div>
@@ -175,7 +175,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="cursor-pointer size-9 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-all disabled:opacity-50"
+            className="cursor-pointer size-9 flex items-center justify-center rounded-full bg-gray-800/10 hover:bg-gray-800/20 text-white transition-all disabled:opacity-50"
             title="Cerrar"
           >
             <FontAwesomeIcon icon={faTimes} />
@@ -186,7 +186,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
         <form onSubmit={handleSubmit} className="p-8 space-y-6 flex-1 overflow-y-auto max-h-[80vh]">
           {/* Zona de Subida de Foto (Drag & Drop) */}
           <div className="flex flex-col items-center justify-center">
-            <label className="block text-sm font-bold text-gray-700 mb-3 self-start">
+            <label className="block text-sm font-bold text-gray-300 mb-3 self-start">
               Fotografía del Client
             </label>
 
@@ -210,7 +210,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="cursor-pointer px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                    className="cursor-pointer px-3 py-1.5 bg-gray-800/20 hover:bg-gray-800/30 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1"
                   >
                     <FontAwesomeIcon icon={faCamera} /> Cambiar
                   </button>
@@ -231,20 +231,20 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 className={`w-full border-2 border-dashed rounded-3xl p-8 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 ${
                   isDragging
-                    ? "border-teal-500 bg-teal-50/60 scale-102"
-                    : "border-gray-200 bg-gray-50/50 hover:border-teal-500 hover:bg-teal-50/20"
+                    ? "border-teal-500 bg-teal-900/30/60 scale-102"
+                    : "border-gray-700 bg-gray-900/50 hover:border-teal-500 hover:bg-teal-900/30/20"
                 }`}
               >
                 <div className="size-16 rounded-2xl bg-teal-100/50 flex items-center justify-center text-teal-600 mb-4 group-hover:scale-110 transition-transform">
                   <FontAwesomeIcon icon={faCloudUploadAlt} className="text-3xl" />
                 </div>
-                <p className="text-sm font-bold text-gray-700 text-center mb-1">
+                <p className="text-sm font-bold text-gray-300 text-center mb-1">
                   Arrastra y suelta la foto aquí
                 </p>
                 <p className="text-xs text-gray-400 text-center mb-3">
                   o haz clic para explorar en tu dispositivo
                 </p>
-                <span className="px-3 py-1 bg-gray-100 text-gray-500 rounded-lg text-[11px] font-bold uppercase tracking-wider">
+                <span className="px-3 py-1 bg-gray-700 text-gray-400 rounded-lg text-[11px] font-bold uppercase tracking-wider">
                   PNG, JPG hasta 5MB
                 </span>
               </div>
@@ -254,7 +254,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
           {/* Campos de texto */}
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
                 Nombre Completo *
               </label>
               <div className="relative">
@@ -268,14 +268,14 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                   placeholder="Ej. Juan Pérez"
                   required
                   disabled={isLoading}
-                  className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium disabled:opacity-60"
+                  className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-700 border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium disabled:opacity-60"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
                   Cédula *
                 </label>
                 <div className="relative">
@@ -289,13 +289,13 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                     placeholder="Ej. 12345678"
                     required
                     disabled={isLoading}
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium disabled:opacity-60"
+                    className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-700 border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium disabled:opacity-60"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
                   Teléfono *
                 </label>
                 <div className="relative">
@@ -309,7 +309,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
                     placeholder="Ej. 04141234567"
                     required
                     disabled={isLoading}
-                    className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium disabled:opacity-60"
+                    className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-700 border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium disabled:opacity-60"
                   />
                 </div>
               </div>
@@ -322,7 +322,7 @@ export const ClientForm: React.FC<ClientFormProps> = ({
               type="button"
               onClick={onClose}
               disabled={isLoading}
-              className="cursor-pointer flex-1 px-6 py-4 text-sm font-bold text-gray-500 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-colors disabled:opacity-50"
+              className="cursor-pointer flex-1 px-6 py-4 text-sm font-bold text-gray-400 bg-gray-900 rounded-2xl hover:bg-gray-700 transition-colors disabled:opacity-50"
             >
               Cancelar
             </button>

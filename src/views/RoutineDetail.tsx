@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faPlus, faTrash, faDumbbell, faCalendarDay, faClock, faSortAmountUp, faLayerGroup, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faDumbbell, faCalendarDay, faClock, faSortAmountUp, faLayerGroup, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import { notify, useConfirm } from "../utils/toast";
 import { SelectField } from "../components/SelectField";
@@ -24,7 +24,7 @@ export default function RoutineDetail() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const isClient = user.role === "client";
-  
+
   const [newExerciseData, setNewExerciseData] = useState({
     exercise_id: 0,
     sets: 3,
@@ -65,7 +65,7 @@ export default function RoutineDetail() {
   const handleAddExercise = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newExerciseData.exercise_id) return notify.error("Selecciona un ejercicio");
-    
+
     setIsSubmitting(true);
     try {
       await apiService.addExercisesToRoutine(newExerciseData as any, id!);
@@ -112,7 +112,7 @@ export default function RoutineDetail() {
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-20 gap-4">
-      <div className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-gray-100 flex items-center justify-center">
+      <div className="rounded-[2.5rem] shadow-xl flex items-center justify-center">
         <FontAwesomeIcon icon={faSpinner} className="text-teal-600 text-4xl animate-spin" />
       </div>
       <p className="text-gray-400 font-bold animate-pulse">Cargando detalles de rutina...</p>
@@ -121,11 +121,11 @@ export default function RoutineDetail() {
 
   if (!routine) return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
-       <div className="bg-rose-50 text-rose-500 p-6 rounded-full mb-4">
-          <FontAwesomeIcon icon={faTimes} size="2x" />
-       </div>
-       <h2 className="text-2xl font-black text-gray-800">Rutina no encontrada</h2>
-       <button onClick={() => navigate("/home/routines")} className="mt-4 text-teal-600 font-bold hover:underline">Volver a rutinas</button>
+      <div className="bg-rose-50 text-rose-500 p-6 rounded-full mb-4">
+        <FontAwesomeIcon icon={faTimes} size="2x" />
+      </div>
+      <h2 className="text-2xl font-black text-gray-200">Rutina no encontrada</h2>
+      <button onClick={() => navigate("/home/routines")} className="mt-4 text-teal-600 font-bold hover:underline">Volver a rutinas</button>
     </div>
   );
 
@@ -147,32 +147,26 @@ export default function RoutineDetail() {
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex items-center gap-3 md:gap-4">
-        <button 
-          onClick={() => navigate("/home/routines")}
-          className="size-10 md:size-12 flex items-center justify-center rounded-xl md:rounded-2xl border border-gray-100 text-gray-400 shadow-sm shrink-0"
-        >
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
         <div className="min-w-0">
-          <h1 className="text-xl md:text-3xl font-black text-gray-800 tracking-tight truncate">{routine.name}</h1>
-          <p className="text-xs md:text-gray-500 font-medium truncate">{routine.description || "Sin descripción"}</p>
+          <h1 className="text-xl md:text-3xl font-black text-gray-200 tracking-tight truncate">{routine.name}</h1>
+          <p className="text-xs md:text-gray-400 font-medium truncate">{routine.description || "Sin descripción"}</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-xl shadow-gray-200/20 overflow-hidden">
-        <div className="p-4 md:p-8 border-b border-gray-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-gray-800 rounded-2xl md:rounded-[2.5rem] border  border-gray-800 shadow-xl shadow-gray-200/20 overflow-hidden">
+        <div className="p-4 md:p-8 border-b border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-             <div className="bg-teal-600 text-white p-2.5 md:p-3 rounded-xl md:rounded-2xl shadow-lg shadow-teal-100">
-                <FontAwesomeIcon icon={faLayerGroup} className="size-4 md:size-5" />
-             </div>
-             <h2 className="font-black text-lg md:text-xl text-gray-800">
-               {isClient ? "Mi Entrenamiento" : "Ejercicios Programados"}
-             </h2>
+            <div className="bg-teal-600 text-white p-2.5 md:p-3 rounded-xl md:rounded-2xl">
+              <FontAwesomeIcon icon={faLayerGroup} className="size-4 md:size-5" />
+            </div>
+            <h2 className="font-black text-lg md:text-xl text-gray-200">
+              {isClient ? "Mi Entrenamiento" : "Ejercicios Programados"}
+            </h2>
           </div>
           {!isClient && (
-            <button 
+            <button
               onClick={() => setShowAddModal(true)}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-teal-600 text-white px-5 py-3 md:py-3.5 rounded-xl md:rounded-2xl text-xs md:text-sm font-black hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95"
+              className=" sm:w-auto flex items-center justify-center gap-2 bg-teal-600 text-white px-5 py-3 md:py-3.5 rounded-xl md:rounded-2xl text-xs md:text-sm font-black hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 active:scale-95"
             >
               <FontAwesomeIcon icon={faPlus} />
               Añadir Ejercicio
@@ -185,9 +179,9 @@ export default function RoutineDetail() {
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-gray-50/50 text-[10px] uppercase tracking-[0.2em] text-gray-400 font-black border-b border-gray-100">
-                  <th className="px-8 py-5">Día</th>
+                <tr className="bg-gray-900/50 text-[10px] uppercase tracking-[0.2em] text-white font-black border-b  border-gray-800">
                   <th className="px-8 py-5">Orden</th>
+                  <th className="px-8 py-5">Día</th>
                   <th className="px-8 py-5">Ejercicio</th>
                   <th className="px-8 py-5">Series</th>
                   <th className="px-8 py-5">Reps</th>
@@ -198,38 +192,38 @@ export default function RoutineDetail() {
               <tbody className="divide-y divide-gray-50">
                 {routine.exercises?.map((item: any) => (
                   <tr key={item.id} className="transition-all group">
+                    <td className="px-8 py-6 font-black text-teal-600 text-lg">#{item.sort_order}</td>
                     <td className="px-8 py-6">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-black uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-700 text-gray-400 rounded-lg text-[10px] font-black uppercase tracking-wider">
                         <FontAwesomeIcon icon={faCalendarDay} className="text-teal-500" />
                         {getDayName(item.day_of_week)}
                       </span>
                     </td>
-                    <td className="px-8 py-6 font-black text-teal-600 text-lg">#{item.sort_order}</td>
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
-                        <div className="bg-teal-50 size-10 rounded-xl flex items-center justify-center text-teal-600">
+                        <div className="bg-teal-900/30 size-10 rounded-xl flex items-center justify-center text-teal-600">
                           <FontAwesomeIcon icon={faDumbbell} className="text-sm" />
                         </div>
-                        <span className="font-bold text-gray-800 text-base">{item.exercise_name}</span>
+                        <span className="font-bold text-gray-200 text-base">{item.exercise_name}</span>
                       </div>
                     </td>
-                    <td className="px-8 py-6 font-bold text-gray-600">{item.sets} <span className="text-[10px] text-gray-400 font-black uppercase">Sets</span></td>
+                    <td className="px-8 py-6 font-bold text-gray-400">{item.sets} <span className="text-[10px] text-gray-400 font-black uppercase">Sets</span></td>
                     <td className="px-8 py-6">
-                      <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-lg font-black font-mono text-sm">
+                      <span className="bg-blue-600 text-white px-3 py-1 rounded-lg font-black font-mono text-sm">
                         {item.reps}
                       </span>
                     </td>
                     <td className="px-8 py-6 text-center">
-                      <div className="flex items-center justify-center gap-1.5 text-gray-600 font-bold">
-                         <FontAwesomeIcon icon={faClock} className="text-orange-400 text-xs" />
-                         <span>{item.rest_time_seconds}s</span>
+                      <div className="flex items-center justify-center gap-1.5 text-gray-400 font-bold">
+                        <FontAwesomeIcon icon={faClock} className="text-orange-400 text-xs" />
+                        <span>{item.rest_time_seconds}s</span>
                       </div>
                     </td>
                     {!isClient && (
                       <td className="px-8 py-6 text-right">
-                        <button 
+                        <button
                           onClick={() => handleRemoveExercise(item.id)}
-                          className="size-10 flex items-center justify-center bg-rose-50 text-rose-500 rounded-xl transition-all"
+                          className="size-10 flex items-center justify-center bg-rose-500 text-white rounded-xl transition-all"
                         >
                           <FontAwesomeIcon icon={faTrash} className="text-sm" />
                         </button>
@@ -244,23 +238,23 @@ export default function RoutineDetail() {
           {/* VISTA MÓVIL (TARJETAS) */}
           <div className="grid grid-cols-1 gap-4 md:hidden">
             {routine.exercises?.map((item: any) => (
-              <div key={item.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
+              <div key={item.id} className="bg-gray-800 p-5 rounded-2xl border border-gray-800 shadow-sm flex flex-col gap-4">
                 <div className="flex justify-between items-start gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="bg-teal-50 size-10 rounded-xl flex items-center justify-center text-teal-600">
+                    <div className="bg-teal-900/30 size-10 rounded-xl flex items-center justify-center text-teal-600">
                       <FontAwesomeIcon icon={faDumbbell} className="text-sm" />
                     </div>
                     <div>
-                      <h3 className="font-black text-gray-800 text-sm">{item.exercise_name}</h3>
+                      <h3 className="font-black text-gray-200 text-sm">{item.exercise_name}</h3>
                       <span className="text-[10px] font-black text-teal-600 uppercase tracking-widest">
                         {getDayName(item.day_of_week)} • Orden #{item.sort_order}
                       </span>
                     </div>
                   </div>
                   {!isClient && (
-                    <button 
+                    <button
                       onClick={() => handleRemoveExercise(item.id)}
-                      className="size-8 flex items-center justify-center bg-rose-50 text-rose-500 rounded-lg"
+                      className="size-8 flex items-center justify-center bg-rose-500 text-white rounded-lg"
                     >
                       <FontAwesomeIcon icon={faTrash} className="text-xs" />
                     </button>
@@ -270,7 +264,7 @@ export default function RoutineDetail() {
                 <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-50">
                   <div className="text-center">
                     <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Sets</span>
-                    <span className="font-black text-gray-800 text-base">{item.sets}</span>
+                    <span className="font-black text-gray-200 text-base">{item.sets}</span>
                   </div>
                   <div className="text-center border-x border-gray-50">
                     <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Reps</span>
@@ -278,9 +272,9 @@ export default function RoutineDetail() {
                   </div>
                   <div className="text-center">
                     <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Descanso</span>
-                    <div className="flex items-center justify-center gap-1 text-gray-600 font-bold">
-                       <FontAwesomeIcon icon={faClock} className="text-orange-400 text-[10px]" />
-                       <span className="text-sm">{item.rest_time_seconds}s</span>
+                    <div className="flex items-center justify-center gap-1 text-gray-400 font-bold">
+                      <FontAwesomeIcon icon={faClock} className="text-orange-400 text-[10px]" />
+                      <span className="text-sm">{item.rest_time_seconds}s</span>
                     </div>
                   </div>
                 </div>
@@ -291,9 +285,9 @@ export default function RoutineDetail() {
           {(!routine.exercises || routine.exercises.length === 0) && (
             <div className="px-8 py-20 text-center">
               <div className="flex flex-col items-center gap-4 text-gray-300">
-                 <FontAwesomeIcon icon={faDumbbell} size="3x" />
-                 <p className="font-bold text-lg">No hay ejercicios asignados todavía.</p>
-                 <button onClick={() => setShowAddModal(true)} className="text-teal-600 hover:underline">Añadir ejercicios</button>
+                <FontAwesomeIcon icon={faDumbbell} size="3x" />
+                <p className="font-bold text-lg">No hay ejercicios asignados todavía.</p>
+                <button onClick={() => setShowAddModal(true)} className="text-teal-600 hover:underline">Añadir ejercicios</button>
               </div>
             </div>
           )}
@@ -303,22 +297,22 @@ export default function RoutineDetail() {
       {/* Modal para añadir ejercicio */}
       {showAddModal && (
         <div className="fixed inset-0 bg-gray-900/60 backdrop-blur-md z-60 flex items-center justify-center p-4 animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-xl overflow-hidden shadow-2xl relative">
-            <button 
+          <div className="bg-gray-800 rounded-[2.5rem] w-full max-w-xl overflow-hidden shadow-2xl relative">
+            <button
               onClick={() => setShowAddModal(false)}
-              className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors z-10"
+              className="absolute top-6 right-6 text-gray-400 hover:text-gray-400 transition-colors z-10"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
 
-            <div className="p-8 border-b border-gray-50 bg-linear-to-r from-teal-600 to-teal-500 text-white">
+            <div className="p-8 border-b border-gray-700 bg-linear-to-r from-teal-600 to-teal-500 text-white">
               <h2 className="text-2xl font-black">Añadir Ejercicio</h2>
               <p className="text-teal-100 font-medium text-sm">Configura los detalles del ejercicio para esta rutina.</p>
             </div>
-            
+
             <form onSubmit={handleAddExercise} className="p-8 space-y-6 max-h-[70vh] overflow-y-auto">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <SelectField 
+                <SelectField
                   label="Ejercicio"
                   icon={faDumbbell}
                   placeholder="Seleccionar..."
@@ -326,7 +320,7 @@ export default function RoutineDetail() {
                   value={newExerciseData.exercise_id}
                   onChange={(val) => setNewExerciseData({ ...newExerciseData, exercise_id: val })}
                 />
-                <SelectField 
+                <SelectField
                   label="Día de la Semana"
                   icon={faCalendarDay}
                   placeholder="Seleccionar..."
@@ -347,7 +341,7 @@ export default function RoutineDetail() {
                       type="number"
                       required
                       min="1"
-                      className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 shadow-xs"
+                      className="w-full pl-11 pr-4 py-4 bg-gray-900 border border-gray-700 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 shadow-xs"
                       value={newExerciseData.sets}
                       onChange={(e) => setNewExerciseData({ ...newExerciseData, sets: Number(e.target.value) })}
                     />
@@ -362,7 +356,7 @@ export default function RoutineDetail() {
                     <input
                       type="text"
                       required
-                      className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 shadow-xs"
+                      className="w-full pl-11 pr-4 py-4 bg-gray-900 border border-gray-700 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 shadow-xs"
                       placeholder="Ej: 12 o 10-12"
                       value={newExerciseData.reps}
                       onChange={(e) => setNewExerciseData({ ...newExerciseData, reps: e.target.value })}
@@ -382,7 +376,7 @@ export default function RoutineDetail() {
                       type="number"
                       required
                       min="0"
-                      className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 shadow-xs"
+                      className="w-full pl-11 pr-4 py-4 bg-gray-900 border border-gray-700 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 shadow-xs"
                       value={newExerciseData.rest_time_seconds}
                       onChange={(e) => setNewExerciseData({ ...newExerciseData, rest_time_seconds: Number(e.target.value) })}
                     />
@@ -398,7 +392,7 @@ export default function RoutineDetail() {
                       type="number"
                       required
                       min="1"
-                      className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 shadow-xs"
+                      className="w-full pl-11 pr-4 py-4 bg-gray-900 border border-gray-700  rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 shadow-xs"
                       value={newExerciseData.sort_order}
                       onChange={(e) => setNewExerciseData({ ...newExerciseData, sort_order: Number(e.target.value) })}
                     />
@@ -410,14 +404,14 @@ export default function RoutineDetail() {
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 px-4 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 transition-all border border-transparent"
+                  className="flex-1 px-4 py-4 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-900 transition-all border border-gray-700"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="flex-1 px-4 py-4 rounded-2xl bg-teal-600 text-white text-xs font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-xl shadow-teal-100 disabled:opacity-50 active:scale-95"
+                  className="flex-1 px-4 py-4 rounded-2xl bg-teal-600 text-white text-xs font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-lg shadow-teal-100 disabled:opacity-50 active:scale-95"
                 >
                   {isSubmitting ? <FontAwesomeIcon icon={faSpinner} className="animate-spin" /> : "Añadir a Rutina"}
                 </button>

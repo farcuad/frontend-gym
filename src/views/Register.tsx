@@ -56,7 +56,7 @@ function AuthRegister() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-900">
       {/* SECCIÓN IZQUIERDA: Banner (Consistente con Login) */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-teal-800 items-center justify-center overflow-hidden">
         {/* <img 
@@ -65,7 +65,7 @@ function AuthRegister() {
           className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay"
         /> */}
         <div className="relative z-10 text-center px-10">
-          <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20">
+          <div className="bg-gray-800/10 backdrop-blur-md p-8 rounded-3xl border border-gray-700 ">
             <FontAwesomeIcon icon={faDumbbell} className="text-teal-400 text-5xl mb-4" />
             <h1 className="text-4xl font-black text-white mb-2 tracking-tight">Únete a FitLog</h1>
             <p className="text-teal-100 text-lg font-light max-w-xs mx-auto">
@@ -79,15 +79,15 @@ function AuthRegister() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 overflow-y-auto">
         <div className="w-full max-w-md space-y-6">
           <div className="text-left">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900">Crear Cuenta</h2>
-            <p className="mt-2 text-gray-500 text-sm">Regístrate para empezar a usar el panel administrativo.</p>
+            <h2 className="text-3xl font-bold tracking-tight text-gray-100">Crear Cuenta</h2>
+            <p className="mt-2 text-gray-400 text-sm">Regístrate para empezar a usar el panel administrativo.</p>
           </div>
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 gap-4">
               {/* Nombre del Gimnasio */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Nombre del Gimnasio</label>
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Nombre del Gimnasio</label>
                 <div className="relative group">
                   <input
                     type="text"
@@ -95,7 +95,7 @@ function AuthRegister() {
                     value={formData.gym_name}
                     onChange={handleChange}
                     required
-                    className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-10 text-gray-900 transition-all focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
+                    className="block w-full rounded-xl border border-gray-700  bg-gray-900 px-4 py-3 pr-10 text-gray-100 transition-all focus:bg-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
                     placeholder="Titan Gym Center"
                   />
                   <FontAwesomeIcon icon={faBuilding} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-teal-500 transition-colors" />
@@ -104,7 +104,7 @@ function AuthRegister() {
 
               {/* Nombre Administrador */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Nombre del Administrador</label>
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Nombre del Administrador</label>
                 <div className="relative group">
                   <input
                     type="text"
@@ -112,7 +112,7 @@ function AuthRegister() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-10 text-gray-900 transition-all focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
+                    className="block w-full rounded-xl border border-gray-700  bg-gray-900 px-4 py-3 pr-10 text-gray-100 transition-all focus:bg-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
                     placeholder="Juan Pérez"
                   />
                   <FontAwesomeIcon icon={faUser} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-teal-500 transition-colors" />
@@ -121,7 +121,7 @@ function AuthRegister() {
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Correo Corporativo</label>
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Correo Corporativo</label>
                 <div className="relative group">
                   <input
                     type="email"
@@ -129,7 +129,7 @@ function AuthRegister() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-10 text-gray-900 transition-all focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
+                    className="block w-full rounded-xl border border-gray-700  bg-gray-900 px-4 py-3 pr-10 text-gray-100 transition-all focus:bg-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
                     placeholder="admin@tu-gym.com"
                   />
                   <FontAwesomeIcon icon={faEnvelope} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-teal-500 transition-colors" />
@@ -138,7 +138,7 @@ function AuthRegister() {
 
               {/* Contraseña */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Contraseña</label>
+                <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-1">Contraseña</label>
                 <div className="relative group">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -146,7 +146,7 @@ function AuthRegister() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 pr-10 text-gray-900 transition-all focus:bg-white focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
+                    className="block w-full rounded-xl border border-gray-700  bg-gray-900 px-4 py-3 pr-10 text-gray-100 transition-all focus:bg-gray-800 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 outline-none sm:text-sm"
                     placeholder="••••••••"
                   />
                   <button
@@ -157,15 +157,15 @@ function AuthRegister() {
                     <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                   </button>
                 </div>
-                
+
                 {/* Indicador de Fuerza de Contraseña */}
                 {formData.password && passwordInfo && (
                   <div className="mt-3 px-1">
                     <div className="flex justify-between items-center mb-1">
-                      <span className="text-[10px] font-bold uppercase text-gray-500">Seguridad:</span>
+                      <span className="text-[10px] font-bold uppercase text-gray-400">Seguridad:</span>
                       <span className={`text-xs font-bold ${passwordInfo.color}`}>{passwordInfo.label}</span>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-gray-200 overflow-hidden">
+                    <div className="h-1.5 w-full rounded-full bg-gray-700 overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-500 ${passwordInfo.bar}`}
                         style={{ width: passwordInfo.level === 'very-weak' ? '25%' : passwordInfo.level === 'weak' ? '50%' : passwordInfo.level === 'medium' ? '75%' : '100%' }}
@@ -179,12 +179,12 @@ function AuthRegister() {
             <button
               disabled={loading || passwordInfo?.level === "very-weak"}
               type="submit"
-              className="w-full flex justify-center items-center rounded-xl bg-gray-900 px-4 py-4 text-sm font-bold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center items-center rounded-xl bg-gray-700 px-4 py-4 text-sm font-bold text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creando cuenta..." : "Comenzar ahora"}
             </button>
 
-            <p className="text-center text-sm text-gray-600 pt-2">
+            <p className="text-center text-sm text-gray-400 pt-2">
               ¿Ya tienes una cuenta?{" "}
               <NavLink to="/login" className="font-bold text-teal-600 hover:text-teal-700 transition-colors">
                 Inicia Sesión

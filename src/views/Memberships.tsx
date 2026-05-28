@@ -173,8 +173,8 @@ const MembershipTable: React.FC = () => {
       }
     }
   };
-  
-  const handleUpdate = async (member: Memberships ) => {
+
+  const handleUpdate = async (member: Memberships) => {
     setRenewingMember(member);
     setRenewPlanId(member.plan_id);
     setPaymentMethod("Divisas");
@@ -231,13 +231,13 @@ const MembershipTable: React.FC = () => {
   const getStatusColor = (estado: Memberships['estado']) => {
     switch (estado) {
       case 'activo':
-        return 'bg-green-100 text-green-600';
+        return 'bg-green-600 text-white';
       case 'vencido':
-        return 'bg-rose-100 text-rose-600';
+        return 'bg-rose-600 text-white';
       case 'suspendido':
-        return 'bg-amber-100 text-amber-600';
+        return 'bg-amber-600 text-white';
       default:
-        return 'bg-gray-100 text-gray-600';
+        return 'bg-gray-700 text-gray-400';
     }
   };
 
@@ -247,8 +247,8 @@ const MembershipTable: React.FC = () => {
     if (!exchangeRate || isNaN(price)) return '—';
     return `Bs. ${(price * exchangeRate).toFixed(2)}`;
   };
-  const formatFecha = (dateString:string) => {
-    if(!dateString) return '----';
+  const formatFecha = (dateString: string) => {
+    if (!dateString) return '----';
     // Cortamos el string en la "T" para obtener solo "YYYY-MM-DD"
     const [year, month, day] = dateString.split('T')[0].split('-');
     // Retornamos el formato latino que usas: DD/MM/YYYY
@@ -269,29 +269,29 @@ const MembershipTable: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-center min-h-50">
+      <div className="p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm flex items-center justify-center min-h-50">
         <FontAwesomeIcon icon={faSpinner} className="text-teal-600 text-2xl animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="p-4 md:p-6 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
+    <div className="p-4 md:p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm">
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-6 px-2">
         <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 justify-start">
-        <h2 className="text-xl font-black text-gray-800 flex items-center gap-3">
-          <div className="bg-teal-600 text-white p-2 rounded-xl shadow-lg shadow-teal-100">
-            <FontAwesomeIcon icon={faIdBadge} className="size-5" />
-          </div>
-          <span className="hidden sm:inline">Control de </span>Membresías
-        </h2>
-        {exchangeRate && (
-        <div className="mt-2 md:mt-0 px-2">
-          <span className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-xs font-bold">
-            Tasa BCV: {exchangeRate.toFixed(2)} Bs
-          </span>
-        </div>
-      )}
+          <h2 className="text-xl font-black text-gray-200 flex items-center gap-3">
+            <div className="bg-teal-600 text-white p-2 rounded-xl ">
+              <FontAwesomeIcon icon={faIdBadge} className="size-5" />
+            </div>
+            <span className="hidden sm:inline">Control de </span>Membresías
+          </h2>
+          {exchangeRate && (
+            <div className="mt-2 md:mt-0 px-2">
+              <span className="inline-flex items-center gap-2 bg-teal-600 text-white px-4 py-2 rounded-xl text-xs font-bold">
+                Tasa BCV: {exchangeRate.toFixed(2)} Bs
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center gap-3 w-full xl:w-auto">
@@ -304,7 +304,7 @@ const MembershipTable: React.FC = () => {
               placeholder="Buscar por cliente..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full xl:w-64 pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
+              className="w-full xl:w-64 pl-9 pr-4 py-2.5 bg-gray-900 border border-gray-700 rounded-xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium"
             />
           </div>
           <button
@@ -323,12 +323,12 @@ const MembershipTable: React.FC = () => {
         </div>
       </div>
 
-      
+
 
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-50 text-gray-400">
+            <tr className="border-b border-gray-700 text-gray-400">
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">#</th>
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Cliente</th>
               <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Plan</th>
@@ -343,146 +343,146 @@ const MembershipTable: React.FC = () => {
           {currentMemberships.length === 0 && <tr><td colSpan={9} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
           {currentMemberships.length > 0 && (
             <tbody className="divide-y divide-gray-50">
-            
-            
-            {currentMemberships.map((member, index) => (
-              <tr key={member.id} className="hover:bg-gray-50/50 transition-all group">
-                <td className="px-6 py-5 text-gray-400 font-medium">{indexOfFirstItem + index + 1}</td>
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-3">
-                    <div className="size-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-teal-100 group-hover:text-teal-600 transition-colors">
-                      <FontAwesomeIcon icon={faUser} className="text-xs" />
+
+
+              {currentMemberships.map((member, index) => (
+                <tr key={member.id} className="hover:bg-gray-900/50 transition-all group">
+                  <td className="px-6 py-5 text-gray-400 font-medium">{indexOfFirstItem + index + 1}</td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-3">
+                      <div className="size-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 group-hover:bg-teal-100 group-hover:text-teal-600 transition-colors">
+                        <FontAwesomeIcon icon={faUser} className="text-xs" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-white">{member.client_name}</span>
+                        <span className="text-xs text-white">{member.client_phone}</span>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="font-bold text-gray-700">{member.client_name}</span>
-                      <span className="text-xs text-gray-400">{member.client_phone}</span>
+                  </td>
+                  <td className="px-6 py-5 font-medium text-white">{member.plan_name}</td>
+                  <td className="px-6 py-5">
+                    <span className="bg-green-700 text-white px-3 py-1 rounded-full font-bold text-xs">
+                      $ {member.plan_price}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className="bg-blue-700 text-white px-3 py-1 rounded-full font-bold text-xs">
+                      {formatBs(member.plan_price)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-2 text-white">
+                      <FontAwesomeIcon icon={faCalendarAlt} className="text-xs text-white" />
+                      <span className="font-medium">{formatFecha(member.fecha_inicio)}</span>
                     </div>
-                  </div>
-                </td>
-                <td className="px-6 py-5 font-medium text-gray-600">{member.plan_name}</td>
-                <td className="px-6 py-5">
-                  <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-xs">
-                    $ {member.plan_price}
-                  </span>
-                </td>
-                <td className="px-6 py-5">
-                  <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-bold text-xs">
-                    {formatBs(member.plan_price)}
-                  </span>
-                </td>
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <FontAwesomeIcon icon={faCalendarAlt} className="text-xs text-gray-400" />
-                    <span className="font-medium">{formatFecha(member.fecha_inicio)}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-5">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <FontAwesomeIcon icon={faCalendarAlt} className="text-xs text-gray-400" />
-                    <span className="font-medium">{formatFecha(member.fecha_vencimiento)}</span>
-                  </div>
-                </td>
-                <td className="px-6 py-5">
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
-                    <FontAwesomeIcon icon={member.estado === "activo" ? faCheckCircle : faTimes} className="text-[12px]" />
-                    {member.estado}
-                  </span>
-                </td>
-                <td className="px-6 py-5 text-center">
-                  <div className="flex justify-center gap-2">
-                    <button onClick={() => handleUpdate(member)} className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm">
-                      <FontAwesomeIcon icon={faEdit} />
-                    </button>
-                    <button onClick={() => handleDelete(member.id)} className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm">
-                      <FontAwesomeIcon icon={faTrashAlt} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-            )}
-          
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex items-center gap-2 text-white">
+                      <FontAwesomeIcon icon={faCalendarAlt} className="text-xs text-white" />
+                      <span className="font-medium">{formatFecha(member.fecha_vencimiento)}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
+                      <FontAwesomeIcon icon={member.estado === "activo" ? faCheckCircle : faTimes} className="text-[12px]" />
+                      {member.estado}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button onClick={() => handleUpdate(member)} className="cursor-pointer size-9 flex items-center justify-center rounded-xl border  border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm">
+                        <FontAwesomeIcon icon={faEdit} />
+                      </button>
+                      <button onClick={() => handleDelete(member.id)} className="cursor-pointer size-9 flex items-center justify-center rounded-xl border border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm">
+                        <FontAwesomeIcon icon={faTrashAlt} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          )}
+
         </table>
       </div>
 
       {/* VISTA MÓVIL (TARJETAS) */}
       <div className="grid grid-cols-1 gap-4 md:hidden">
         {currentMemberships.length === 0 && (
-           <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
+          <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
             No hay membresias disponibles
           </div>
         )}
         {currentMemberships.map((member) => (
-          <div key={member.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col gap-4">
-             {/* Header Tarjeta */}
-             <div className="flex justify-between items-start gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="size-10 rounded-full bg-teal-50 shrink-0 flex items-center justify-center text-teal-600">
-                      <FontAwesomeIcon icon={faUser} className="text-sm" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-bold text-gray-800 truncate">{member.client_name}</h3>
-                      <p className="text-xs text-gray-400 font-medium">{member.client_phone}</p>
-                    </div>
+          <div key={member.id} className="bg-gray-800 p-5 rounded-2xl border border-gray-800 shadow-sm flex flex-col gap-4">
+            {/* Header Tarjeta */}
+            <div className="flex justify-between items-start gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="size-10 rounded-full bg-teal-900/30 shrink-0 flex items-center justify-center text-teal-600">
+                  <FontAwesomeIcon icon={faUser} className="text-sm" />
                 </div>
-                <span className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
-                    <FontAwesomeIcon icon={member.estado === "activo" ? faCheckCircle : faTimes} className="text-[10px]" />
-                    {member.estado}
+                <div className="min-w-0">
+                  <h3 className="font-bold text-white truncate">{member.client_name}</h3>
+                  <p className="text-xs text-whitefont-medium">{member.client_phone}</p>
+                </div>
+              </div>
+              <span className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
+                <FontAwesomeIcon icon={member.estado === "activo" ? faCheckCircle : faTimes} className="text-[10px]" />
+                {member.estado}
+              </span>
+            </div>
+
+            {/* Detalles */}
+            <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-50">
+              <div>
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Plan</span>
+                <span className="text-sm font-bold text-gray-300">{member.plan_name}</span>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Precio USD</span>
+                <span className="bg-green-700 text-white px-2 py-0.5 rounded-lg font-bold text-xs">
+                  $ {member.plan_price}
                 </span>
-             </div>
+              </div>
 
-             {/* Detalles */}
-             <div className="grid grid-cols-2 gap-3 pt-3 border-t border-gray-50">
-                <div>
-                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Plan</span>
-                   <span className="text-sm font-bold text-gray-700">{member.plan_name}</span>
-                </div>
-                <div className="text-right">
-                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Precio USD</span>
-                   <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-lg font-bold text-xs">
-                    $ {member.plan_price}
-                   </span>
-                </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Precio Bs</span>
+                <span className="bg-blue-700 text-white px-2 py-0.5 rounded-lg font-bold text-xs">
+                  {formatBs(member.plan_price)}
+                </span>
+              </div>
 
-                <div>
-                   <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Precio Bs</span>
-                   <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-lg font-bold text-xs">
-                    {formatBs(member.plan_price)}
-                   </span>
+              <div className="text-right">
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Inicio</span>
+                <div className="flex items-center justify-end gap-1.5 text-gray-400">
+                  <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-teal-500" />
+                  <span className="text-xs font-medium">{formatFecha(member.fecha_inicio)}</span>
                 </div>
-                
-                <div className="text-right">
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Inicio</span>
-                   <div className="flex items-center justify-end gap-1.5 text-gray-600">
-                    <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-teal-500" />
-                    <span className="text-xs font-medium">{formatFecha(member.fecha_inicio)}</span>
-                  </div>
+              </div>
+              <div>
+                <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Vencimiento</span>
+                <div className="flex items-center gap-1.5 text-gray-400">
+                  <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-rose-500" />
+                  <span className="text-xs font-medium">{formatFecha(member.fecha_vencimiento)}</span>
                 </div>
-                 <div>
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-1">Vencimiento</span>
-                   <div className="flex items-center gap-1.5 text-gray-600">
-                    <FontAwesomeIcon icon={faCalendarAlt} className="text-[10px] text-rose-500" />
-                    <span className="text-xs font-medium">{formatFecha(member.fecha_vencimiento)}</span>
-                  </div>
-                </div>
-             </div>
+              </div>
+            </div>
 
-             {/* Acciones */}
-             <div className="flex gap-2 pt-3 border-t border-gray-50">
-               <button 
-                  onClick={() => handleUpdate(member)} 
-                  className="flex-1 py-2 rounded-xl bg-amber-50 text-amber-600 font-bold text-xs hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faEdit} /> Renovar
-                </button>
-                <button 
-                  onClick={() => handleDelete(member.id)} 
-                  className="flex-1 py-2 rounded-xl bg-rose-50 text-rose-600 font-bold text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-2"
-                >
-                  <FontAwesomeIcon icon={faTrashAlt} /> Eliminar
-                </button>
-             </div>
+            {/* Acciones */}
+            <div className="flex gap-2 pt-3 border-t border-gray-50">
+              <button
+                onClick={() => handleUpdate(member)}
+                className="flex-1 py-2 rounded-xl bg-amber-600 text-white font-bold text-xs hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <FontAwesomeIcon icon={faEdit} /> Renovar
+              </button>
+              <button
+                onClick={() => handleDelete(member.id)}
+                className="flex-1 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <FontAwesomeIcon icon={faTrashAlt} /> Eliminar
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -494,33 +494,33 @@ const MembershipTable: React.FC = () => {
             <button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-xl disabled:opacity-50"
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-900/30 rounded-xl disabled:opacity-50"
             >
               Anterior
             </button>
             <button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-50 rounded-xl disabled:opacity-50"
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-900/30 rounded-xl disabled:opacity-50"
             >
               Siguiente
             </button>
           </div>
 
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <p className="text-sm text-gray-500 font-medium">
-              Mostrando <span className="text-gray-800 font-bold">{indexOfFirstItem + 1}</span> a{" "}
-              <span className="text-gray-800 font-bold">
+            <p className="text-sm text-gray-400 font-medium">
+              Mostrando <span className="text-gray-200 font-bold">{indexOfFirstItem + 1}</span> a{" "}
+              <span className="text-gray-200 font-bold">
                 {Math.min(indexOfLastItem, filteredMemberships.length)}
               </span>{" "}
-              de <span className="text-gray-800 font-bold">{filteredMemberships.length}</span> membresías
+              de <span className="text-gray-200 font-bold">{filteredMemberships.length}</span> membresías
             </p>
-            
+
             <nav className="flex gap-1">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="size-9 flex items-center justify-center rounded-xl border border-gray-100 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+                className="size-9 flex items-center justify-center rounded-xl border  border-gray-800 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
               >
                 <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
               </button>
@@ -529,11 +529,10 @@ const MembershipTable: React.FC = () => {
                 <button
                   key={page}
                   onClick={() => setCurrentPage(page)}
-                  className={`size-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    currentPage === page
-                      ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
-                      : "text-gray-500 hover:bg-gray-100"
-                  }`}
+                  className={`size-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
+                    ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
+                    : "text-gray-400 hover:bg-gray-700"
+                    }`}
                 >
                   {page}
                 </button>
@@ -542,7 +541,7 @@ const MembershipTable: React.FC = () => {
               <button
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="size-9 flex items-center justify-center rounded-xl border border-gray-100 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+                className="size-9 flex items-center justify-center rounded-xl border  border-gray-800 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
               >
                 <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
               </button>
@@ -554,17 +553,17 @@ const MembershipTable: React.FC = () => {
       {/* Modal para renovar membresias */}
       {isRenewOpen && renewingMember && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden max-h-[90vh] overflow-y-auto">
-            
-            <button 
+          <div className="bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden max-h-[90vh] overflow-y-auto">
+
+            <button
               onClick={() => setIsRenewOpen(false)}
-              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-400 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
 
             <div className="mb-8 mt-4">
-              <h3 className="text-2xl font-black text-gray-800">Renovar Membersía</h3>
+              <h3 className="text-2xl font-black text-gray-200">Renovar Membersía</h3>
               <p className="text-sm text-gray-400 font-medium">Renueva la membresía de {renewingMember.client_name}.</p>
             </div>
 
@@ -587,11 +586,10 @@ const MembershipTable: React.FC = () => {
                 <div className="flex gap-3">
                   {/* Divisas */}
                   <label
-                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                      paymentMethod === "Divisas"
-                        ? "border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100"
-                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
-                    }`}
+                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === "Divisas"
+                      ? "border-teal-500 bg-teal-900/30/50 shadow-md shadow-teal-100"
+                      : "border-gray-800 bg-gray-900 hover:border-gray-700"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -601,24 +599,22 @@ const MembershipTable: React.FC = () => {
                       onChange={() => setPaymentMethod("Divisas")}
                       className="sr-only"
                     />
-                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${
-                      paymentMethod === "Divisas" ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-400"
-                    }`}>
+                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${paymentMethod === "Divisas" ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
+                      }`}>
                       <FontAwesomeIcon icon={faDollarSign} />
                     </div>
                     <div>
-                      <span className="font-bold text-sm text-gray-700 block">Divisas</span>
+                      <span className="font-bold text-sm text-gray-300 block">Divisas</span>
                       <span className="text-[10px] text-gray-400">Pago en USD</span>
                     </div>
                   </label>
 
                   {/* Pago Móvil */}
                   <label
-                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                      paymentMethod === "Pago Móvil"
-                        ? "border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100"
-                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
-                    }`}
+                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === "Pago Móvil"
+                      ? "border-teal-500 bg-teal-900/30/50 shadow-md shadow-teal-100"
+                      : "border-gray-800 bg-gray-900 hover:border-gray-700"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -628,13 +624,12 @@ const MembershipTable: React.FC = () => {
                       onChange={() => setPaymentMethod("Pago Móvil")}
                       className="sr-only"
                     />
-                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${
-                      paymentMethod === "Pago Móvil" ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-400"
-                    }`}>
+                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${paymentMethod === "Pago Móvil" ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
+                      }`}>
                       <FontAwesomeIcon icon={faMobileAlt} />
                     </div>
                     <div>
-                      <span className="font-bold text-sm text-gray-700 block">Pago Móvil</span>
+                      <span className="font-bold text-sm text-gray-300 block">Pago Móvil</span>
                       <span className="text-[10px] text-gray-400">Transferencia Bs</span>
                     </div>
                   </label>
@@ -655,7 +650,7 @@ const MembershipTable: React.FC = () => {
                       onChange={(e) => setReference(e.target.value)}
                       placeholder="Ej: 987654321"
                       required
-                      className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
+                      className="w-full pl-11 pr-4 py-4 bg-gray-900 border border-gray-700 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300"
                     />
                   </div>
                 </div>
@@ -663,47 +658,47 @@ const MembershipTable: React.FC = () => {
 
               {/* Vista del monto a pagar */}
               {renewPlanId > 0 && exchangeRate && (
-                <div className="bg-linear-to-br from-gray-50 to-teal-50/30 rounded-2xl p-5 space-y-3 border border-gray-100">
+                <div className="bg-linear-to-br from-gray-900 to-gray-700 rounded-2xl p-5 space-y-3 border border-gray-800">
                   <h4 className="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Resumen de Pago</h4>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-500">Precio del plan</span>
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm">
+                    <span className="text-sm font-medium text-white">Precio del plan</span>
+                    <span className="bg-green-700 text-white px-3 py-1 rounded-full font-bold text-sm">
                       $ {selectedPlanPrice.toFixed(2)}
                     </span>
                   </div>
                   {paymentMethod === "Pago Móvil" && (
                     <>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-500">Tasa BCV</span>
-                        <span className="text-sm font-bold text-gray-600">{exchangeRate.toFixed(2)} Bs/USD</span>
+                        <span className="text-sm font-medium text-white">Tasa BCV</span>
+                        <span className="text-sm font-bold text-white">{exchangeRate.toFixed(2)} Bs/USD</span>
                       </div>
-                      <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
-                        <span className="text-sm font-bold text-gray-700">Total en Bolívares</span>
-                        <span className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-black text-sm">
+                      <div className="border-t border-gray-700 pt-3 flex justify-between items-center">
+                        <span className="text-sm font-bold text-white">Total en Bolívares</span>
+                        <span className="bg-blue-700 text-white px-4 py-1.5 rounded-full font-black text-sm">
                           Bs. {amountInBs.toFixed(2)}
                         </span>
                       </div>
                     </>
                   )}
                   {paymentMethod === "Divisas" && (
-                    <p className="text-[11px] text-gray-400 italic">El cliente pagará en divisas (USD).</p>
+                    <p className="text-[11px] text-white italic">El cliente pagará en divisas (USD).</p>
                   )}
                   {paymentMethod === "Pago Móvil" && (
-                    <p className="text-[11px] text-gray-400 italic">El cliente pagará Bs. {amountInBs.toFixed(2)} por Pago Móvil.</p>
+                    <p className="text-[11px] text-white italic">El cliente pagará Bs. {amountInBs.toFixed(2)} por Pago Móvil.</p>
                   )}
                 </div>
               )}
 
               <div className="flex gap-3 pt-4">
-                <button 
-                  type="button" 
-                  onClick={() => setIsRenewOpen(false)} 
-                  className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 rounded-2xl transition-all"
+                <button
+                  type="button"
+                  onClick={() => setIsRenewOpen(false)}
+                  className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-900 rounded-2xl transition-all"
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-100 rounded-2xl transition-all disabled:opacity-50"
                 >
@@ -722,17 +717,17 @@ const MembershipTable: React.FC = () => {
       {/* Modal para crear membresias */}
       {isCreateOpen && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-gray-900/40 backdrop-blur-md animate-in fade-in duration-300">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden max-h-[90vh] overflow-y-auto">
-            
-            <button 
+          <div className="bg-gray-800 rounded-[2.5rem] shadow-2xl w-full max-w-md p-8 relative overflow-hidden max-h-[90vh] overflow-y-auto">
+
+            <button
               onClick={() => setIsCreateOpen(false)}
-              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+              className="cursor-pointer absolute top-6 right-6 text-gray-400 hover:text-gray-400 transition-colors"
             >
               <FontAwesomeIcon icon={faTimes} size="lg" />
             </button>
 
             <div className="mb-8 mt-4">
-              <h3 className="text-2xl font-black text-gray-800">Nueva Membersía</h3>
+              <h3 className="text-2xl font-black text-gray-200">Nueva Membersía</h3>
               <p className="text-sm text-gray-400 font-medium">Asigna un plan a un cliente.</p>
             </div>
 
@@ -767,11 +762,10 @@ const MembershipTable: React.FC = () => {
                 <div className="flex gap-3">
                   {/* Divisas */}
                   <label
-                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                      paymentMethod === "Divisas"
-                        ? "border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100"
-                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
-                    }`}
+                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === "Divisas"
+                      ? "border-teal-500 bg-teal-900/30/50 shadow-md shadow-teal-100"
+                      : "border-gray-800 bg-gray-900 hover:border-gray-700"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -781,24 +775,22 @@ const MembershipTable: React.FC = () => {
                       onChange={() => setPaymentMethod("Divisas")}
                       className="sr-only"
                     />
-                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${
-                      paymentMethod === "Divisas" ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-400"
-                    }`}>
+                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${paymentMethod === "Divisas" ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
+                      }`}>
                       <FontAwesomeIcon icon={faDollarSign} />
                     </div>
                     <div>
-                      <span className="font-bold text-sm text-gray-700 block">Divisas</span>
+                      <span className="font-bold text-sm text-gray-300 block">Divisas</span>
                       <span className="text-[10px] text-gray-400">Pago en USD</span>
                     </div>
                   </label>
 
                   {/* Pago Móvil */}
                   <label
-                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-                      paymentMethod === "Pago Móvil"
-                        ? "border-teal-500 bg-teal-50/50 shadow-md shadow-teal-100"
-                        : "border-gray-100 bg-gray-50 hover:border-gray-200"
-                    }`}
+                    className={`flex-1 flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all ${paymentMethod === "Pago Móvil"
+                      ? "border-teal-500 bg-teal-900/30/50 shadow-md shadow-teal-100"
+                      : "border-gray-800 bg-gray-900 hover:border-gray-700"
+                      }`}
                   >
                     <input
                       type="radio"
@@ -808,13 +800,12 @@ const MembershipTable: React.FC = () => {
                       onChange={() => setPaymentMethod("Pago Móvil")}
                       className="sr-only"
                     />
-                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${
-                      paymentMethod === "Pago Móvil" ? "bg-teal-500 text-white" : "bg-gray-200 text-gray-400"
-                    }`}>
+                    <div className={`size-10 rounded-xl flex items-center justify-center transition-colors ${paymentMethod === "Pago Móvil" ? "bg-teal-500 text-white" : "bg-gray-700 text-gray-400"
+                      }`}>
                       <FontAwesomeIcon icon={faMobileAlt} />
                     </div>
                     <div>
-                      <span className="font-bold text-sm text-gray-700 block">Pago Móvil</span>
+                      <span className="font-bold text-sm text-gray-300 block">Pago Móvil</span>
                       <span className="text-[10px] text-gray-400">Transferencia Bs</span>
                     </div>
                   </label>
@@ -835,7 +826,7 @@ const MembershipTable: React.FC = () => {
                       onChange={(e) => setReference(e.target.value)}
                       placeholder="Ej: 987654321"
                       required
-                      className="w-full pl-11 pr-4 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700"
+                      className="w-full pl-11 pr-4 py-4 bg-gray-900 border border-gray-700 rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300"
                     />
                   </div>
                 </div>
@@ -843,47 +834,47 @@ const MembershipTable: React.FC = () => {
 
               {/* Vista del monto a pagar */}
               {newMembership.plan_id > 0 && exchangeRate && (
-                <div className="bg-linear-to-br from-gray-50 to-teal-50/30 rounded-2xl p-5 space-y-3 border border-gray-100">
+                <div className="bg-linear-to-br from-gray-900 to-gray-700 rounded-2xl p-5 space-y-3 border  border-gray-800">
                   <h4 className="text-[10px] font-bold text-teal-600 uppercase tracking-wider">Resumen de Pago</h4>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-gray-500">Precio del plan</span>
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold text-sm">
+                    <span className="text-sm font-medium text-white">Precio del plan</span>
+                    <span className="bg-green-600 text-white px-3 py-1 rounded-full font-bold text-sm">
                       $ {selectedPlanPrice.toFixed(2)}
                     </span>
                   </div>
                   {paymentMethod === "Pago Móvil" && (
                     <>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-500">Tasa BCV</span>
-                        <span className="text-sm font-bold text-gray-600">{exchangeRate.toFixed(2)} Bs/USD</span>
+                        <span className="text-sm font-medium text-white">Tasa BCV</span>
+                        <span className="text-sm font-bold text-white">{exchangeRate.toFixed(2)} Bs/USD</span>
                       </div>
-                      <div className="border-t border-gray-200 pt-3 flex justify-between items-center">
-                        <span className="text-sm font-bold text-gray-700">Total en Bolívares</span>
-                        <span className="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full font-black text-sm">
+                      <div className="border-t border-gray-700 pt-3 flex justify-between items-center">
+                        <span className="text-sm font-bold text-gray-300">Total en Bolívares</span>
+                        <span className="bg-blue-700 text-white px-4 py-1.5 rounded-full font-black text-sm">
                           Bs. {amountInBs.toFixed(2)}
                         </span>
                       </div>
                     </>
                   )}
                   {paymentMethod === "Divisas" && (
-                    <p className="text-[11px] text-gray-400 italic">El cliente pagará en divisas (USD).</p>
+                    <p className="text-[11px] text-white italic">El cliente pagará en divisas (USD).</p>
                   )}
                   {paymentMethod === "Pago Móvil" && (
-                    <p className="text-[11px] text-gray-400 italic">El cliente pagará Bs. {amountInBs.toFixed(2)} por Pago Móvil.</p>
+                    <p className="text-[11px] text-white italic">El cliente pagará Bs. {amountInBs.toFixed(2)} por Pago Móvil.</p>
                   )}
                 </div>
               )}
 
               <div className="flex gap-3 pt-4">
-                <button 
-                  type="button" 
-                  onClick={() => setIsCreateOpen(false)} 
-                  className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-50 rounded-2xl transition-all"
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-gray-400 hover:bg-gray-900 rounded-2xl transition-all"
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   className="cursor-pointer flex-1 py-4 text-xs font-black uppercase tracking-widest text-white bg-teal-600 hover:bg-teal-700 shadow-lg shadow-teal-100 rounded-2xl transition-all disabled:opacity-50"
                 >

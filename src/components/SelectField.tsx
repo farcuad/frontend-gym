@@ -27,7 +27,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({ label, options, value,
                     {label}
                 </Listbox.Label>
                 <div className="relative">
-                    <Listbox.Button className="relative w-full pl-11 pr-10 py-4 bg-gray-50 border border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-700 text-left cursor-pointer shadow-xs">
+                    <Listbox.Button className="relative w-full pl-11 pr-10 py-4 bg-gray-900 border border-gray-700 border-transparent rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 text-left cursor-pointer shadow-xs">
                         <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
                             <FontAwesomeIcon icon={icon} className="text-xs" />
                         </span>
@@ -45,20 +45,20 @@ export const SelectField: React.FC<SelectFieldProps> = ({ label, options, value,
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <Listbox.Options className="absolute z-70 mt-2 max-h-60 w-full overflow-auto rounded-3xl bg-white py-2 text-base shadow-2xl ring-1 ring-black/5 focus:outline-none sm:text-sm border border-gray-100">
+                        <Listbox.Options className="absolute z-70 mt-2 max-h-60 w-full overflow-auto rounded-3xl bg-gray-800 py-2 text-base shadow-2xl ring-1 ring-black/5 focus:outline-none sm:text-sm border border-gray-700 border-gray-800">
                             {options.map((option) => (
                                 <Listbox.Option
                                     key={option.id}
                                     className={({ active }) =>
                                         `relative cursor-pointer select-none py-3.5 pl-11 pr-4 transition-all ${
-                                            active ? 'bg-teal-50 text-teal-900 px-5' : 'text-gray-900'
+                                            active ? 'bg-teal-900/30 text-teal-900 px-5' : 'text-gray-100'
                                         }`
                                     }
                                     value={option.id}
                                 >
                                     {({ selected }) => (
                                         <>
-                                            <span className={`block truncate ${selected ? 'font-black text-teal-600' : 'font-bold text-gray-600'}`}>
+                                            <span className={`block truncate ${selected ? 'font-black text-teal-600' : 'font-bold text-gray-400'}`}>
                                                 {option.name}
                                             </span>
                                             {selected ? (

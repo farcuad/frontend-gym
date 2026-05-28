@@ -24,7 +24,7 @@ function Aside({ isOpen, onClose }: AsideProps) {
     flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200
     ${isActive
       ? "bg-teal-600 text-white shadow-md shadow-teal-200"
-      : "text-gray-500 hover:bg-teal-50 hover:text-teal-600"}
+      : "text-gray-400 hover:bg-teal-900/30 hover:text-teal-600"}
   `;
 
   const isAdmin = role === "admin" || role === "super_admin";
@@ -43,7 +43,7 @@ function Aside({ isOpen, onClose }: AsideProps) {
 
       <aside
         className={`
-          w-72 bg-white border-r h-screen
+          w-72 bg-gray-800 border-r h-screen
           fixed lg:static z-50
           transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
@@ -55,7 +55,7 @@ function Aside({ isOpen, onClose }: AsideProps) {
             <div className="bg-teal-600 p-2 rounded-lg text-white shadow-lg">
               <FontAwesomeIcon icon={faDumbbell} className="size-5" />
             </div>
-            <span className="text-xl font-black text-gray-800 tracking-tight italic">
+            <span className="text-xl font-black text-gray-200 tracking-tight italic">
               FIT<span className="text-teal-600">LOG</span>
             </span>
           </div>

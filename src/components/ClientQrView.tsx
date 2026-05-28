@@ -56,7 +56,7 @@ const ClientQrView: React.FC = () => {
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 animate-in slide-in-from-bottom-10 duration-500">
         <button
           onClick={fetchTicket}
-          className="flex items-center gap-3 px-6 py-4 bg-teal-600 hover:bg-teal-500 text-white rounded-full font-bold transition-all shadow-[0_8px_30px_rgb(13,148,136,0.4)] hover:shadow-[0_8px_30px_rgb(13,148,136,0.6)] active:scale-95 border border-teal-500/50"
+          className="flex items-center gap-3 px-6 py-4 bg-teal-600 hover:bg-teal-500 text-white rounded-full font-bold transition-all shadow-[0_8px_30px_rgb(13,148,136,0.4)] hover:shadow-[0_8px_30px_rgb(13,148,136,0.6)] active:scale-95 border border-gray-700 border-teal-500/50"
         >
           <QrCode className="w-6 h-6" />
           <span>Generar mi QR</span>
@@ -67,7 +67,7 @@ const ClientQrView: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="bg-linear-to-b from-teal-900 to-teal-950 rounded-4xl p-8 shadow-2xl border border-teal-800 w-full max-w-sm relative overflow-hidden group animate-in zoom-in-95 duration-300">
+      <div className="bg-linear-to-b from-teal-900 to-teal-950 rounded-4xl p-8 shadow-2xl border border-gray-700 border-teal-800 w-full max-w-sm relative overflow-hidden group animate-in zoom-in-95 duration-300">
         
         {/* Close Button */}
         <button 
@@ -82,7 +82,7 @@ const ClientQrView: React.FC = () => {
         <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-emerald-500/20 blur-[80px] rounded-full pointer-events-none z-0"></div>
 
         <div className="relative z-10 flex flex-col items-center text-center mt-2">
-          <div className="bg-teal-800/80 p-3 rounded-full mb-4 shadow-inner border border-teal-700/50">
+          <div className="bg-teal-800/80 p-3 rounded-full mb-4 shadow-inner border border-gray-700 border-teal-700/50">
             <ShieldCheck className="w-8 h-8 text-teal-400" />
           </div>
           
@@ -92,18 +92,18 @@ const ClientQrView: React.FC = () => {
           </p>
 
           {loading ? (
-            <div className="w-56 h-56 flex items-center justify-center bg-teal-900/50 rounded-3xl border border-teal-800/50 animate-pulse shadow-inner">
+            <div className="w-56 h-56 flex items-center justify-center bg-teal-900/50 rounded-3xl border border-gray-700 border-teal-800/50 animate-pulse shadow-inner">
               <RefreshCcw className="w-10 h-10 text-teal-500 animate-spin" />
             </div>
           ) : error ? (
-            <div className="w-56 h-56 flex flex-col items-center justify-center bg-red-900/20 rounded-3xl border border-red-500/30 p-6 shadow-inner">
+            <div className="w-56 h-56 flex flex-col items-center justify-center bg-red-900/20 rounded-3xl border border-gray-700 border-red-500/30 p-6 shadow-inner">
               <AlertCircle className="w-12 h-12 text-red-500 mb-3" />
               <p className="text-red-400 text-sm font-medium">{error}</p>
             </div>
           ) : (
             <div className="relative group">
               <div 
-                className={`bg-white p-4 rounded-3xl shadow-xl transition-all duration-500 border-4 border-teal-500/20 ${
+                className={`bg-gray-800 p-4 rounded-3xl shadow-xl transition-all duration-500 border-4 border-teal-500/20 ${
                   isExpired ? "opacity-20 blur-md scale-95 grayscale" : "opacity-100 scale-100"
                 }`}
               >
@@ -120,7 +120,7 @@ const ClientQrView: React.FC = () => {
 
               {/* Overlay when expired */}
               {isExpired && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-teal-950/90 backdrop-blur-sm rounded-3xl border border-teal-800 z-20 transition-all duration-300">
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-teal-950/90 backdrop-blur-sm rounded-3xl border border-gray-700 border-teal-800 z-20 transition-all duration-300">
                   <span className="text-red-400 font-bold mb-4 text-lg">Código Expirado</span>
                   <button
                     onClick={fetchTicket}
@@ -142,7 +142,7 @@ const ClientQrView: React.FC = () => {
                   {formatTime(timeLeft)}
                 </span>
               </div>
-              <div className="w-full bg-teal-900/80 h-2 rounded-full overflow-hidden border border-teal-800/50">
+              <div className="w-full bg-teal-900/80 h-2 rounded-full overflow-hidden border border-gray-700 border-teal-800/50">
                 <div 
                   className={`h-full rounded-full transition-all duration-1000 ease-linear ${
                     timeLeft < 30 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-linear-to-r from-teal-500 to-emerald-400 shadow-[0_0_10px_rgba(20,184,166,0.3)]'

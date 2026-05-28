@@ -34,7 +34,7 @@ function App() {
 
       <div className="flex flex-col flex-1 h-full relative">
         <Header onToggleAside={toggleAside} />
-        <main className="flex-1 p-4 bg-gray-50 overflow-y-auto">
+        <main className="flex-1 p-4 bg-gray-900 overflow-y-auto">
           <Routes>
             {/* Estas rutas requieren que el plan NO esté vencido */}
             <Route path="metrics" element={<PlanRoute minPlan="trial"><Metrics /></PlanRoute>} />

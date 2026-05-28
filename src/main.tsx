@@ -4,12 +4,15 @@ import './index.css'
 import App from './App.tsx'
 import { GlassAlertProvider } from 'glass-alert-animation';
 import { GlassAlertBridge } from './utils/toast';
+import { ThemeProvider } from './context/ThemeContext';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <GlassAlertProvider>
-      <GlassAlertBridge />
-      <App />
-    </GlassAlertProvider>
+    <ThemeProvider>
+      <GlassAlertProvider>
+        <GlassAlertBridge />
+        <App />
+      </GlassAlertProvider>
+    </ThemeProvider>
   </StrictMode>
 )
