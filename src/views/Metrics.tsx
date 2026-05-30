@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -16,6 +16,7 @@ import { SelectField } from "../components/SelectField";
 import { notify, useConfirm } from "../utils/toast";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolder, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type PaymentMetric = {
   month: string;
@@ -177,25 +178,18 @@ const formatRangeText = (start?: string, end?: string) => {
 };
 
 const Metrics = () => {
-  const [payments, setPayments] = useState<PaymentMetric[]>([]);
-  const [newClients, setNewClients] = useState<ClientMetric[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [finanzas, setFinanzas] = useState<FinanzasMetric | null>(null);
   const [activeTab, setActiveTab] = useState<'graficos' | 'tabla'>('graficos');
   const [modalOpen, setModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
-  // Filtros de fecha reactivos
   const [activeFilter, setActiveFilter] = useState<'hoy' | 'semana' | 'mes' | 'anterior' | 'custom'>('mes');
   const [customStartDate, setCustomStartDate] = useState(getTodayString());
   const [customEndDate, setCustomEndDate] = useState(getTodayString());
   const [appliedDates, setAppliedDates] = useState<{ startDate?: string; endDate?: string }>(() => getMesActualRange());
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  // Gastos list
-  const [gastos, setGastos] = useState<Gastos[]>([]);
   const [editingGasto, setEditingGasto] = useState<Gastos | null>(null);
 
-  // Form states
   const [titulo, setTitulo] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [monto, setMonto] = useState("");
@@ -205,6 +199,55 @@ const Metrics = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const confirm = useConfirm();
+
+  const { data: payments = [] } = useQuery<PaymentMetric[]>({
+    queryKey: ['metrics', 'payments'],
+    queryFn: async () => {
+      const res = await apiService.getMetricsPayments();
+      return res.data.metrics ?? [];
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: newClients = [] } = useQuery<ClientMetric[]>({
+    queryKey: ['metrics', 'newClients'],
+    queryFn: async () => {
+      const res = await apiService.getMetricsClients();
+      return res.data.metrics ?? [];
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: finanzas = null } = useQuery<FinanzasMetric | null>({
+    queryKey: ['metrics', 'finanzas', appliedDates.startDate, appliedDates.endDate],
+    queryFn: async () => {
+      const res = await apiService.getMetricsFinanzas(appliedDates.startDate, appliedDates.endDate);
+      return res.data.data as FinanzasMetric;
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: gastos = [] } = useQuery<Gastos[]>({
+    queryKey: ['gastos'],
+    queryFn: async () => {
+      const res = await apiService.getGastos();
+      return res.data.result ?? [];
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 15,
+    refetchOnWindowFocus: false,
+  });
+
+  const refetchMetrics = () => {
+    queryClient.invalidateQueries({ queryKey: ['metrics'] });
+    queryClient.invalidateQueries({ queryKey: ['gastos'] });
+  };
 
 
   const handleFilterChange = (filter: 'hoy' | 'semana' | 'mes' | 'anterior' | 'custom') => {
@@ -233,40 +276,6 @@ const Metrics = () => {
       setIsPopoverOpen(false);
     }
   };
-
-  const fetchData = async (startDate?: string, endDate?: string) => {
-    try {
-      const [payRes, clientRes, finRes, gastosRes] = await Promise.all([
-        apiService.getMetricsPayments(),
-        apiService.getMetricsClients(),
-        apiService.getMetricsFinanzas(startDate, endDate),
-        apiService.getGastos(),
-      ]);
-
-      const paymentsArray = payRes.data.metrics ?? [];
-      const clientsArray = clientRes.data.metrics ?? [];
-
-      setPayments(paymentsArray);
-      setNewClients(clientsArray);
-
-      // Finanzas
-      const finData: FinanzasMetric = finRes.data.data;
-      setFinanzas(finData);
-
-      // Gastos list
-      const resData = gastosRes.data.result;
-      setGastos(resData);
-
-    } catch (error) {
-      console.error("Error al cargar métricas:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData(appliedDates.startDate, appliedDates.endDate);
-  }, [appliedDates]);
 
   const openNewModal = () => {
     setEditingGasto(null);
@@ -299,7 +308,7 @@ const Metrics = () => {
       try {
         await apiService.deleteGastos(id);
         notify.success("Gasto eliminado correctamente.");
-        fetchData(appliedDates.startDate, appliedDates.endDate);
+        refetchMetrics();
       } catch (error) {
         console.error("Error al eliminar gasto:", error);
         notify.error("No se pudo eliminar el gasto.");
@@ -342,7 +351,7 @@ const Metrics = () => {
         notify.success("Gastos registrado correctamente.");
       }
       setModalOpen(false);
-      fetchData(appliedDates.startDate, appliedDates.endDate);
+      refetchMetrics();
     } catch (error) {
       console.error("Error al guardar gasto:", error);
       notify.error("No se pudo guardar el gasto.");
@@ -364,14 +373,6 @@ const Metrics = () => {
       return { ...c, pct, offset, ...meta };
     });
   }, [finanzas]);
-
-  if (loading) {
-    return (
-      <div className="flex h-64 items-center justify-center text-gray-400 font-medium">
-        Cargando estadísticas...
-      </div>
-    );
-  }
 
   const paymentsData = payments.map((item) => ({
     month: formatMonth(item.month),

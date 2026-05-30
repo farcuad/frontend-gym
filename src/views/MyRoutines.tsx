@@ -1,32 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDumbbell, faClock, faRedo, faCheckCircle, faCalendarAlt, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { apiService} from "../services/services";
 import ClientQrView from "../components/ClientQrView";
+import { useQuery } from "@tanstack/react-query";
 
 export default function MyRoutines() {
-  const [activeRoutine, setActiveRoutine] = useState<any>(null);
-  const [weeklyAssignments, setWeeklyAssignments] = useState<any[]>([]);
   const [selectedDay, setSelectedDay] = useState<number>(new Date().getDay() === 0 ? 7 : new Date().getDay());
-  const [loading, setLoading] = useState(true);
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  const fetchData = async () => {
-    if (!user.id) return;
-    setLoading(true);
-    try {
-      // 1. Get all assignments for the client
+  const { data: weeklyAssignments = [], isLoading: loading } = useQuery<any[]>({
+    queryKey: ['myRoutines', user.id],
+    queryFn: async () => {
+      if (!user.id) return [];
       const weekRes = await apiService.getClientRoutines(user.id);
       const allAssignments = weekRes.data.assignments || [];
-      
-      
-      // Filter only active assignments
       const activeAssignments = allAssignments.filter((a: any) => a.is_active === true || a.is_active === 1);
-
-      // 2. Get unique routine IDs to avoid redundant calls
       const uniqueRoutineIds = [...new Set(activeAssignments.map((a: any) => a.routine_id))];
 
-      // 3. Fetch full details for each unique routine (including exercises)
       const routinesDetails = await Promise.all(
         uniqueRoutineIds.map(async (id) => {
           try {
@@ -39,24 +30,16 @@ export default function MyRoutines() {
         })
       );
 
-      // Create a map for quick access: { routineId: routineData }
       const routinesMap = routinesDetails.reduce((acc: any, r: any) => {
         if (r) acc[r.id] = r;
         return acc;
       }, {});
 
-      // 4. Build the weekly schedule with full data
-      const todayDay = new Date().getDay() === 0 ? 7 : new Date().getDay();
-      
       const activeWeekly = activeAssignments.map((a: any) => {
         const routineInfo = routinesMap[a.routine_id] || {};
-        
-        // Match exercises that belong to this routine AND this specific day
-        // Some routines might have exercises for different days
-        const exercises = (routineInfo.exercises || []).filter((ex: any) => 
+        const exercises = (routineInfo.exercises || []).filter((ex: any) =>
           !ex.day_of_week || ex.day_of_week === a.day_of_week
         );
-
         return {
           ...a,
           routine: {
@@ -68,24 +51,15 @@ export default function MyRoutines() {
         };
       }).sort((a: any, b: any) => (a.day_of_week || 0) - (b.day_of_week || 0));
 
-      setWeeklyAssignments(activeWeekly);
+      return activeWeekly;
+    },
+    enabled: !!user.id,
+  });
 
-      // Set today's active routine if it exists
-      const todayAssignment = activeWeekly.find((a:any) => a.day_of_week === todayDay);
-      if (todayAssignment) {
-        setActiveRoutine(todayAssignment);
-      }
-
-    } catch (error) {
-      console.error("Error al cargar rutinas:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const activeRoutine = useMemo(() => {
+    const todayDay = new Date().getDay() === 0 ? 7 : new Date().getDay();
+    return weeklyAssignments.find((a: any) => a.day_of_week === todayDay) || null;
+  }, [weeklyAssignments]);
 
   const getDayName = (dayNum: number) => {
     const days = ["", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];

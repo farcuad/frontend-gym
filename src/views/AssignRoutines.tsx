@@ -1,18 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faLayerGroup, faSearch, faSpinner, faCalendarAlt, faTimes, faCheckCircle, faCalendarDay, faPlus, faEdit, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import { notify } from "../utils/toast";
 import { SelectField } from "../components/SelectField";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function AssignRoutines() {
-  const [clients, setClients] = useState<any[]>([]);
-  const [routines, setRoutines] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
+  const queryClient = useQueryClient();
 
   const [assignmentData, setAssignmentData] = useState({
     routine_id: 0,
@@ -22,14 +21,18 @@ export default function AssignRoutines() {
     is_active: true
   });
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [clientsRes, routinesRes] = await Promise.all([
-        apiService.getClients(),
-        apiService.getRoutines()
-      ]);
+  const { data: routines = [], isLoading: routinesLoading } = useQuery<any[]>({
+    queryKey: ['routines-assign'],
+    queryFn: async () => {
+      const res = await apiService.getRoutines();
+      return res.data.routines || [];
+    },
+  });
 
+  const { data: clients = [], isLoading: clientsLoading } = useQuery<any[]>({
+    queryKey: ['clients-with-routines'],
+    queryFn: async () => {
+      const clientsRes = await apiService.getClients();
       const clientsData = clientsRes.data.clients || [];
 
       const clientsWithRoutines = await Promise.all(
@@ -38,7 +41,6 @@ export default function AssignRoutines() {
             const routinesRes = await apiService.getClientRoutines(client.id);
             const assignments = routinesRes.data.assignments || [];
             const activeExercises = routinesRes.data.activeExercises || [];
-
 
             const activeAssignments = assignments
               .filter((item: any) => {
@@ -70,18 +72,16 @@ export default function AssignRoutines() {
         })
       );
 
-      setClients(clientsWithRoutines);
-      setRoutines(routinesRes.data.routines || []);
-    } catch (error) {
-      notify.error("Error al cargar datos");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return clientsWithRoutines;
+    },
+  });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const loading = routinesLoading || clientsLoading;
+
+  const refetchData = () => {
+    queryClient.invalidateQueries({ queryKey: ['routines-assign'] });
+    queryClient.invalidateQueries({ queryKey: ['clients-with-routines'] });
+  };
 
   const handleAssign = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +106,7 @@ export default function AssignRoutines() {
         end_date: "",
         is_active: true
       });
-      fetchData();
+      refetchData();
     } catch (error) {
       notify.error("Error al asignar rutina");
     } finally {
@@ -120,7 +120,7 @@ export default function AssignRoutines() {
     try {
       await apiService.deactivateRoutineCliente(assignmentId);
       notify.success("Rutina desactivada correctamente");
-      fetchData();
+      refetchData();
     } catch (error) {
       notify.error("Error al desactivar rutina");
     }

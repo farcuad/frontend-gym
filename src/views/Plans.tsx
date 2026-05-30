@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -14,31 +14,30 @@ import { notify, useConfirm } from "../utils/toast";
 import { apiService, getExchangeRate } from "../services/services";
 import type { Plans } from "../services/services";
 import axios from 'axios';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const PlanTable: React.FC = () => {
-  const [plans, setPlans] = useState<Plans[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
 
-  const fetchPlans = async () => {
-    try {
+  const { data: plans = [], isLoading: loading } = useQuery<Plans[]>({
+    queryKey: ['plans'],
+    queryFn: async () => {
       const response = await apiService.getPlans();
-      const apiResponse = response.data.plans;
+      return response.data.plans;
+    },
+  });
 
-      setPlans(apiResponse);
-    } catch (error) {
-      console.error("Error al obtener planes:", error);
-      setPlans([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: exchangeRate = null } = useQuery<number | null>({
+    queryKey: ['exchangeRate'],
+    queryFn: async () => {
+      const rate = await getExchangeRate();
+      return rate;
+    },
+    staleTime: 1000 * 60 * 2,
+  });
 
-  useEffect(() => {
-    fetchPlans();
-    getExchangeRate().then(rate => setExchangeRate(rate)).catch(err => console.error("Error tasa:", err));
-  }, []);
+  const refetchPlans = () => queryClient.invalidateQueries({ queryKey: ['plans'] });
 
   const formatBs = (price: number) => {
     if (!exchangeRate) return '—';
@@ -67,7 +66,7 @@ const PlanTable: React.FC = () => {
         duration_day: 30,
         price: 0,
       });
-      fetchPlans();
+      refetchPlans();
     } catch (error) {
       console.error("Error al crear plan:", error);
       notify.error("No se pudo crear el plan.");
@@ -92,7 +91,7 @@ const PlanTable: React.FC = () => {
       try {
         await apiService.deletePlan(plans.id);
         notify.success("El plan ha sido borrado con éxito.");
-        fetchPlans();
+        refetchPlans();
       } catch (error) {
         if (axios.isAxiosError(error)) {
           const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
@@ -117,7 +116,7 @@ const PlanTable: React.FC = () => {
       });
       notify.success("Plan actualizado correctamente.");
       setIsEditOpen(false);
-      fetchPlans();
+      refetchPlans();
     } catch (error) {
       console.error("Error al actualizar plan:", error);
       notify.error("No se pudo actualizar el plan.");

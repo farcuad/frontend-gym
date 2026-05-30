@@ -6,6 +6,7 @@ import { apiService, getExchangeRate } from "../services/services";
 import type { Memberships, Clients, Plans, PaymentInfo } from "../services/services";
 import { SelectField } from '../components/SelectField';
 import axios from 'axios';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 interface NewMembership {
   client_id: number;
   plan_id: number;
@@ -15,69 +16,52 @@ interface NewMembership {
 
 
 
-
 const MembershipTable: React.FC = () => {
-  const [memberships, setMemberships] = useState<Memberships[]>([]);
-  const [clients, setClients] = useState<Clients[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-  const [plans, setPlans] = useState<Plans[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchMemberships = async () => {
-    try {
+  const { data: memberships = [], isLoading: loading } = useQuery<Memberships[]>({
+    queryKey: ['memberships'],
+    queryFn: async () => {
       const response = await apiService.getMemberships();
       const apiResponse = response.data;
-
       if (apiResponse && apiResponse.membership && Array.isArray(apiResponse.membership)) {
-        setMemberships(apiResponse.membership);
+        return apiResponse.membership;
       } else if (Array.isArray(apiResponse)) {
-        setMemberships(apiResponse);
-      } else {
-        console.error("Formato de respuesta inesperado:", apiResponse);
-        setMemberships([]);
+        return apiResponse;
       }
-    } catch (error) {
-      console.error("Error al obtener membresías:", error);
-      setMemberships([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return [];
+    },
+  });
 
-  const fetchClientsAndPlans = async () => {
-    try {
-      const [clientsRes, plansRes] = await Promise.all([
-        apiService.getClients(),
-        apiService.getPlans()
-      ]);
+  const { data: clients = [] } = useQuery<Clients[]>({
+    queryKey: ['clients-memberships'],
+    queryFn: async () => {
+      const res = await apiService.getClients();
+      return res.data.clients;
+    },
+  });
 
-      const clientsData = clientsRes.data.clients;
-      const plansData = plansRes.data.plans;
+  const { data: plans = [] } = useQuery<Plans[]>({
+    queryKey: ['plans-memberships'],
+    queryFn: async () => {
+      const res = await apiService.getPlans();
+      return res.data.plans;
+    },
+  });
 
-      setClients(clientsData);
-      setPlans(plansData);
-    } catch (error) {
-      console.error("Error al obtener clientes/planes:", error);
-    }
-  };
-
-  const fetchExchangeRate = async () => {
-    try {
+  const { data: exchangeRate = null } = useQuery<number | null>({
+    queryKey: ['exchangeRate'],
+    queryFn: async () => {
       const rate = await getExchangeRate();
-      setExchangeRate(rate);
-    } catch (error) {
-      console.error("Error al obtener tasa de cambio:", error);
-    }
-  };
+      return rate;
+    },
+    staleTime: 1000 * 60 * 2,
+  });
 
-  useEffect(() => {
-    fetchMemberships();
-    fetchClientsAndPlans();
-    fetchExchangeRate();
-  }, []);
+  const refetchMemberships = () => queryClient.invalidateQueries({ queryKey: ['memberships'] });
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isRenewOpen, setIsRenewOpen] = useState(false);
@@ -141,7 +125,7 @@ const MembershipTable: React.FC = () => {
       setNewMembership({ client_id: 0, plan_id: 0, fecha_inicio: fechaHoy });
       setPaymentMethod("Divisas");
       setReference("");
-      fetchMemberships();
+      refetchMemberships();
     } catch (error) {
       console.error("Error al crear membresía:", error);
       notify.error('No se pudo crear la membresía.');
@@ -162,7 +146,7 @@ const MembershipTable: React.FC = () => {
       try {
         await apiService.deleteMembership(id);
         notify.success('Registro actualizado.');
-        fetchMemberships();
+        refetchMemberships();
       } catch (error) {
         if (axios.isAxiosError(error)) {
           const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
@@ -219,7 +203,7 @@ const MembershipTable: React.FC = () => {
       setRenewPlanId(0);
       setPaymentMethod("Divisas");
       setReference("");
-      fetchMemberships();
+      refetchMemberships();
     } catch (error) {
       console.error("Error al renovar membresía:", error);
       notify.error('No se pudo renovar la membresía.');

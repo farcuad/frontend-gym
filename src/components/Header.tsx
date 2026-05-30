@@ -3,7 +3,7 @@ import { faBars, faUser, faBell, faExclamationTriangle, faSignOutAlt, faSpinner,
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { apiService } from "../services/services";
-
+import { useQueryClient } from '@tanstack/react-query';
 interface AlertClient {
   name: string;
   phone: string;
@@ -67,7 +67,9 @@ function Header({ onToggleAside }: HeaderProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const queryClient = useQueryClient()
   const handleLogout = () => {
+    queryClient.clear();
     localStorage.removeItem("token");
     navigate("/login");
   };

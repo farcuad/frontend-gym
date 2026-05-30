@@ -6,31 +6,24 @@ import type { Clients } from "../services/services";
 import { notify, useConfirm } from "../utils/toast";
 import axios from "axios";
 import { ClientForm } from "../components/ClientForm";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const EmployeeTable: React.FC = () => {
-  const [employees, setEmployees] = useState<Clients[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
 
-  const fetchClients = async () => {
-    try {
+  const { data: employees = [], isLoading: loading } = useQuery<Clients[]>({
+    queryKey: ['clients'],
+    queryFn: async () => {
       const response = await apiService.getClients();
-      const apiResponse = response.data.clients;
-      setEmployees(apiResponse);
-    } catch (error) {
-      console.error("Error al obtener clientes:", error);
-      setEmployees([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data.clients;
+    },
+  });
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
+  const refetchClients = () => queryClient.invalidateQueries({ queryKey: ['clients'] });
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -52,7 +45,7 @@ const EmployeeTable: React.FC = () => {
       try {
         await apiService.deleteClient(client.id);
         notify.success("El cliente ha sido borrado.");
-        fetchClients();
+        refetchClients();
       } catch (error) {
         if (axios.isAxiosError(error)) {
           const message = error.response?.data?.message || "No se pudo eliminar el cliente.";
@@ -345,7 +338,7 @@ const EmployeeTable: React.FC = () => {
       <ClientForm
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        onSuccess={fetchClients}
+        onSuccess={refetchClients}
         clientToEdit={null}
       />
 
@@ -355,7 +348,7 @@ const EmployeeTable: React.FC = () => {
           setIsEditOpen(false);
           setEditClient(null);
         }}
-        onSuccess={fetchClients}
+        onSuccess={refetchClients}
         clientToEdit={editClient}
       />
     </div>

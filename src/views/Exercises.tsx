@@ -1,17 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faSearch, faDumbbell, faTrash, faEdit, faSpinner, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { ExerciseBody } from "../services/services";
 import { notify, useConfirm } from "../utils/toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Exercise extends ExerciseBody {
   id: number;
 }
 
 export default function Exercises() {
-  const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,22 +20,17 @@ export default function Exercises() {
     muscle_group: "",
   });
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
 
-  const fetchExercises = async () => {
-    setLoading(true);
-    try {
+  const { data: exercises = [], isLoading: loading } = useQuery<Exercise[]>({
+    queryKey: ['exercises'],
+    queryFn: async () => {
       const response = await apiService.getExercises();
-      setExercises(response.data.exercises || []);
-    } catch (error) {
-      notify.error("Error al cargar ejercicios");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data.exercises || [];
+    },
+  });
 
-  useEffect(() => {
-    fetchExercises();
-  }, []);
+  const refetchExercises = () => queryClient.invalidateQueries({ queryKey: ['exercises'] });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +46,7 @@ export default function Exercises() {
       setShowModal(false);
       setEditingExercise(null);
       setFormData({ name: "", muscle_group: "" });
-      fetchExercises();
+      refetchExercises();
     } catch (error) {
       notify.error("Error al guardar ejercicio");
     } finally {
@@ -71,7 +65,7 @@ export default function Exercises() {
       try {
         await apiService.deleteExercises(id);
         notify.success("Ejercicio eliminado");
-        fetchExercises();
+        refetchExercises();
       } catch (error) {
         notify.error("Error al eliminar ejercicio");
       }

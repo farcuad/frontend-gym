@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEdit,
@@ -14,10 +14,9 @@ import { notify, useConfirm } from "../utils/toast";
 import { apiService } from "../services/services";
 import type { BotConfig } from "../services/services";
 import axios from 'axios';
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const BotsView: React.FC = () => {
-  const [bots, setBots] = useState<BotConfig[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [newBot, setNewBot] = useState<BotConfig>({
@@ -27,29 +26,21 @@ const BotsView: React.FC = () => {
   const [botUpdate, setBotUpdate] = useState<BotConfig | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
 
-  const fetchBots = async () => {
-    try {
+  const { data: bots = [], isLoading: loading } = useQuery<BotConfig[]>({
+    queryKey: ['bots'],
+    queryFn: async () => {
       const response = await apiService.getConfigBots();
       const data = response.data.bots;
-
       if (data && !Array.isArray(data)) {
-        // Si viene un solo objeto, lo convertimos en array
-        setBots([data]);
-      } else {
-        setBots(data || []);
+        return [data];
       }
-    } catch (error) {
-      console.error("Error al obtener bots", error);
-      setBots([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data || [];
+    },
+  });
 
-  useEffect(() => {
-    fetchBots();
-  }, []);
+  const refetchBots = () => queryClient.invalidateQueries({ queryKey: ['bots'] });
 
   const handleCreateBot = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +53,7 @@ const BotsView: React.FC = () => {
         whaibot_id: "",
         whaibot_key: "",
       });
-      fetchBots();
+      refetchBots();
     } catch (error) {
       console.error("Error al crear bot:", error);
       notify.error("No se pudo configurar el bot.");
@@ -87,7 +78,7 @@ const BotsView: React.FC = () => {
       try {
         await apiService.deleteConfigBots(bot.id);
         notify.success("La configuración ha sido borrada con éxito.");
-        fetchBots();
+        refetchBots();
       } catch (error) {
         if (axios.isAxiosError(error)) {
           const message = error.response?.data?.message || "Error inesperado, intenta nuevamente";
@@ -111,7 +102,7 @@ const BotsView: React.FC = () => {
       });
       notify.success("Bot actualizado correctamente.");
       setIsEditOpen(false);
-      fetchBots();
+      refetchBots();
     } catch (error) {
       console.error("Error al actualizar bot:", error);
       notify.error("No se pudo actualizar el bot.");

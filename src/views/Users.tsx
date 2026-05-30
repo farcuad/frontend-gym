@@ -15,14 +15,13 @@ import {
 import { apiService } from "../services/services";
 import type { createUsers } from "../services/services";
 import { notify, useConfirm } from "../utils/toast";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface User extends createUsers {
   id: number;
 }
 
 export default function Users() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -30,6 +29,7 @@ export default function Users() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState<createUsers>({
     name: "",
@@ -38,20 +38,15 @@ export default function Users() {
     role: "trainer",
   });
 
-  const fetchUsers = async () => {
-    try {
+  const { data: users = [], isLoading: loading } = useQuery<User[]>({
+    queryKey: ['users'],
+    queryFn: async () => {
       const response = await apiService.getUsers();
-      setUsers(response.data.users || []);
-    } catch (error) {
-      notify.error("Error al cargar usuarios");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data.users || [];
+    },
+  });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  const refetchUsers = () => queryClient.invalidateQueries({ queryKey: ['users'] });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,7 +67,7 @@ export default function Users() {
       setShowModal(false);
       setEditingUser(null);
       setFormData({ name: "", email: "", password: "", role: "trainer" });
-      fetchUsers();
+      refetchUsers();
     } catch (error) {
       notify.error("Error al guardar usuario");
     } finally {
@@ -91,7 +86,7 @@ export default function Users() {
       try {
         await apiService.deleteUsers(user.id);
         notify.success("Usuario eliminado correctamente");
-        fetchUsers();
+        refetchUsers();
       } catch (error) {
         notify.error("Error al eliminar usuario");
       }

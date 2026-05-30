@@ -1,18 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faLayerGroup, faTrash, faEdit, faArrowRight, faSpinner, faTimes, faDumbbell } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { RoutinesBody } from "../services/services";
 import { notify, useConfirm } from "../utils/toast";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Routine extends RoutinesBody {
   id: number;
 }
 
 export default function Routines() {
-  const [routines, setRoutines] = useState<Routine[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingRoutine, setEditingRoutine] = useState<Routine | null>(null);
@@ -22,22 +21,17 @@ export default function Routines() {
   });
   const navigate = useNavigate();
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
 
-  const fetchRoutines = async () => {
-    setLoading(true);
-    try {
+  const { data: routines = [], isLoading: loading } = useQuery<Routine[]>({
+    queryKey: ['routines'],
+    queryFn: async () => {
       const response = await apiService.getRoutines();
-      setRoutines(response.data.routines || []);
-    } catch (error) {
-      notify.error("Error al cargar rutinas");
-    } finally {
-      setLoading(false);
-    }
-  };
+      return response.data.routines || [];
+    },
+  });
 
-  useEffect(() => {
-    fetchRoutines();
-  }, []);
+  const refetchRoutines = () => queryClient.invalidateQueries({ queryKey: ['routines'] });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +47,7 @@ export default function Routines() {
       setShowModal(false);
       setEditingRoutine(null);
       setFormData({ name: "", description: "" });
-      fetchRoutines();
+      refetchRoutines();
     } catch (error) {
       notify.error("Error al guardar rutina");
     } finally {
@@ -72,7 +66,7 @@ export default function Routines() {
       try {
         await apiService.deleteRoutines(id);
         notify.success("Rutina eliminada");
-        fetchRoutines();
+        refetchRoutines();
       } catch (error) {
         notify.error("Error al eliminar rutina");
       }

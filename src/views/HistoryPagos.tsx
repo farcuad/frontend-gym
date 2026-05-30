@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHistory,
@@ -11,57 +11,32 @@ import {
 import { apiService } from "../services/services";
 import type { PaymentHistory } from "../services/services";
 import { notify } from "../utils/toast";
+import { useQuery } from "@tanstack/react-query";
 
 const PaymentHistoryView: React.FC = () => {
-  const [payments, setPayments] = useState<PaymentHistory[]>([]);
-  const [filteredPayments, setFilteredPayments] = useState<PaymentHistory[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  const fetchPayments = async () => {
-    try {
-      setLoading(true);
+  const { data: allPayments = [], isLoading: loading } = useQuery<PaymentHistory[]>({
+    queryKey: ['payments'],
+    queryFn: async () => {
       const response = await apiService.getHistoryPagos();
       const apiResponse = response.data.payment;
-
       let data: PaymentHistory[] = [];
-
       if (apiResponse && Array.isArray(apiResponse.payment)) {
         data = apiResponse.payment;
       } else if (Array.isArray(apiResponse)) {
         data = apiResponse;
-      } else {
-        console.error("Unexpected response format:", apiResponse);
-        data = [];
       }
-
-
       data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      return data;
+    },
+  });
 
-      setPayments(data);
-      setFilteredPayments(data);
-    } catch (error) {
-      console.error("Error fetching payment history:", error);
-      notify.error("No se pudo obtener el historial de pagos.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchPayments();
-  }, []);
-
-  useEffect(() => {
-    filterPayments();
-    setCurrentPage(1);
-  }, [startDate, endDate, payments]);
-
-  const filterPayments = () => {
-    let temp = [...payments];
+  const filteredPayments = useMemo(() => {
+    let temp = [...allPayments];
 
     if (startDate) {
       temp = temp.filter(p => new Date(p.created_at) >= new Date(startDate));
@@ -72,8 +47,12 @@ const PaymentHistoryView: React.FC = () => {
       temp = temp.filter(p => new Date(p.created_at) <= end);
     }
 
-    setFilteredPayments(temp);
-  };
+    return temp;
+  }, [startDate, endDate, allPayments]);
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [startDate, endDate]);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "-";
