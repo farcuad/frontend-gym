@@ -325,19 +325,19 @@ const MembershipTable: React.FC = () => {
 
 
 
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden lg:block overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b border-gray-700 text-gray-400">
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">#</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Cliente</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Plan</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Precio USD</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Precio Bs</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Fecha Inicio</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Fecha Vencimiento</th>
-              <th className="px-6 py-4 text-left font-bold uppercase tracking-widest text-[10px]">Estado</th>
-              <th className="px-6 py-4 text-center font-bold uppercase tracking-widest text-[10px]">Acciones</th>
+              <th className="px-4 py-4 text-left font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">#</th>
+              <th className="px-4 py-4 text-left font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">Cliente</th>
+              <th className="px-4 py-4 text-left font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">Plan</th>
+              <th className="px-4 py-4 text-left font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">Precio USD</th>
+              <th className="px-4 py-4 text-left font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">Precio Bs</th>
+              <th className="px-4 py-4 text-left font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">Fecha Inicio</th>
+              <th className="px-4 py-4 text-left font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">Fecha Vencimiento</th>
+              <th className="px-4 py-4 text-left font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">Estado</th>
+              <th className="px-4 py-4 text-center font-bold uppercase tracking-widest text-[10px] whitespace-nowrap">Acciones</th>
             </tr>
           </thead>
           {currentMemberships.length === 0 && <tr><td colSpan={9} className="px-6 py-5 text-center text-gray-400 font-bold text-[15px]">No hay membresias disponibles</td></tr>}
@@ -347,48 +347,48 @@ const MembershipTable: React.FC = () => {
 
               {currentMemberships.map((member, index) => (
                 <tr key={member.id} className="hover:bg-gray-900/50 transition-all group">
-                  <td className="px-6 py-5 text-gray-400 font-medium">{indexOfFirstItem + index + 1}</td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-5 text-gray-400 font-medium whitespace-nowrap">{indexOfFirstItem + index + 1}</td>
+                  <td className="px-4 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="size-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 group-hover:bg-teal-100 group-hover:text-teal-600 transition-colors">
+                      <div className="size-8 rounded-full bg-gray-700 flex items-center justify-center text-gray-400 group-hover:bg-teal-100 group-hover:text-teal-600 transition-colors shrink-0">
                         <FontAwesomeIcon icon={faUser} className="text-xs" />
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-bold text-white">{member.client_name}</span>
-                        <span className="text-xs text-white">{member.client_phone}</span>
+                        <span className="font-bold text-white whitespace-nowrap">{member.client_name}</span>
+                        <span className="text-xs text-white whitespace-nowrap">{member.client_phone}</span>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-5 font-medium text-white">{member.plan_name}</td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-5 font-medium text-white whitespace-nowrap">{member.plan_name}</td>
+                  <td className="px-4 py-5 whitespace-nowrap">
                     <span className="bg-green-700 text-white px-3 py-1 rounded-full font-bold text-xs">
                       $ {member.plan_price}
                     </span>
                   </td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-5 whitespace-nowrap">
                     <span className="bg-blue-700 text-white px-3 py-1 rounded-full font-bold text-xs">
                       {formatBs(member.plan_price)}
                     </span>
                   </td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-5 whitespace-nowrap">
                     <div className="flex items-center gap-2 text-white">
                       <FontAwesomeIcon icon={faCalendarAlt} className="text-xs text-white" />
                       <span className="font-medium">{formatFecha(member.fecha_inicio)}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-5 whitespace-nowrap">
                     <div className="flex items-center gap-2 text-white">
                       <FontAwesomeIcon icon={faCalendarAlt} className="text-xs text-white" />
                       <span className="font-medium">{formatFecha(member.fecha_vencimiento)}</span>
                     </div>
                   </td>
-                  <td className="px-6 py-5">
+                  <td className="px-4 py-5 whitespace-nowrap">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${getStatusColor(member.estado)}`}>
                       <FontAwesomeIcon icon={member.estado === "activo" ? faCheckCircle : faTimes} className="text-[12px]" />
                       {member.estado}
                     </span>
                   </td>
-                  <td className="px-6 py-5 text-center">
+                  <td className="px-4 py-5 text-center whitespace-nowrap">
                     <div className="flex justify-center gap-2">
                       <button onClick={() => handleUpdate(member)} className="cursor-pointer size-9 flex items-center justify-center rounded-xl border  border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm">
                         <FontAwesomeIcon icon={faEdit} />
@@ -407,7 +407,7 @@ const MembershipTable: React.FC = () => {
       </div>
 
       {/* VISTA MÓVIL (TARJETAS) */}
-      <div className="grid grid-cols-1 gap-4 md:hidden">
+      <div className="grid grid-cols-1 gap-4 lg:hidden">
         {currentMemberships.length === 0 && (
           <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
             No hay membresias disponibles

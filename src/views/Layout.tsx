@@ -32,7 +32,7 @@ function App() {
     <div className="flex h-screen overflow-hidden">
       <Aside isOpen={asideOpen} onClose={() => setAsideOpen(false)} />
 
-      <div className="flex flex-col flex-1 h-full relative">
+      <div className="flex flex-col flex-1 min-w-0 h-full relative">
         <Header onToggleAside={toggleAside} />
         <main className="flex-1 p-4 bg-gray-900 overflow-y-auto">
           <Routes>

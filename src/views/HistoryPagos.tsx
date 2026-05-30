@@ -5,6 +5,8 @@ import {
   faSpinner,
   faCalendarAlt,
   faFileInvoiceDollar,
+  faChevronLeft,
+  faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { PaymentHistory } from "../services/services";
@@ -16,6 +18,8 @@ const PaymentHistoryView: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
 
   const fetchPayments = async () => {
     try {
@@ -53,6 +57,7 @@ const PaymentHistoryView: React.FC = () => {
 
   useEffect(() => {
     filterPayments();
+    setCurrentPage(1);
   }, [startDate, endDate, payments]);
 
   const filterPayments = () => {
@@ -88,6 +93,11 @@ const PaymentHistoryView: React.FC = () => {
       : `Bs. ${value.toFixed(2)}`;
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentPayments = filteredPayments.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredPayments.length / itemsPerPage);
+
   if (loading) {
     return (
       <div className="p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm flex items-center justify-center min-h-[200px]">
@@ -101,7 +111,7 @@ const PaymentHistoryView: React.FC = () => {
 
   return (
     <div className="p-4 md:p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm transition-colors duration-300">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div className="flex flex-col lg:flex-row justify-between items-center mb-8 gap-4">
         <h2 className="text-xl font-black text-gray-200 flex items-center gap-2">
           <FontAwesomeIcon icon={faHistory} className="text-teal-600" />
           Historial de Pagos
@@ -141,26 +151,26 @@ const PaymentHistoryView: React.FC = () => {
         </div>
       </div>
 
-      <div className="hidden md:block overflow-x-auto">
+      <div className="hidden lg:block overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b  border-gray-800">
-              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px]">
+              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px] whitespace-nowrap">
                 #
               </th>
-              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px]">
+              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px] whitespace-nowrap">
                 Fecha
               </th>
-              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px]">
+              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px] whitespace-nowrap">
                 Cliente
               </th>
-              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px]">
+              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px] whitespace-nowrap">
                 Plan
               </th>
-              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px]">
+              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px] whitespace-nowrap">
                 Referencia
               </th>
-              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px]">
+              <th className="px-6 py-4 text-left font-bold text-white uppercase tracking-widest text-[10px] whitespace-nowrap">
                 Monto
               </th>
             </tr>
@@ -177,9 +187,9 @@ const PaymentHistoryView: React.FC = () => {
               </tr>
             </tbody>
           )}
-          {filteredPayments.length > 0 && (
+          {currentPayments.length > 0 && (
             <tbody className="divide-y divide-gray-50">
-              {filteredPayments.map((payment, index) => (
+              {currentPayments.map((payment, index) => (
                 <tr
                   key={payment.id || index}
                   className="hover:bg-gray-900/50 transition-colors group"
@@ -230,13 +240,13 @@ const PaymentHistoryView: React.FC = () => {
       </div>
 
       {/* MOBILE VIEW (CARDS) */}
-      <div className="grid grid-cols-1 gap-4 md:hidden">
-        {filteredPayments.length === 0 && (
+      <div className="grid grid-cols-1 gap-4 lg:hidden">
+        {currentPayments.length === 0 && (
           <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
             No hay pagos que coincidan con la búsqueda
           </div>
         )}
-        {filteredPayments.map((payment, index) => (
+        {currentPayments.map((payment, index) => (
           <div key={payment.id || index} className="bg-gray-800 p-5 rounded-2xl border  border-gray-700 shadow-sm flex flex-col gap-3 relative overflow-hidden">
 
             <div className="flex justify-between items-start gap-3">
@@ -281,6 +291,69 @@ const PaymentHistoryView: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* PAGINACIÓN */}
+      {filteredPayments.length > itemsPerPage && (
+        <div className="flex items-center justify-between mt-6 px-2 py‑4 border-t border-gray-700">
+          <div className="flex flex-1 justify-between sm:hidden">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-900/30 rounded-xl disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 text-sm font-bold text-teal-600 bg-teal-900/30 rounded-xl disabled:opacity-50"
+            >
+              Siguiente
+            </button>
+          </div>
+
+          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+            <p className="text-sm text-gray-400 font-medium">
+              Mostrando <span className="text-gray-200 font-bold">{indexOfFirstItem + 1}</span> a{" "}
+              <span className="text-gray-200 font-bold">
+                {Math.min(indexOfLastItem, filteredPayments.length)}
+              </span>{" "}
+              de <span className="text-gray-200 font-bold">{filteredPayments.length}</span> pagos
+            </p>
+
+            <nav className="flex gap-1">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="size-9 flex items-center justify-center rounded-xl border border-gray-800 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+              >
+                <FontAwesomeIcon icon={faChevronLeft} className="text-xs" />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`size-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
+                      ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
+                      : "text-gray-400 hover:bg-gray-700"
+                    }`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="size-9 flex items-center justify-center rounded-xl border border-gray-800 text-gray-400 hover:bg-teal-600 hover:text-white disabled:opacity-30 transition-all cursor-pointer"
+              >
+                <FontAwesomeIcon icon={faChevronRight} className="text-xs" />
+              </button>
+            </nav>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
