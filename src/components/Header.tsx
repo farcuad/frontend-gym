@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { faBars, faUser, faBell, faExclamationTriangle, faSignOutAlt, faSpinner, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faUser, faBell, faExclamationTriangle, faSignOutAlt, faSpinner, faPhone, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { apiService } from "../services/services";
@@ -87,6 +87,24 @@ function Header({ onToggleAside }: HeaderProps) {
     return `${day} ${meses[mesIndex]} ${year}`;
   };
 
+  const copyAlertData = async () => {
+    if (!alertData?.clients?.length) return;
+
+    const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    const today = new Date();
+    const fechaHoy = `${today.getDate()} ${meses[today.getMonth()]} ${today.getFullYear()}`;
+
+    const header = `Vencidos hoy fecha ${fechaHoy}`;
+    const body = alertData.clients.map(c => `${c.name} - ${c.cedula}`).join('\n');
+    const text = `${header}\n${body}`;
+
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (error) {
+      console.error("Error al copiar:", error);
+    }
+  };
+
   const [user, setUser] = useState<{ name: string } | null>(null);
 
   useEffect(() => {
@@ -139,11 +157,23 @@ function Header({ onToggleAside }: HeaderProps) {
               <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-20 sm:top-auto mt-0 sm:mt-3 w-auto sm:w-96 rounded-xl bg-gray-800 shadow-2xl border  border-gray-800 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
                 <div className="p-4 border-b border-gray-700 bg-gray-900/50 flex justify-between items-center">
                   <h3 className="font-bold text-gray-200 text-sm sm:text-base">Membresías Vencidas</h3>
-                  {alertData && (
-                    <span className="text-xs bg-rose-600 text-white px-2 py-0.5 rounded-full font-medium">
-                      {alertData.count} {alertData.count === 1 ? 'Vencida' : 'Vencidas'}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {alertData && alertData.clients?.length > 0 && (
+                      <button
+                        onClick={copyAlertData}
+                        className="cursor-pointer text-xs text-teal-600 hover:text-teal-400 transition-colors"
+                        title="Copiar nombres y cédulas"
+                      >
+                        <FontAwesomeIcon icon={faCopy} className="mr-1" />
+                        Copiar
+                      </button>
+                    )}
+                    {alertData && (
+                      <span className="text-xs bg-rose-600 text-white px-2 py-0.5 rounded-full font-medium">
+                        {alertData.count} {alertData.count === 1 ? 'Vencida' : 'Vencidas'}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="max-h-80 overflow-y-auto">

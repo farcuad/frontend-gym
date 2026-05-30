@@ -1,91 +1,58 @@
-import { useGlassAlert } from 'glass-alert-animation';
-import { useEffect } from 'react';
+import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 
-let alertFire: any = null;
-
-export const GlassAlertBridge = () => {
-  const { fire } = useGlassAlert();
-
-  useEffect(() => {
-    alertFire = fire;
-  }, [fire]);
-
-  return null;
-};
+const SwalDark = Swal.mixin({
+  background: '#1f2937',
+  color: '#f3f4f6',
+  confirmButtonColor: '#00a884',
+  cancelButtonColor: '#374151',
+  iconColor: '#00a884',
+  customClass: {
+    popup: 'swal2-dark-popup',
+  },
+});
 
 export const notify = {
   success: (msg: string) => {
-    if (alertFire) {
-      alertFire({
-        title: msg,
-        toast: true,
-        position: 'bottom-end',
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'success',
-        glassColor: '#1ced50',
-        animation: 'liquid'
-      });
-    }
+    toast.success(msg, {
+      position: 'bottom-right',
+      autoClose: 3000,
+    });
   },
   error: (msg: string) => {
-    if (alertFire) {
-      alertFire({
-        title: msg,
-        toast: true,
-        position: 'top-end',
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'error',
-        glassColor: '#ff0000',
-        animation: 'liquid'
-      });
-    }
+    toast.error(msg, {
+      position: 'top-right',
+      autoClose: 3000,
+    });
   },
   info: (msg: string) => {
-    if (alertFire) {
-      alertFire({
-        title: msg,
-        toast: true,
-        position: 'top-end',
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'info',
-        glassColor: '#ffe900',
-        animation: 'liquid'
-      });
-    }
+    toast.info(msg, {
+      position: 'top-right',
+      autoClose: 3000,
+    });
   },
   warning: (msg: string) => {
-    if (alertFire) {
-      alertFire({
-        title: msg,
-        toast: true,
-        position: 'top-end',
-        timer: 3000,
-        timerProgressBar: true,
-        icon: 'warning',
-        glassColor: '#ff0000',
-        animation: 'liquid'
-      });
-    }
+    toast.warning(msg, {
+      position: 'top-right',
+      autoClose: 3000,
+    });
   },
 };
 
-// Hook para diálogos que requieren confirmación (async)
 export const useConfirm = () => {
-  const { fire } = useGlassAlert();
-  
-  const confirm = async (title: string, text: string, icon: 'success' | 'error' | 'warning' | 'info' | 'question' = 'warning') => {
-    return await fire({
+  const confirm = async (
+    title: string,
+    text: string,
+    icon: 'success' | 'error' | 'warning' | 'info' | 'question' = 'warning'
+  ) => {
+    return await SwalDark.fire({
       title,
       text,
       icon,
       showCancelButton: true,
       confirmButtonText: 'Confirmar',
       cancelButtonText: 'Cancelar',
-      glassColor: '#6366f1',
-      animation: 'liquid'
+      reverseButtons: true,
     });
   };
 
@@ -93,6 +60,9 @@ export const useConfirm = () => {
 };
 
 export const useAlert = () => {
-  const { fire } = useGlassAlert();
+  const fire = async (options: Record<string, unknown>) => {
+    return await SwalDark.fire(options);
+  };
+
   return { fire };
 };
