@@ -10,7 +10,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { apiService } from "../services/services";
 import type { PaymentHistory } from "../services/services";
-import { notify } from "../utils/toast";
 import { useQuery } from "@tanstack/react-query";
 
 const PaymentHistoryView: React.FC = () => {
@@ -314,8 +313,8 @@ const PaymentHistoryView: React.FC = () => {
                   key={page}
                   onClick={() => setCurrentPage(page)}
                   className={`size-9 flex items-center justify-center rounded-xl text-xs font-bold transition-all cursor-pointer ${currentPage === page
-                      ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
-                      : "text-gray-400 hover:bg-gray-700"
+                    ? "bg-teal-600 text-white shadow-lg shadow-teal-100"
+                    : "text-gray-400 hover:bg-gray-700"
                     }`}
                 >
                   {page}
