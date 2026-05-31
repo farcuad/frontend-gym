@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faEnvelope, faDumbbell, faIdCard } from "@fortawesome/free-solid-svg-icons";
-import Axios from "axios";
+import api, { setAccessToken } from "../services/services";
 import type { AxiosError } from "axios";
 import { NavLink, useNavigate } from "react-router-dom";
 import { notify } from "../utils/toast";
@@ -33,18 +33,18 @@ function AuthLogin() {
     setLoading(true);
     try {
       const API_URL = import.meta.env.VITE_API_URL;
-      const endpoint = loginMode === "admin"
-        ? `${API_URL}/login`
+      const endpoint = loginMode === "admin" ? `${API_URL}/login`
         : `${API_URL}/client/login`;
 
       const payload = loginMode === "admin"
         ? { email: formData.email, password: formData.password }
         : { cedula: formData.cedula };
 
-      const response = await Axios.post(endpoint, payload);
+      // ⚡️ ¡Ahora viaja usando la instancia correcta con credentials y headers unificados!
+      const response = await api.post(endpoint, payload);
 
       if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+        setAccessToken(response.data.token);
 
         // Manejar datos de usuario/cliente
         const userData = response.data.user || response.data.client;

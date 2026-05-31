@@ -138,41 +138,80 @@ export interface Gastos {
 // 1. Crear instancia de Axios con la URL base
 const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
 
-// 2. Interceptor para inyectar el Token automáticamente y validar Plan
+let accessToken: string | null = null;
+let isRefreshing = false;
+let failedQueue: Array<{ resolve: (token: string) => void; reject: (error: any) => void }> = [];
+
+export const setAccessToken = (token: string | null) => {
+  accessToken = token;
+};
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(token!);
+    }
+  });
+  failedQueue = [];
+};
+
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-
-    // Restricción para Plan Básico en Chat AI -> ELIMINADO (Se maneja por Contexto)
-
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (error) => Promise.reject(error),
 );
 
-// Interceptor de respuesta
 api.interceptors.response.use(
   (response) => response,
-  (error: AxiosError<any>) => {
-    if (error.response?.status === 401) {
-      // Token inválido o expirado
-      localStorage.removeItem("token");
-      localStorage.removeItem("plan_type");
-      localStorage.removeItem("user");
-      window.location.href = "/";
+  async (error: AxiosError<any>) => {
+    const originalRequest = error.config as any;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then((token) => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return api(originalRequest);
+        });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const { data } = await axios.post(`${API_URL}/refresh`, {}, { withCredentials: true });
+        const newToken = data.token;
+        setAccessToken(newToken);
+        processQueue(null, newToken);
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        setAccessToken(null);
+        localStorage.removeItem("plan_type");
+        localStorage.removeItem("user");
+        localStorage.removeItem("role");
+        window.location.href = "/";
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
     }
-    const currentPath = window.location.pathname;
+
     if (error.response?.status === 403) {
       const data = error.response?.data;
       const code = data?.code;
@@ -181,6 +220,7 @@ api.interceptors.response.use(
         data?.error === "Acceso denegado"
       ) {
         notify.warning(data.message || "Suscripción vencida");
+        const currentPath = window.location.pathname;
         if (currentPath !== "/home/plans-gym") {
           window.location.href = "/home/plans-gym";
         }
@@ -267,6 +307,8 @@ export const apiService = {
   generateAccessTicket: () => api.get<{ token: string }>("/access/generate-ticket"),
   verifyQrTicket: (token: string, membershipId: string | number = 0) =>
     api.post(`/memberships/${membershipId}/verify-qr`, { token }),
+
+  logout: () => api.post("/logout"),
 
   // Configuración de la App
   getAppConfig: () => api.get("/app-config", {

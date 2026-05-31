@@ -23,12 +23,8 @@ const PaymentHistoryView: React.FC = () => {
     queryFn: async () => {
       const response = await apiService.getHistoryPagos();
       const apiResponse = response.data.payment;
-      let data: PaymentHistory[] = [];
-      if (apiResponse && Array.isArray(apiResponse.payment)) {
-        data = apiResponse.payment;
-      } else if (Array.isArray(apiResponse)) {
-        data = apiResponse;
-      }
+      let data: PaymentHistory[] = apiResponse;
+
       data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
       return data;
     },

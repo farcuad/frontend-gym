@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { faBars, faUser, faBell, faExclamationTriangle, faSignOutAlt, faSpinner, faPhone, faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faUser, faBell, faExclamationTriangle, faSignOutAlt, faSpinner, faPhone, faCopy, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { apiService } from "../services/services";
-import { useQueryClient } from '@tanstack/react-query';
+import { apiService, setAccessToken } from "../services/services";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 interface AlertClient {
   name: string;
   phone: string;
@@ -25,32 +25,21 @@ interface HeaderProps {
 function Header({ onToggleAside }: HeaderProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState<boolean>(false);
-  const [alertData, setAlertData] = useState<AlertResponse | null>(null);
-  const [loadingAlerts, setLoadingAlerts] = useState<boolean>(false);
+  const [copied, setCopied] = useState(false);
   const navigate = useNavigate();
 
   const notificationRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
 
-  const fetchAlerts = async () => {
-    setLoadingAlerts(true);
-    try {
+  const { data: alertData, isLoading: loadingAlerts } = useQuery({
+    queryKey: ['alerts'],
+    queryFn: async () => {
       const response = await apiService.getAlertClient();
-      setAlertData(response.data);
-    } catch (error) {
-      console.error("Error al obtener alertas:", error);
-      setAlertData(null);
-    } finally {
-      setLoadingAlerts(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAlerts();
-    // Refrescar cada 5 minutos
-    const interval = setInterval(fetchAlerts, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+      return response.data as AlertResponse;
+    },
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+  });
 
   // Cerrar al hacer clic fuera
   useEffect(() => {
@@ -68,9 +57,17 @@ function Header({ onToggleAside }: HeaderProps) {
   }, []);
 
   const queryClient = useQueryClient()
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await apiService.logout();
+    } catch {
+      // even if logout API fails, clear local state
+    }
     queryClient.clear();
-    localStorage.removeItem("token");
+    setAccessToken(null);
+    localStorage.removeItem("user");
+    localStorage.removeItem("role");
+    localStorage.removeItem("plan_type");
     navigate("/login");
   };
 
@@ -102,6 +99,8 @@ function Header({ onToggleAside }: HeaderProps) {
 
     try {
       await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
     } catch (error) {
       console.error("Error al copiar:", error);
     }
@@ -140,10 +139,7 @@ function Header({ onToggleAside }: HeaderProps) {
         {!isClient && (
           <div className="relative" ref={notificationRef}>
             <button
-              onClick={() => {
-                setIsNotificationOpen(!isNotificationOpen);
-                if (!isNotificationOpen) fetchAlerts();
-              }}
+              onClick={() => setIsNotificationOpen(!isNotificationOpen)}
               className={`cursor-pointer relative p-2 rounded-full transition-all ${isNotificationOpen ? 'bg-teal-900/30 text-teal-600' : 'text-gray-400 hover:bg-gray-700'}`}
             >
               <FontAwesomeIcon icon={faBell} className="size-5" />
@@ -158,22 +154,22 @@ function Header({ onToggleAside }: HeaderProps) {
             {isNotificationOpen && (
               <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-20 sm:top-auto mt-0 sm:mt-3 w-auto sm:w-96 rounded-xl bg-gray-800 shadow-2xl border  border-gray-800 z-50 overflow-hidden animate-in fade-in zoom-in duration-200">
                 <div className="p-4 border-b border-gray-700 bg-gray-900/50 flex justify-between items-center">
-                  <h3 className="font-bold text-gray-200 text-sm sm:text-base">Membresías Vencidas</h3>
+                  <h3 className="text-gray-200 text-sm sm:text-base">
+                    Membresías Vencidas
+                    {alertData && (
+                      <span className="ml-1.5 text-rose-500">: {alertData.count}</span>
+                    )}
+                  </h3>
                   <div className="flex items-center gap-2">
                     {alertData && alertData.clients?.length > 0 && (
                       <button
                         onClick={copyAlertData}
-                        className="cursor-pointer text-xs text-teal-600 hover:text-teal-400 transition-colors"
+                        className="cursor-pointer text-xs text-teal-600 hover:text-teal-400 transition-colors flex items-center gap-1"
                         title="Copiar nombres y cédulas"
                       >
-                        <FontAwesomeIcon icon={faCopy} className="mr-1" />
-                        Copiar
+                        <FontAwesomeIcon icon={copied ? faCheck : faCopy} />
+                        {copied ? 'Copiado' : 'Copiar'}
                       </button>
-                    )}
-                    {alertData && (
-                      <span className="text-xs bg-rose-600 text-white px-2 py-0.5 rounded-full font-medium">
-                        {alertData.count} {alertData.count === 1 ? 'Vencida' : 'Vencidas'}
-                      </span>
                     )}
                   </div>
                 </div>
@@ -184,29 +180,31 @@ function Header({ onToggleAside }: HeaderProps) {
                       <FontAwesomeIcon icon={faSpinner} className="text-teal-600 text-xl animate-spin" />
                     </div>
                   ) : alertData && alertData.clients && alertData.clients.length > 0 ? (
-                    alertData.clients.map((client, index) => (
-                      <div key={index} className="w-full p-4 flex gap-3 hover:bg-gray-900 transition-colors border-b border-gray-700  last:border-0">
-                        <div className="mt-1 text-amber-500 shrink-0">
-                          <FontAwesomeIcon icon={faExclamationTriangle} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-gray-100 truncate">{client.name}</p>
-                          <p className="text-xs text-gray-400 truncate">{client.plan_name}</p>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                            <span className="text-[10px] text-rose-500 font-medium whitespace-nowrap">
-                              Vencido: {formatDate(client.fecha_vencimiento)}
-                            </span>
-                            <a
-                              href={`tel:${client.phone}`}
-                              className="text-[10px] text-teal-600 font-medium flex items-center gap-1 hover:underline whitespace-nowrap"
-                            >
-                              <FontAwesomeIcon icon={faPhone} className="text-[8px]" />
-                              {client.phone}
-                            </a>
+                    <>
+                      {alertData.clients.map((client, index) => (
+                        <div key={index} className="w-full p-4 flex gap-3 hover:bg-gray-900 transition-colors border-b border-gray-700 last:border-0">
+                          <div className="mt-1 text-amber-500 shrink-0">
+                            <FontAwesomeIcon icon={faExclamationTriangle} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-100 truncate">{client.name}</p>
+                            <p className="text-xs text-gray-400 truncate">{client.plan_name}</p>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                              <span className="text-[10px] text-rose-500 font-medium whitespace-nowrap">
+                                Vencido: {formatDate(client.fecha_vencimiento)}
+                              </span>
+                              <a
+                                href={`tel:${client.phone}`}
+                                className="text-[10px] text-teal-600 font-medium flex items-center gap-1 hover:underline whitespace-nowrap"
+                              >
+                                <FontAwesomeIcon icon={faPhone} className="text-[8px]" />
+                                {client.phone}
+                              </a>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))
+                      ))}
+                    </>
                   ) : (
                     <div className="p-8 text-center text-gray-400">
                       <p className="text-sm">No hay membresías vencidas</p>
