@@ -27,7 +27,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({ label, options, value,
                     {label}
                 </Listbox.Label>
                 <div className="relative">
-                    <Listbox.Button className="relative w-full pl-11 pr-10 py-4 bg-gray-900 border border-gray-700 border-transparent rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 text-left cursor-pointer shadow-xs">
+                    <Listbox.Button className="relative w-full pl-10 pr-9 py-3 bg-gray-900 border border-gray-700 border-transparent rounded-2xl focus:bg-gray-800 focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold text-gray-300 text-left cursor-pointer shadow-xs">
                         <span className="absolute inset-y-0 left-4 flex items-center text-gray-300">
                             <FontAwesomeIcon icon={icon} className="text-xs" />
                         </span>
@@ -50,7 +50,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({ label, options, value,
                                 <Listbox.Option
                                     key={option.id}
                                     className={({ active }) =>
-                                        `relative cursor-pointer select-none py-3.5 pl-11 pr-4 transition-all ${
+                                        `relative cursor-pointer select-none py-2.5 pl-9 pr-3 transition-all ${
                                             active ? 'bg-teal-900/30 text-teal-900 px-5' : 'text-gray-100'
                                         }`
                                     }

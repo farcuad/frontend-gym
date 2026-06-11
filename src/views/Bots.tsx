@@ -7,8 +7,9 @@ import {
   faKey,
   faIdBadge,
   faTimes,
-  faPlus,
   faSpinner,
+  faCheckCircle,
+  faPlug,
 } from "@fortawesome/free-solid-svg-icons";
 import { notify, useConfirm } from "../utils/toast";
 import { apiService } from "../services/services";
@@ -31,14 +32,24 @@ const BotsView: React.FC = () => {
   const { data: bots = [], isLoading: loading } = useQuery<BotConfig[]>({
     queryKey: ['bots'],
     queryFn: async () => {
-      const response = await apiService.getConfigBots();
-      const data = response.data.bots;
-      if (data && !Array.isArray(data)) {
-        return [data];
+      try {
+        const response = await apiService.getConfigBots();
+        const data = response.data.bots;
+        if (data && !Array.isArray(data)) {
+          return [data];
+        }
+        return data || [];
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
+          return [];
+        }
+        throw error;
       }
-      return data || [];
     },
+    retry: false,
   });
+
+  const activeBot = bots.length > 0 ? bots[0] : null;
 
   const refetchBots = () => queryClient.invalidateQueries({ queryKey: ['bots'] });
 
@@ -47,7 +58,7 @@ const BotsView: React.FC = () => {
     setIsSubmitting(true);
     try {
       await apiService.createConfigBots(newBot);
-      notify.success("Bot configurado correctamente.");
+      notify.success("Whaibot configurado correctamente.");
       setIsCreateOpen(false);
       setNewBot({
         whaibot_id: "",
@@ -56,7 +67,7 @@ const BotsView: React.FC = () => {
       refetchBots();
     } catch (error) {
       console.error("Error al crear bot:", error);
-      notify.error("No se pudo configurar el bot.");
+      notify.error("No se pudo configurar Whaibot.");
     } finally {
       setIsSubmitting(false);
     }
@@ -69,15 +80,15 @@ const BotsView: React.FC = () => {
 
   const handleDelete = async (bot: BotConfig) => {
     const result = await confirm(
-      "¿Eliminar configuración?",
-      `El bot "${bot.whaibot_id}" será eliminado de este gimnasio.`,
+      "¿Desconectar Whaibot?",
+      `La configuración de "${bot.whaibot_id}" será eliminada y dejarán de enviarse mensajes por WhatsApp.`,
       "warning"
     );
 
     if (result.isConfirmed && bot.id) {
       try {
         await apiService.deleteConfigBots(bot.id);
-        notify.success("La configuración ha sido borrada con éxito.");
+        notify.success("Whaibot desconectado correctamente.");
         refetchBots();
       } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -100,12 +111,12 @@ const BotsView: React.FC = () => {
         whaibot_id,
         whaibot_key,
       });
-      notify.success("Bot actualizado correctamente.");
+      notify.success("Configuración de Whaibot actualizada.");
       setIsEditOpen(false);
       refetchBots();
     } catch (error) {
       console.error("Error al actualizar bot:", error);
-      notify.error("No se pudo actualizar el bot.");
+      notify.error("No se pudo actualizar la configuración.");
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +124,7 @@ const BotsView: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm flex items-center justify-center min-h-[200px]">
+      <div className="p-6 bg-gray-800 rounded-[2.5rem] border border-gray-800 shadow-sm flex items-center justify-center min-h-[200px]">
         <FontAwesomeIcon
           icon={faSpinner}
           className="text-teal-600 text-2xl animate-spin"
@@ -123,140 +134,76 @@ const BotsView: React.FC = () => {
   }
 
   return (
-    <div className="p-6 bg-gray-800 rounded-[2.5rem] border  border-gray-800 shadow-sm">
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 justify-start">
-          <h2 className="text-xl font-black text-gray-200 flex items-center gap-2">
-            <FontAwesomeIcon icon={faRobot} className="text-teal-600" />
-            Configuración de Bots
-          </h2>
-        </div>
-        {bots.length === 0 && (
-          <button
-            onClick={() => setIsCreateOpen(true)}
-            className="cursor-pointer flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg shadow-teal-100"
-          >
-            <FontAwesomeIcon icon={faPlus} />
-            <span className="hidden sm:inline">Configurar Bot</span>
-            <span className="sm:hidden">Nuevo</span>
-          </button>
-        )}
+    <div className="p-6 bg-gray-800 rounded-[2.5rem] border border-gray-800 shadow-sm">
+      <div className="flex items-center gap-2 mb-8">
+        <FontAwesomeIcon icon={faRobot} className="text-teal-600 text-xl" />
+        <h2 className="text-xl font-black text-gray-200">Configuraciones</h2>
       </div>
 
-      <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full bg-gray-800 text-sm">
-          <thead>
-            <tr className="border-b  border-gray-800">
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
-                #
-              </th>
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
-                ID del Bot
-              </th>
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
-                API Key
-              </th>
-              <th className="px-6 py-4 text-left font-bold text-gray-400 uppercase tracking-widest text-[10px]">
-                Creado el
-              </th>
-              <th className="px-6 py-4 text-center font-bold text-gray-400 uppercase tracking-widest text-[10px]">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          {bots.length === 0 && (
-            <tbody>
-              <tr>
-                <td
-                  colSpan={5}
-                  className="px-6 py-10 whitespace-nowrap text-center text-gray-400 font-bold text-[15px]"
-                >
-                  No hay bots configurados para este gimnasio.
-                </td>
-              </tr>
-            </tbody>
-          )}
-          {bots.length > 0 && (
-            <tbody className="divide-y divide-gray-50">
-              {bots.map((bot, index) => (
-                <tr
-                  key={bot.id}
-                  className="hover:bg-gray-900/50 transition-colors group"
-                >
-                  <td className="px-6 py-5 whitespace-nowrap text-gray-400 font-medium">
-                    {index + 1}
-                  </td>
-                  <td className="px-6 py-5 whitespace-nowrap">
-                    <span className="font-bold text-gray-300">{bot.whaibot_id}</span>
-                  </td>
-                  <td className="px-6 py-5 whitespace-nowrap">
-                    <span className="bg-teal-900/30 text-teal-700 px-3 py-1 rounded-full font-bold text-xs">
-                      ••••••••{bot.whaibot_key.slice(-4)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-5 whitespace-nowrap text-gray-400">
-                    {bot.created_at ? new Date(bot.created_at).toLocaleDateString() : '—'}
-                  </td>
-                  <td className="px-6 py-5 whitespace-nowrap text-center">
-                    <div className="flex justify-center gap-3">
-                      <button
-                        onClick={() => handleEdit(bot)}
-                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border  border-amber-200 text-amber-500 hover:bg-amber-500 hover:text-white transition-all shadow-sm"
-                        title="Editar Bot"
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(bot)}
-                        className="cursor-pointer size-9 flex items-center justify-center rounded-xl border  border-rose-200 text-rose-500 hover:bg-rose-500 hover:text-white transition-all shadow-sm"
-                        title="Eliminar Bot"
-                      >
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          )}
-
-        </table>
-      </div>
-
-      {/* VISTA MÓVIL (TARJETAS) */}
-      <div className="grid grid-cols-1 gap-4 md:hidden">
-        {bots.length === 0 && (
-          <div className="text-center font-bold text-gray-400 uppercase tracking-wider text-[13px] py-10">
-            No hay bots configurados
-          </div>
-        )}
-        {bots.map((bot) => (
-          <div key={bot.id} className="bg-gray-800 p-5 rounded-2xl border  border-gray-800 shadow-sm flex flex-col gap-4">
-            <div className="flex justify-between items-start">
-              <div>
-                <h3 className="font-bold text-gray-200 text-lg">{bot.whaibot_id}</h3>
-                <span className="bg-teal-900/30 text-teal-700 px-3 py-1 rounded-full font-bold text-xs mt-2 inline-block">
-                  Key: ••••••••{bot.whaibot_key.slice(-4)}
-                </span>
+      {/* Grid de servicios */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Whaibot Card */}
+        <div className="bg-gray-900 rounded-3xl border border-gray-800 p-5 flex flex-col">
+          <div className="flex items-start gap-4">
+            <div className="size-12 min-w-[48px] rounded-2xl bg-gradient-to-br from-teal-600/20 to-teal-600/10 flex items-center justify-center border border-teal-600/20">
+              <FontAwesomeIcon icon={faRobot} className="text-teal-600 text-xl" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="text-base font-black text-gray-200">Whaibot</h3>
+                {activeBot && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-900/30 border border-teal-600/30 text-teal-600 text-[9px] font-bold uppercase tracking-wider">
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-[7px]" />
+                    Activo
+                  </span>
+                )}
               </div>
-            </div>
-
-            <div className="flex gap-2 pt-3 border-t border-gray-50 mt-2">
-              <button
-                onClick={() => handleEdit(bot)}
-                className="flex-1 py-2 rounded-xl bg-amber-600 text-whitefont-bold text-xs hover:bg-amber-100 transition-colors flex items-center justify-center gap-2"
-              >
-                <FontAwesomeIcon icon={faEdit} /> Editar
-              </button>
-              <button
-                onClick={() => handleDelete(bot)}
-                className="flex-1 py-2 rounded-xl bg-rose-600 text-white font-bold text-xs hover:bg-rose-100 transition-colors flex items-center justify-center gap-2"
-              >
-                <FontAwesomeIcon icon={faTrashAlt} /> Eliminar
-              </button>
+              <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">
+                Notificaciones y recordatorios por WhatsApp para clientes.
+              </p>
             </div>
           </div>
-        ))}
+
+          <div className="mt-4 pt-4 border-t border-gray-800">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+              Estado:{" "}
+              {activeBot ? (
+                <span className="text-teal-600">Conectado</span>
+              ) : (
+                <span className="text-gray-400">Inactivo</span>
+              )}
+            </span>
+          </div>
+
+          {activeBot && (
+            <div className="mt-3 flex items-center gap-2">
+              <button
+                onClick={() => handleEdit(activeBot)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white font-bold text-xs transition-all"
+              >
+                <FontAwesomeIcon icon={faEdit} className="text-[10px]" />
+                Editar
+              </button>
+              <button
+                onClick={() => handleDelete(activeBot)}
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white font-bold text-xs transition-all"
+              >
+                <FontAwesomeIcon icon={faTrashAlt} className="text-[10px]" />
+                Desconectar
+              </button>
+            </div>
+          )}
+
+          {!activeBot && (
+            <button
+              onClick={() => setIsCreateOpen(true)}
+              className="mt-3 w-full flex items-center justify-center gap-2 py-2.5 bg-teal-600 text-white rounded-xl font-bold text-sm hover:bg-teal-700 transition-all shadow-lg"
+            >
+              <FontAwesomeIcon icon={faPlug} />
+              Configurar
+            </button>
+          )}
+        </div>
       </div>
 
       {/* MODAL DE EDICIÓN */}
@@ -271,9 +218,9 @@ const BotsView: React.FC = () => {
             </button>
 
             <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-200">Editar Bot</h3>
+              <h3 className="text-2xl font-black text-gray-200">Editar Whaibot</h3>
               <p className="text-sm text-gray-400 font-medium italic">
-                Actualiza las credenciales de Whaibot.
+                Actualiza las credenciales de tu instancia de Whaibot.
               </p>
             </div>
 
@@ -296,7 +243,7 @@ const BotsView: React.FC = () => {
                         )
                       }
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -341,7 +288,7 @@ const BotsView: React.FC = () => {
                       className="animate-spin"
                     />
                   ) : (
-                    "Actualizar Bot"
+                    "Guardar Cambios"
                   )}
                 </button>
               </div>
@@ -362,9 +309,10 @@ const BotsView: React.FC = () => {
             </button>
 
             <div className="mb-8">
-              <h3 className="text-2xl font-black text-gray-200">Configurar Bot</h3>
+              <h3 className="text-2xl font-black text-gray-200">Configurar Whaibot</h3>
               <p className="text-sm text-gray-400 font-medium italic">
-                Ingresa las credenciales de tu instancia de Whaibot.
+                Ingresa las credenciales de tu instancia de Whaibot para activar
+                los mensajes automáticos por WhatsApp.
               </p>
             </div>
 
@@ -386,7 +334,7 @@ const BotsView: React.FC = () => {
                       }
                       placeholder="Ej: mi_bot_123"
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -407,7 +355,7 @@ const BotsView: React.FC = () => {
                       }
                       placeholder="Ej: abc-123-key"
                       required
-                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
+                      className="w-full pl-11 pr-4 py-3.5 bg-gray-900 border border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -432,7 +380,7 @@ const BotsView: React.FC = () => {
                       className="animate-spin"
                     />
                   ) : (
-                    "Guardar Configuración"
+                    "Activar Whaibot"
                   )}
                 </button>
               </div>

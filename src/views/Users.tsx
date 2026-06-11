@@ -15,7 +15,16 @@ import {
 import { apiService } from "../services/services";
 import type { createUsers } from "../services/services";
 import { notify, useConfirm } from "../utils/toast";
+import { SelectField, type SelectOption } from "../components/SelectField";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+const roleOptions: SelectOption[] = [
+  { id: 1, name: "Entrenador" },
+  { id: 2, name: "Cajero" },
+];
+
+const roleToId = (role: string) => (role === "trainer" ? 1 : 2);
+const idToRole = (id: number) => (id === 1 ? "trainer" : "cashier");
 
 interface User extends createUsers {
   id: number;
@@ -458,20 +467,14 @@ export default function Users() {
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
-                  Rol en el Gimnasio *
-                </label>
-                <select
-                  disabled={saving}
-                  className="w-full px-4 py-3.5 bg-gray-900 border  border-gray-800 rounded-2xl focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 outline-none transition-all text-sm font-medium disabled:opacity-60"
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-                >
-                  <option value="trainer">Entrenador</option>
-                  <option value="cashier">Cajero</option>
-                </select>
-              </div>
+              <SelectField
+                label="Rol en el Gimnasio *"
+                options={roleOptions}
+                value={roleToId(formData.role)}
+                onChange={(id) => setFormData({ ...formData, role: idToRole(id) as any })}
+                icon={faUser}
+                placeholder="Selecciona un rol"
+              />
 
               {/* Botones de Acción */}
               <div className="flex gap-4 pt-4 border-t border-gray-50">

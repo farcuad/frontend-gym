@@ -13,7 +13,7 @@ interface LoginBody {
 }
 
 function AuthLogin() {
-  const [loginMode, setLoginMode] = useState<"admin" | "client">("admin");
+  const [loginMode, setLoginMode] = useState<"staff" | "client">("staff");
   const [formData, setFormData] = useState<LoginBody>({
     email: "",
     password: "",
@@ -33,10 +33,10 @@ function AuthLogin() {
     setLoading(true);
     try {
       const API_URL = import.meta.env.VITE_API_URL;
-      const endpoint = loginMode === "admin" ? `${API_URL}/login`
+      const endpoint = loginMode === "staff" ? `${API_URL}/login`
         : `${API_URL}/client/login`;
 
-      const payload = loginMode === "admin"
+      const payload = loginMode === "staff"
         ? { email: formData.email, password: formData.password }
         : { cedula: formData.cedula };
 
@@ -96,10 +96,10 @@ function AuthLogin() {
         <div className="w-full max-w-md space-y-8">
           <div className="text-left">
             <h2 className="text-4xl font-bold tracking-tight text-gray-100">
-              {loginMode === "admin" ? "Iniciar Sesión" : "Acceso Clientes"}
+              {loginMode === "staff" ? "Iniciar Sesión" : "Acceso Clientes"}
             </h2>
             <p className="mt-2 text-gray-400">
-              {loginMode === "admin"
+              {loginMode === "staff"
                 ? "Bienvenido de nuevo. Por favor, ingresa tus datos de acceso administrativo."
                 : "Ingresa tu número de cédula para ver tus rutinas y progreso."}
             </p>
@@ -108,8 +108,8 @@ function AuthLogin() {
           {/* TABS DE LOGIN */}
           <div className="flex p-1 bg-gray-700 rounded-xl">
             <button
-              onClick={() => setLoginMode("admin")}
-              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${loginMode === "admin" ? "bg-gray-800 text-teal-600 shadow-sm" : "text-gray-400 hover:text-gray-300"}`}
+              onClick={() => setLoginMode("staff")}
+              className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${loginMode === "staff" ? "bg-gray-800 text-teal-600 shadow-sm" : "text-gray-400 hover:text-gray-300"}`}
             >
               Personal
             </button>
@@ -123,7 +123,7 @@ function AuthLogin() {
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-5">
-              {loginMode === "admin" ? (
+              {loginMode === "staff" ? (
                 <>
                   {/* Input Email */}
                   <div>
@@ -195,7 +195,7 @@ function AuthLogin() {
               )}
             </div>
 
-            {loginMode === "admin" && (
+            {loginMode === "staff" && (
               <div className="flex items-center justify-between">
                 <NavLink
                   to="/recover-password"
@@ -219,10 +219,10 @@ function AuthLogin() {
                   </svg>
                   Procesando...
                 </span>
-              ) : loginMode === "admin" ? "Entrar al Panel" : "Ver mis Rutinas"}
+              ) : loginMode === "staff" ? "Entrar al Panel" : "Ver mis Rutinas"}
             </button>
 
-            {loginMode === "admin" && (
+            {loginMode === "staff" && (
               <p className="text-center text-sm text-gray-400">
                 ¿No tienes una cuenta?{" "}
                 <NavLink to="/register" className="font-bold text-teal-600 hover:underline">
