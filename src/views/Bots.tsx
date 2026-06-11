@@ -145,12 +145,9 @@ const BotsView: React.FC = () => {
         {/* Whaibot Card */}
         <div className="bg-gray-900 rounded-3xl border border-gray-800 p-5 flex flex-col">
           <div className="flex items-start gap-4">
-            <div className="size-12 min-w-[48px] rounded-2xl bg-gradient-to-br from-teal-600/20 to-teal-600/10 flex items-center justify-center border border-teal-600/20">
-              <FontAwesomeIcon icon={faRobot} className="text-teal-600 text-xl" />
-            </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-base font-black text-gray-200">Whaibot</h3>
+                <img src="/whaibot.png" alt="Whaibot Logo" className="h-8 object-contain" />
                 {activeBot && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-900/30 border border-teal-600/30 text-teal-600 text-[9px] font-bold uppercase tracking-wider">
                     <FontAwesomeIcon icon={faCheckCircle} className="text-[7px]" />
